@@ -19,7 +19,11 @@ const SummarizeNotesInputSchema = z.object({
 export type SummarizeNotesInput = z.infer<typeof SummarizeNotesInputSchema>;
 
 const SummarizeNotesOutputSchema = z.object({
-  summary: z.string().describe('A concise, aesthetically pleasing summary in Markdown format.'),
+  summary: z
+    .string()
+    .describe(
+      'A concise, aesthetically pleasing summary in Markdown format, organized into sections like "Main Ideas", "Key Concepts", and "Action Items".'
+    ),
 });
 export type SummarizeNotesOutput = z.infer<typeof SummarizeNotesOutputSchema>;
 
@@ -31,15 +35,16 @@ const summarizeNotesPrompt = ai.definePrompt({
   name: 'summarizeNotesPrompt',
   input: {schema: SummarizeNotesInputSchema},
   output: {schema: SummarizeNotesOutputSchema},
-  prompt: `You are an expert summarizer. You will take the following notes and create a concise, aesthetically pleasing summary.
+  prompt: `You are an expert summarizer, inspired by tools like Miro, Visily, and Napkin.ai.
+  Your task is to transform raw notes into a visually structured, beautiful, and easy-to-digest summary.
 
-  Format the summary using Markdown, including features like:
-  - Headings (#, ##, etc.)
-  - Bold and italic text
-  - Nested bullet points
-  - Blockquotes
+  Analyze the notes and organize the content into logical sections. Use the following structure:
+  - **## 🌟 Main Ideas**: Identify the core concepts or the most important takeaways.
+  - **## 🔑 Key Concepts**: Break down the main ideas into smaller, key points using nested bullet points.
+  - **##  actionable items**: List any tasks, to-dos, or actionable steps mentioned.
+  - Use emojis to make the summary more engaging.
 
-  Make it easy to read and visually appealing.
+  Format the entire output using Markdown. Ensure the summary is not just a block of text, but a well-organized and aesthetically pleasing document.
 
   Notes: {{{notes}}}`,
 });
