@@ -3,9 +3,8 @@ export interface Flashcard {
   answer: string;
 }
 
-export interface MindMapNodeData {
-  name: string;
-  children?: MindMapNodeData[];
+export interface MindMapData {
+  mindMap: string;
 }
 
 export interface DiagramData {

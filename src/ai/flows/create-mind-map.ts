@@ -16,13 +16,8 @@ const CreateMindMapInputSchema = z.object({
 });
 export type CreateMindMapInput = z.infer<typeof CreateMindMapInputSchema>;
 
-const MindMapNodeSchema: z.ZodType<any> = z.object({
-  name: z.string(),
-  children: z.lazy(() => MindMapNodeSchema.array()).optional(),
-});
-
 const CreateMindMapOutputSchema = z.object({
-  mindMap: MindMapNodeSchema.describe('A JSON representation of the mind map structure.'),
+  mindMap: z.string().describe('A mind map in Mermaid syntax that represents the notes.'),
 });
 
 export type CreateMindMapOutput = z.infer<typeof CreateMindMapOutputSchema>;
@@ -35,7 +30,11 @@ const prompt = ai.definePrompt({
   name: 'createMindMapPrompt',
   input: {schema: CreateMindMapInputSchema},
   output: {schema: CreateMindMapOutputSchema},
-  prompt: `You are an AI expert in creating mind maps. Transform the given notes into a JSON structure representing a mind map. Ensure the JSON is valid and well-structured.
+  prompt: `You are an AI expert in creating mind maps. Transform the given notes into a Mermaid syntax mind map.
+  
+  The diagram should be well-structured, with a clear central idea and logical branches.
+  Ensure the Mermaid syntax is valid and accurately represents the information in the notes.
+  The root node should represent the central idea of the notes.
 
 Notes: {{{notes}}}
 `,

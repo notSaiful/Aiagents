@@ -16,14 +16,14 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import Flashcard from './flashcard';
 import MindMap from './mind-map';
-import type { Flashcard as FlashcardType, MindMapNodeData } from '@/types';
+import type { Flashcard as FlashcardType } from '@/types';
 import ShareDialog from './share-dialog';
 import Mermaid from './mermaid';
 
 interface OutputDisplayProps {
   summary: string;
   flashcards: FlashcardType[];
-  mindMap: MindMapNodeData;
+  mindMap: string;
   diagram: string;
   napkin: string;
 }

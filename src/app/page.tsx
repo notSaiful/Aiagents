@@ -12,7 +12,7 @@ import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
 import { generateDiagram } from '@/ai/flows/generate-diagram';
 import { generateNapkin } from '@/ai/flows/generate-napkin';
-import type { Flashcard, MindMapNodeData } from '@/types';
+import type { Flashcard } from '@/types';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -27,19 +27,15 @@ const DUMMY_DATA = {
     { question: 'How many continents are there?', answer: 'Seven' },
     { question: 'What is the powerhouse of the cell?', answer: 'Mitochondria' },
   ],
-  mindMap: {
-    name: 'Central Idea',
-    children: [
-      {
-        name: 'Main Topic 1',
-        children: [{ name: 'Sub-topic 1.1' }, { name: 'Sub-topic 1.2' }],
-      },
-      {
-        name: 'Main Topic 2',
-        children: [{ name: 'Sub-topic 2.1' }],
-      },
-    ],
-  },
+  mindMap: `
+mindmap
+  root((Central Idea))
+    Main Topic 1
+      Sub-topic 1.1
+      Sub-topic 1.2
+    Main Topic 2
+      Sub-topic 2.1
+  `,
   diagram: `
 graph TD
     A[Start] --> B{Is it?};
@@ -54,7 +50,7 @@ graph TD
 interface AIOutput {
   summary: string;
   flashcards: Flashcard[];
-  mindMap: MindMapNodeData;
+  mindMap: string;
   diagram: string;
   napkin: string;
 }
