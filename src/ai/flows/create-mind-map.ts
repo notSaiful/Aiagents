@@ -34,7 +34,7 @@ const prompt = ai.definePrompt({
   
   The diagram should be well-structured, with a clear central idea and logical branches.
   Ensure the Mermaid syntax is valid and accurately represents the information in the notes.
-  The root node should represent the central idea of the notes.
+  The first line must be "mindmap" and the root node should be the first indented item, representing the central idea of the notes.
 
 Notes: {{{notes}}}
 `,

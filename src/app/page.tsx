@@ -29,7 +29,7 @@ const DUMMY_DATA = {
   ],
   mindMap: `
 mindmap
-  root((Central Idea))
+  Central Idea
     Main Topic 1
       Sub-topic 1.1
       Sub-topic 1.2
