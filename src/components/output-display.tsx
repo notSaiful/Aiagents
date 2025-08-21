@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Share2 } from 'lucide-react';
+import Image from 'next/image';
 import {
   Carousel,
   CarouselContent,
@@ -24,9 +25,10 @@ interface OutputDisplayProps {
   flashcards: FlashcardType[];
   mindMap: MindMapNodeData;
   diagram: string;
+  napkin: string;
 }
 
-export default function OutputDisplay({ summary, flashcards, mindMap, diagram }: OutputDisplayProps) {
+export default function OutputDisplay({ summary, flashcards, mindMap, diagram, napkin }: OutputDisplayProps) {
   const { toast } = useToast();
   const [isShareDialogOpen, setShareDialogOpen] = useState(false);
   
@@ -48,6 +50,7 @@ export default function OutputDisplay({ summary, flashcards, mindMap, diagram }:
             <TabsTrigger value="flashcards">Flashcards</TabsTrigger>
             <TabsTrigger value="mind-map">Mind Map</TabsTrigger>
             <TabsTrigger value="diagram">Diagram</TabsTrigger>
+            <TabsTrigger value="napkin">Napkin</TabsTrigger>
           </TabsList>
         </div>
 
@@ -84,6 +87,13 @@ export default function OutputDisplay({ summary, flashcards, mindMap, diagram }:
            <Card>
             <CardContent className="p-6 flex justify-center">
                 <Mermaid chart={diagram} />
+            </CardContent>
+           </Card>
+        </TabsContent>
+        <TabsContent value="napkin">
+           <Card>
+            <CardContent className="p-6 flex justify-center">
+                <Image src={napkin} alt="Napkin Diagram" width={1024} height={576} className="rounded-lg shadow-lg" data-ai-hint="diagram comic" />
             </CardContent>
            </Card>
         </TabsContent>

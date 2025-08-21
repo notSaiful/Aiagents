@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Sparkles, LoaderCircle, BrainCircuit } from 'lucide-react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,6 +11,7 @@ import { summarizeNotes } from '@/ai/flows/summarize-notes';
 import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
 import { generateDiagram } from '@/ai/flows/generate-diagram';
+import { generateNapkin } from '@/ai/flows/generate-napkin';
 import type { Flashcard, MindMapNodeData } from '@/types';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -46,6 +48,7 @@ graph TD
     B -->|No| E[Don't];
     E --> D[End];
   `,
+  napkin: 'https://placehold.co/1024x576.png',
 };
 
 interface AIOutput {
@@ -53,6 +56,7 @@ interface AIOutput {
   flashcards: Flashcard[];
   mindMap: MindMapNodeData;
   diagram: string;
+  napkin: string;
 }
 
 export default function Home() {
@@ -75,11 +79,12 @@ export default function Home() {
     setOutput(null);
 
     try {
-      const [summaryRes, flashcardsRes, mindMapRes, diagramRes] = await Promise.all([
+      const [summaryRes, flashcardsRes, mindMapRes, diagramRes, napkinRes] = await Promise.all([
         summarizeNotes({ notes }),
         generateFlashcards({ notes }),
         createMindMap({ notes }),
         generateDiagram({ notes }),
+        generateNapkin({ notes }),
       ]);
 
       setOutput({
@@ -87,6 +92,7 @@ export default function Home() {
         flashcards: flashcardsRes.flashcards,
         mindMap: mindMapRes.mindMap,
         diagram: diagramRes.diagram,
+        napkin: napkinRes.imageUrl,
       });
     } catch (error) {
       console.error('Transformation failed:', error);

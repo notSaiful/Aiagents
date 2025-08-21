@@ -11,3 +11,7 @@ export interface MindMapNodeData {
 export interface DiagramData {
     diagram: string;
 }
+
+export interface NapkinData {
+    imageUrl: string;
+}
