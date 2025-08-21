@@ -71,12 +71,10 @@ export default function Home() {
         createMindMap({ notes }),
       ]);
 
-      const parsedMindMap = JSON.parse(mindMapRes.mindMapJson);
-
       setOutput({
         summary: summaryRes.summary,
         flashcards: flashcardsRes.flashcards,
-        mindMap: parsedMindMap,
+        mindMap: mindMapRes.mindMap,
       });
     } catch (error) {
       console.error('Transformation failed:', error);

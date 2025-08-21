@@ -16,9 +16,15 @@ const CreateMindMapInputSchema = z.object({
 });
 export type CreateMindMapInput = z.infer<typeof CreateMindMapInputSchema>;
 
-const CreateMindMapOutputSchema = z.object({
-  mindMapJson: z.string().describe('A JSON representation of the mind map structure.'),
+const MindMapNodeSchema: z.ZodType<any> = z.object({
+  name: z.string(),
+  children: z.lazy(() => MindMapNodeSchema.array()).optional(),
 });
+
+const CreateMindMapOutputSchema = z.object({
+  mindMap: MindMapNodeSchema.describe('A JSON representation of the mind map structure.'),
+});
+
 export type CreateMindMapOutput = z.infer<typeof CreateMindMapOutputSchema>;
 
 export async function createMindMap(input: CreateMindMapInput): Promise<CreateMindMapOutput> {
@@ -32,8 +38,7 @@ const prompt = ai.definePrompt({
   prompt: `You are an AI expert in creating mind maps. Transform the given notes into a JSON structure representing a mind map. Ensure the JSON is valid and well-structured.
 
 Notes: {{{notes}}}
-
-JSON:`,
+`,
 });
 
 const createMindMapFlow = ai.defineFlow(
