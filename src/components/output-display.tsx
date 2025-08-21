@@ -1,6 +1,7 @@
 'use client';
 
-import { Share2 } from 'lucide-react';
+import { useState } from 'react';
+import { Share2, FileDown, Image, Link as LinkIcon } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -15,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import Flashcard from './flashcard';
 import MindMap from './mind-map';
 import type { Flashcard as FlashcardType, MindMapNodeData } from '@/types';
+import ShareDialog from './share-dialog';
 
 interface OutputDisplayProps {
   summary: string;
@@ -24,6 +26,7 @@ interface OutputDisplayProps {
 
 export default function OutputDisplay({ summary, flashcards, mindMap }: OutputDisplayProps) {
   const { toast } = useToast();
+  const [isShareDialogOpen, setShareDialogOpen] = useState(false);
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -48,12 +51,21 @@ export default function OutputDisplay({ summary, flashcards, mindMap }: OutputDi
       });
     }
   };
+  
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(window.location.href);
+    toast({
+      title: 'Link Copied',
+      description: 'The link has been copied to your clipboard.',
+    });
+    setShareDialogOpen(false);
+  }
 
   return (
     <div className="relative">
       <Tabs defaultValue="summary" className="w-full">
         <div className="flex justify-center mb-4">
-          <TabsList>
+          <TabsList className="bg-primary/60">
             <TabsTrigger value="summary">Summary</TabsTrigger>
             <TabsTrigger value="flashcards">Flashcards</TabsTrigger>
             <TabsTrigger value="mind-map">Mind Map</TabsTrigger>
@@ -62,10 +74,10 @@ export default function OutputDisplay({ summary, flashcards, mindMap }: OutputDi
 
         <TabsContent value="summary">
           <Card>
-            <CardContent className="p-6 prose prose-sm max-w-none">
-              {summary.split('\n').map((line, index) => {
-                if (line.startsWith('* ') || line.startsWith('- ')) {
-                  return <li key={index} className="ml-4">{line.substring(2)}</li>;
+            <CardContent className="p-6 prose prose-sm max-w-none prose-li:marker:text-primary-foreground">
+              {summary.split('\n').filter(line => line.trim() !== '').map((line, index) => {
+                if (line.startsWith('- ') || line.startsWith('* ')) {
+                  return <li key={index} className="ml-4 list-disc">{line.substring(2)}</li>;
                 }
                 return <p key={index}>{line}</p>;
               })}
@@ -95,15 +107,21 @@ export default function OutputDisplay({ summary, flashcards, mindMap }: OutputDi
            </Card>
         </TabsContent>
       </Tabs>
-      <Button
-        onClick={handleShare}
-        variant="outline"
-        size="icon"
-        className="fixed bottom-8 right-8 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
+      <ShareDialog 
+        open={isShareDialogOpen}
+        onOpenChange={setShareDialogOpen}
+        onCopyLink={handleCopyLink}
       >
-        <Share2 className="h-6 w-6" />
-        <span className="sr-only">Share</span>
-      </Button>
+        <Button
+          onClick={() => setShareDialogOpen(true)}
+          variant="default"
+          size="icon"
+          className="fixed bottom-8 right-8 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
+        >
+          <Share2 className="h-6 w-6" />
+          <span className="sr-only">Share</span>
+        </Button>
+      </ShareDialog>
     </div>
   );
 }

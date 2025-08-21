@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkles, LoaderCircle } from 'lucide-react';
+import { Sparkles, LoaderCircle, BrainCircuit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,7 +12,32 @@ import { createMindMap } from '@/ai/flows/create-mind-map';
 import type { Flashcard, MindMapNodeData } from '@/types';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
-import Image from 'next/image';
+
+const DUMMY_DATA = {
+  summary: `
+- This is a placeholder summary.
+- Replace this with your own notes to see the AI in action.
+- The output will be nicely formatted.
+`,
+  flashcards: [
+    { question: 'What is the capital of France?', answer: 'Paris' },
+    { question: 'How many continents are there?', answer: 'Seven' },
+    { question: 'What is the powerhouse of the cell?', answer: 'Mitochondria' },
+  ],
+  mindMap: {
+    name: 'Central Idea',
+    children: [
+      {
+        name: 'Main Topic 1',
+        children: [{ name: 'Sub-topic 1.1' }, { name: 'Sub-topic 1.2' }],
+      },
+      {
+        name: 'Main Topic 2',
+        children: [{ name: 'Sub-topic 2.1' }],
+      },
+    ],
+  },
+};
 
 interface AIOutput {
   summary: string;
@@ -83,28 +108,22 @@ export default function Home() {
         </div>
       );
     }
-
-    if (output) {
-      return <OutputDisplay {...output} />;
-    }
-
-    return (
-       <div className="text-center text-muted-foreground">
-         <Image src="https://placehold.co/400x300.png" alt="A person organizing notes on a digital board" width={400} height={300} className="mx-auto mb-4 rounded-lg" data-ai-hint="digital organization productivity"/>
-        <p>Your transformed notes will appear here.</p>
-        <p className="text-sm">Get summaries, flashcards, and mind maps in seconds.</p>
-       </div>
-    );
+    
+    const dataToDisplay = output || DUMMY_DATA;
+    return <OutputDisplay {...dataToDisplay} />;
   };
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
       <div className="flex flex-col items-center text-center mb-8">
+        <div className="flex items-center justify-center mb-4">
+          <BrainCircuit className="h-10 w-10 text-primary-foreground" />
+        </div>
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary-foreground to-accent-foreground/60">
-          Transform Your Notes with AI
+          Gemini Notes
         </h1>
         <p className="mt-2 text-lg text-muted-foreground max-w-2xl">
-          Simply paste your notes and let our AI create beautiful summaries, interactive flashcards, and clear mind maps.
+          Paste your notes and instantly get aesthetic summaries, flashcards, and mind maps.
         </p>
       </div>
 
@@ -112,23 +131,24 @@ export default function Home() {
         <CardContent className="p-6">
           <Textarea
             placeholder="Paste your notes here..."
-            className="min-h-[200px] text-base border-0 focus-visible:ring-1 focus-visible:ring-ring p-0 shadow-none"
+            className="min-h-[200px] text-base border-0 focus-visible:ring-1 focus-visible:ring-ring p-0 shadow-none bg-transparent"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             disabled={loading}
           />
-          <div className="flex justify-end mt-4">
-            <Button onClick={handleTransform} disabled={loading} size="lg">
-              {loading ? (
-                <LoaderCircle className="animate-spin" />
-              ) : (
-                <Sparkles className="mr-2 h-5 w-5" />
-              )}
-              Transform
-            </Button>
-          </div>
         </CardContent>
       </Card>
+      
+      <div className="mt-6">
+        <Button onClick={handleTransform} disabled={loading} size="lg" className="w-full">
+          {loading ? (
+            <LoaderCircle className="animate-spin" />
+          ) : (
+            <Sparkles className="mr-2 h-5 w-5" />
+          )}
+          Transform
+        </Button>
+      </div>
 
       <div className="mt-12 min-h-[300px] w-full">
         {renderContent()}
