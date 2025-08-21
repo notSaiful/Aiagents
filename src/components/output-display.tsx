@@ -44,19 +44,19 @@ export default function OutputDisplay({ summary, flashcards, mindMap, diagram, n
   return (
     <div className="relative">
       <Tabs defaultValue="summary" className="w-full">
-        <div className="flex justify-center mb-4">
-          <TabsList className="bg-primary/60">
-            <TabsTrigger value="summary">Summary</TabsTrigger>
-            <TabsTrigger value="flashcards">Flashcards</TabsTrigger>
-            <TabsTrigger value="mind-map">Mind Map</TabsTrigger>
-            <TabsTrigger value="diagram">Diagram</TabsTrigger>
-            <TabsTrigger value="napkin">Napkin</TabsTrigger>
+        <div className="flex justify-center mb-6">
+          <TabsList className="bg-primary/80 rounded-full h-12 px-2">
+            <TabsTrigger value="summary" className="text-base rounded-full h-10">Summary</TabsTrigger>
+            <TabsTrigger value="flashcards" className="text-base rounded-full h-10">Flashcards</TabsTrigger>
+            <TabsTrigger value="mind-map" className="text-base rounded-full h-10">Mind Map</TabsTrigger>
+            <TabsTrigger value="diagram" className="text-base rounded-full h-10">Diagram</TabsTrigger>
+            <TabsTrigger value="napkin" className="text-base rounded-full h-10">Napkin</TabsTrigger>
           </TabsList>
         </div>
 
         <TabsContent value="summary">
-          <Card>
-            <CardContent className="p-6 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-primary-foreground prose-strong:text-primary-foreground prose-li:marker:text-primary-foreground">
+          <Card className="rounded-xl border-2 border-primary/40">
+            <CardContent className="p-6 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground prose-li:marker:text-primary-foreground/80">
               <div dangerouslySetInnerHTML={{ __html: summary.replace(/\n/g, '<br />') }} />
             </CardContent>
           </Card>
@@ -77,21 +77,21 @@ export default function OutputDisplay({ summary, flashcards, mindMap, diagram, n
           </Carousel>
         </TabsContent>
         <TabsContent value="mind-map">
-           <Card>
+           <Card className="rounded-xl border-2 border-primary/40">
             <CardContent className="p-6">
                 <MindMap data={mindMap} />
             </CardContent>
            </Card>
         </TabsContent>
          <TabsContent value="diagram">
-           <Card>
+           <Card className="rounded-xl border-2 border-primary/40">
             <CardContent className="p-6 flex justify-center">
                 <Mermaid chart={diagram} />
             </CardContent>
            </Card>
         </TabsContent>
         <TabsContent value="napkin">
-           <Card>
+           <Card className="rounded-xl border-2 border-primary/40">
             <CardContent className="p-6 flex justify-center">
                 <Image src={napkin} alt="Napkin Diagram" width={1024} height={576} className="rounded-lg shadow-lg" data-ai-hint="diagram comic" />
             </CardContent>

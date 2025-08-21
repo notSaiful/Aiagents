@@ -19,7 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const DUMMY_DATA = {
   summary: `
 - This is a placeholder summary.
-- Replace this with your own notes to see the AI in action.
+- Paste your own notes to see the AI in action.
 - The output will be nicely formatted.
 `,
   flashcards: [
@@ -132,22 +132,22 @@ export default function Home() {
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
       <div className="flex flex-col items-center text-center mb-8">
-        <div className="flex items-center justify-center mb-4">
-          <BrainCircuit className="h-10 w-10 text-primary-foreground" />
+        <div className="p-3 rounded-full bg-primary mb-4">
+            <BrainCircuit className="h-10 w-10 text-primary-foreground" />
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary-foreground to-accent-foreground/60">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">
           Gemini Notes
         </h1>
-        <p className="mt-2 text-lg text-muted-foreground max-w-2xl">
-          Paste your notes and instantly get aesthetic summaries, flashcards, and mind maps.
+        <p className="mt-3 text-lg text-muted-foreground max-w-xl">
+          Instantly transform your raw notes into beautiful summaries, flashcards, and mind maps.
         </p>
       </div>
 
-      <Card className="w-full shadow-lg border-2 border-primary/20">
-        <CardContent className="p-6">
+      <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
+        <CardContent className="p-4">
           <Textarea
             placeholder="Paste your notes here..."
-            className="min-h-[200px] text-base border-0 focus-visible:ring-1 focus-visible:ring-ring p-0 shadow-none bg-transparent"
+            className="min-h-[200px] text-base border-0 focus-visible:ring-0 p-2 shadow-none bg-transparent"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             disabled={loading}
@@ -156,7 +156,7 @@ export default function Home() {
       </Card>
       
       <div className="mt-6">
-        <Button onClick={handleTransform} disabled={loading} size="lg" className="w-full">
+        <Button onClick={handleTransform} disabled={loading} size="lg" className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
           {loading ? (
             <LoaderCircle className="animate-spin" />
           ) : (
