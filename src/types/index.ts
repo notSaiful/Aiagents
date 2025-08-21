@@ -7,3 +7,7 @@ export interface MindMapNodeData {
   name: string;
   children?: MindMapNodeData[];
 }
+
+export interface DiagramData {
+    diagram: string;
+}

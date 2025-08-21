@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Share2, FileDown, Image, Link as LinkIcon } from 'lucide-react';
+import { Share2 } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -17,40 +17,18 @@ import Flashcard from './flashcard';
 import MindMap from './mind-map';
 import type { Flashcard as FlashcardType, MindMapNodeData } from '@/types';
 import ShareDialog from './share-dialog';
+import Mermaid from './mermaid';
 
 interface OutputDisplayProps {
   summary: string;
   flashcards: FlashcardType[];
   mindMap: MindMapNodeData;
+  diagram: string;
 }
 
-export default function OutputDisplay({ summary, flashcards, mindMap }: OutputDisplayProps) {
+export default function OutputDisplay({ summary, flashcards, mindMap, diagram }: OutputDisplayProps) {
   const { toast } = useToast();
   const [isShareDialogOpen, setShareDialogOpen] = useState(false);
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'AI Notes Summary',
-          text: summary,
-          url: window.location.href,
-        });
-      } catch (error) {
-        toast({
-          title: 'Share failed',
-          description: 'Could not share the content.',
-          variant: 'destructive',
-        });
-      }
-    } else {
-      await navigator.clipboard.writeText(summary);
-      toast({
-        title: 'Copied to clipboard',
-        description: 'Share functionality is not available, so we copied the summary for you.',
-      });
-    }
-  };
   
   const handleCopyLink = async () => {
     await navigator.clipboard.writeText(window.location.href);
@@ -69,18 +47,14 @@ export default function OutputDisplay({ summary, flashcards, mindMap }: OutputDi
             <TabsTrigger value="summary">Summary</TabsTrigger>
             <TabsTrigger value="flashcards">Flashcards</TabsTrigger>
             <TabsTrigger value="mind-map">Mind Map</TabsTrigger>
+            <TabsTrigger value="diagram">Diagram</TabsTrigger>
           </TabsList>
         </div>
 
         <TabsContent value="summary">
           <Card>
-            <CardContent className="p-6 prose prose-sm max-w-none prose-li:marker:text-primary-foreground">
-              {summary.split('\n').filter(line => line.trim() !== '').map((line, index) => {
-                if (line.startsWith('- ') || line.startsWith('* ')) {
-                  return <li key={index} className="ml-4 list-disc">{line.substring(2)}</li>;
-                }
-                return <p key={index}>{line}</p>;
-              })}
+            <CardContent className="p-6 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-primary-foreground prose-strong:text-primary-foreground prose-li:marker:text-primary-foreground">
+              <div dangerouslySetInnerHTML={{ __html: summary.replace(/\n/g, '<br />') }} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -103,6 +77,13 @@ export default function OutputDisplay({ summary, flashcards, mindMap }: OutputDi
            <Card>
             <CardContent className="p-6">
                 <MindMap data={mindMap} />
+            </CardContent>
+           </Card>
+        </TabsContent>
+         <TabsContent value="diagram">
+           <Card>
+            <CardContent className="p-6 flex justify-center">
+                <Mermaid chart={diagram} />
             </CardContent>
            </Card>
         </TabsContent>

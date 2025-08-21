@@ -19,7 +19,7 @@ const SummarizeNotesInputSchema = z.object({
 export type SummarizeNotesInput = z.infer<typeof SummarizeNotesInputSchema>;
 
 const SummarizeNotesOutputSchema = z.object({
-  summary: z.string().describe('A concise, aesthetically pleasing summary with bullet points.'),
+  summary: z.string().describe('A concise, aesthetically pleasing summary in Markdown format.'),
 });
 export type SummarizeNotesOutput = z.infer<typeof SummarizeNotesOutputSchema>;
 
@@ -31,7 +31,17 @@ const summarizeNotesPrompt = ai.definePrompt({
   name: 'summarizeNotesPrompt',
   input: {schema: SummarizeNotesInputSchema},
   output: {schema: SummarizeNotesOutputSchema},
-  prompt: `You are an expert summarizer. You will take the following notes and create a concise, aesthetically pleasing summary with bullet points.\n\nNotes: {{{notes}}}`,
+  prompt: `You are an expert summarizer. You will take the following notes and create a concise, aesthetically pleasing summary.
+
+  Format the summary using Markdown, including features like:
+  - Headings (#, ##, etc.)
+  - Bold and italic text
+  - Nested bullet points
+  - Blockquotes
+
+  Make it easy to read and visually appealing.
+
+  Notes: {{{notes}}}`,
 });
 
 const summarizeNotesFlow = ai.defineFlow(

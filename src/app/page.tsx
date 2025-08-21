@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { summarizeNotes } from '@/ai/flows/summarize-notes';
 import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
+import { generateDiagram } from '@/ai/flows/generate-diagram';
 import type { Flashcard, MindMapNodeData } from '@/types';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -37,12 +38,21 @@ const DUMMY_DATA = {
       },
     ],
   },
+  diagram: `
+graph TD
+    A[Start] --> B{Is it?};
+    B -->|Yes| C[OK];
+    C --> D[End];
+    B -->|No| E[Don't];
+    E --> D[End];
+  `,
 };
 
 interface AIOutput {
   summary: string;
   flashcards: Flashcard[];
   mindMap: MindMapNodeData;
+  diagram: string;
 }
 
 export default function Home() {
@@ -65,16 +75,18 @@ export default function Home() {
     setOutput(null);
 
     try {
-      const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
+      const [summaryRes, flashcardsRes, mindMapRes, diagramRes] = await Promise.all([
         summarizeNotes({ notes }),
         generateFlashcards({ notes }),
         createMindMap({ notes }),
+        generateDiagram({ notes }),
       ]);
 
       setOutput({
         summary: summaryRes.summary,
         flashcards: flashcardsRes.flashcards,
         mindMap: mindMapRes.mindMap,
+        diagram: diagramRes.diagram,
       });
     } catch (error) {
       console.error('Transformation failed:', error);
