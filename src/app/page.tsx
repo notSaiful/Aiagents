@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { summarizeNotes } from '@/ai/flows/summarize-notes';
 import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
+import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
 import type { Flashcard } from '@/types';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -38,6 +39,14 @@ export default function Home() {
     }
   }, [user, authLoading, router]);
 
+  const readFileAsDataURI = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
 
   const handleTransform = async () => {
     if (!notes.trim()) {
@@ -81,19 +90,43 @@ export default function Home() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log('Selected file:', file.name);
+      setLoading(true);
+      setOutput(null);
+      setNotes('');
       toast({
-        title: 'File Uploaded!',
-        description: `${file.name} is ready for processing. OCR feature coming soon.`,
+        title: 'Processing Upload...',
+        description: `Extracting text from ${file.name}.`,
       });
+      try {
+        const photoDataUri = await readFileAsDataURI(file);
+        const { extractedText } = await extractTextFromImage({ photoDataUri });
+        setNotes(extractedText);
+        toast({
+          title: 'Text Extracted!',
+          description: 'Your notes are ready to be transformed.',
+        });
+      } catch (error) {
+        console.error('OCR failed:', error);
+        toast({
+          title: 'Extraction Failed',
+          description: 'Could not extract text from the uploaded file. Please try again.',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+        // Reset file input
+        if(fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
     }
   };
 
   const renderContent = () => {
-    if (loading) {
+    if (loading && !notes && !output) {
       return (
         <div className="w-full space-y-4">
           <Skeleton className="h-8 w-1/3" />
@@ -142,10 +175,10 @@ export default function Home() {
       </div>
 
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
-        <CardContent className="p-2 relative">
+        <CardContent className="p-2 relative pt-12">
           <Textarea
-            placeholder="Paste your notes here..."
-            className="min-h-[200px] text-base border-0 focus-visible:ring-0 p-2 shadow-none bg-transparent pl-4 pb-12"
+            placeholder="Paste your notes here or upload a file..."
+            className="min-h-[200px] text-base border-0 focus-visible:ring-0 p-2 shadow-none bg-transparent"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             disabled={loading}
@@ -170,7 +203,7 @@ export default function Home() {
       </Card>
       
       <div className="mt-6 flex flex-col gap-4">
-        <Button onClick={handleTransform} disabled={loading} size="lg" className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+        <Button onClick={handleTransform} disabled={loading || !notes} size="lg" className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
           {loading ? (
             <LoaderCircle className="animate-spin" />
           ) : (
