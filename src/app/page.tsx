@@ -179,10 +179,10 @@ export default function Home() {
 
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
         <CardContent className="p-2 pt-4">
-          <div className="relative p-2">
+          <div className="relative">
             <Textarea
               placeholder="Paste your notes here or upload a file..."
-              className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-0"
+              className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-4"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               disabled={loading}
