@@ -194,7 +194,7 @@ export default function Home() {
                     className="hidden"
                     accept="image/png,image/jpeg,application/pdf"
                 />
-                <div className="absolute bottom-2 right-2">
+                <div className="absolute bottom-2 left-2">
                     <Button
                     onClick={handleUploadClick}
                     disabled={loading}
