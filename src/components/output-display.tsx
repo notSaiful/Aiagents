@@ -58,10 +58,10 @@ export default function OutputDisplay({ shortSummary, longSummary, flashcards, m
                   <TabsTrigger value="long">Long Summary</TabsTrigger>
                 </TabsList>
                 <TabsContent value="short" className="pt-4 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground prose-li:marker:text-primary-foreground/80">
-                  <div dangerouslySetInnerHTML={{ __html: shortSummary.replace(/\n/g, '<br />') }} />
+                  <div dangerouslySetInnerHTML={{ __html: shortSummary }} />
                 </TabsContent>
                 <TabsContent value="long" className="pt-4 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground prose-li:marker:text-primary-foreground/80">
-                   <div dangerouslySetInnerHTML={{ __html: longSummary.replace(/\n/g, '<br />') }} />
+                   <div dangerouslySetInnerHTML={{ __html: longSummary }} />
                 </TabsContent>
               </Tabs>
             </CardContent>

@@ -21,6 +21,7 @@ export default {
       fontFamily: {
         sans: ["var(--font-inter)", ...fontFamily.sans],
         serif: ["var(--font-poppins)", ...fontFamily.serif],
+        playfair: ["var(--font-playfair)", ...fontFamily.serif],
       },
       colors: {
         border: "hsl(var(--border))",

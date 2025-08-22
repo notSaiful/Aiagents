@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Poppins } from 'next/font/google';
+import { Inter, Poppins, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
@@ -17,6 +17,11 @@ const poppins = Poppins({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] 
 });
 
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+});
+
 export const metadata: Metadata = {
   title: 'NotesGPT | Transform Your Notes Instantly',
   description: 'Paste your notes and instantly get aesthetic summaries, flashcards, and mind maps. Powered by Gemini.',
@@ -29,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-sans antialiased', inter.variable, poppins.variable)} suppressHydrationWarning>
+      <body className={cn('font-sans antialiased', inter.variable, poppins.variable, playfairDisplay.variable)} suppressHydrationWarning>
         <AuthProvider>
             <Header />
             <main>{children}</main>
