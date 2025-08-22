@@ -9,14 +9,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { summarizeNotes } from '@/ai/flows/summarize-notes';
+import { generateFlashcards } from '@/ai/flows/generate-flashcards';
+import { createMindMap } from '@/ai/flows/create-mind-map';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
+import type { Flashcard } from '@/types';
 
 interface AIOutput {
   shortSummary: string;
   longSummary: string;
+  flashcards: Flashcard[];
+  mindMap: string;
 }
 
 type NoteStyle = 'Minimalist' | 'Story' | 'Action' | 'Formal';
@@ -60,11 +65,17 @@ export default function Home() {
     setOutput(null);
 
     try {
-      const summaryRes = await summarizeNotes({ notes: notesToTransform, style });
+      const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
+        summarizeNotes({ notes: notesToTransform, style }),
+        generateFlashcards({ notes: notesToTransform, style }),
+        createMindMap({ notes: notesToTransform, style }),
+      ]);
 
       setOutput({
         shortSummary: summaryRes.shortSummary,
         longSummary: summaryRes.longSummary,
+        flashcards: flashcardsRes.flashcards,
+        mindMap: mindMapRes.mindMap,
       });
     } catch (error) {
       console.error('Transformation failed:', error);
@@ -137,7 +148,7 @@ export default function Home() {
     }
     
     if (output) {
-      return <OutputDisplay shortSummary={output.shortSummary} longSummary={output.longSummary} />;
+      return <OutputDisplay {...output} />;
     }
 
     return null;
@@ -168,16 +179,14 @@ export default function Home() {
 
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
         <CardContent className="p-2 pt-4">
-          <div className="relative">
-            <div className="p-2">
-              <Textarea
-                placeholder="Paste your notes here or upload a file..."
-                className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-0"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                disabled={loading}
-              />
-            </div>
+          <div className="relative p-2">
+            <Textarea
+              placeholder="Paste your notes here or upload a file..."
+              className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-0"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              disabled={loading}
+            />
             <input
               type="file"
               ref={fileInputRef}
@@ -186,7 +195,7 @@ export default function Home() {
               accept="image/png,image/jpeg,application/pdf"
             />
           </div>
-          <div className="flex items-center p-2">
+          <div className="flex items-center p-2 pt-0">
             <Button
               onClick={handleUploadClick}
               disabled={loading}
