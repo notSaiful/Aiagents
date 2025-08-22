@@ -39,19 +39,19 @@ Instructions for Minimalist / Quick Review style:
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
 - The first indented node after the root MUST be the single parent for all subsequent nodes. This is a strict rule.
-- Use minimal emojis like ✨, 📌, 📚, 🌸 to make it aesthetic.
 
 Example of a valid mindmap:
 mindmap
   root((Photosynthesis 'The Spark of Life' 🌱))
-    Inputs
-      CO₂
-      H₂O
-    Energy Source
-      Sunlight ☀️
-    Outputs
-      Glucose
-      Oxygen
+    Core Process
+      Inputs
+        CO₂
+        H₂O
+      Energy Source
+        Sunlight ☀️
+      Outputs
+        Glucose
+        Oxygen
 `;
 
 const storyStyleInstructions = `

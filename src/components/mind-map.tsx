@@ -12,7 +12,7 @@ export default function MindMap({ data }: MindMapProps) {
   }
 
   return (
-    <div className="p-4 overflow-x-auto">
+    <div className="p-4 overflow-x-auto w-full">
       <Mermaid chart={data} />
     </div>
   );
