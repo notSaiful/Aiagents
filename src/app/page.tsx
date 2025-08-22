@@ -30,7 +30,7 @@ export default function Home() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [output, setOutput] = useState<AIOutput | null>(null);
+  const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -66,18 +66,25 @@ export default function Home() {
     setOutput(null);
 
     try {
-      const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
-        summarizeNotes({ notes: notes, style }),
-        generateFlashcards({ notes: notes, style }),
-        createMindMap({ notes: notes, style }),
-      ]);
-
+      // Step 1: Generate summaries first and display them.
+      const summaryRes = await summarizeNotes({ notes, style });
       setOutput({
         shortSummary: summaryRes.shortSummary,
         longSummary: summaryRes.longSummary,
+      });
+
+      // Step 2: Generate flashcards and mind map in parallel.
+      const [flashcardsRes, mindMapRes] = await Promise.all([
+        generateFlashcards({ notes, style }),
+        createMindMap({ notes, style }),
+      ]);
+
+      // Step 3: Update the state with the new data.
+      setOutput((prevOutput) => ({
+        ...prevOutput,
         flashcards: flashcardsRes.flashcards,
         mindMap: mindMapRes.mindMap,
-      });
+      }));
     } catch (error) {
       console.error('Transformation failed:', error);
       toast({
@@ -148,7 +155,12 @@ export default function Home() {
     }
     
     if (output) {
-      return <OutputDisplay {...output} />;
+      return <OutputDisplay 
+        shortSummary={output.shortSummary ?? ''}
+        longSummary={output.longSummary ?? ''}
+        flashcards={output.flashcards}
+        mindMap={output.mindMap}
+      />;
     }
 
     return null;

@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Share2 } from 'lucide-react';
+import { Share2, LoaderCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -18,12 +18,14 @@ import {
 import Flashcard from './flashcard';
 import MindMap from './mind-map';
 import type { Flashcard as FlashcardType } from '@/types';
+import { Skeleton } from './ui/skeleton';
+
 
 interface OutputDisplayProps {
-  shortSummary: string;
-  longSummary: string;
-  flashcards: FlashcardType[];
-  mindMap: string;
+  shortSummary?: string;
+  longSummary?: string;
+  flashcards?: FlashcardType[];
+  mindMap?: string;
 }
 
 export default function OutputDisplay({
@@ -43,6 +45,18 @@ export default function OutputDisplay({
     });
     setShareDialogOpen(false);
   };
+  
+  const renderLoadingSkeletons = () => (
+    <div className="w-full space-y-4 p-6">
+      <Skeleton className="h-8 w-1/3" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+      </div>
+    </div>
+  );
+
 
   return (
     <div className="relative">
@@ -52,10 +66,10 @@ export default function OutputDisplay({
             <TabsTrigger value="summary" className="text-base rounded-full h-10">
               Summary
             </TabsTrigger>
-            <TabsTrigger value="flashcards" className="text-base rounded-full h-10">
+            <TabsTrigger value="flashcards" className="text-base rounded-full h-10" disabled={!flashcards}>
               Flashcards
             </TabsTrigger>
-            <TabsTrigger value="mind-map" className="text-base rounded-full h-10">
+            <TabsTrigger value="mind-map" className="text-base rounded-full h-10" disabled={!mindMap}>
               Mind Map
             </TabsTrigger>
           </TabsList>
@@ -73,13 +87,13 @@ export default function OutputDisplay({
                   value="short"
                   className="pt-4 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground prose-li:marker:text-primary-foreground/80"
                 >
-                  <div dangerouslySetInnerHTML={{ __html: shortSummary }} />
+                  <div dangerouslySetInnerHTML={{ __html: shortSummary ?? '' }} />
                 </TabsContent>
                 <TabsContent
                   value="long"
                   className="pt-4 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground prose-li:marker:text-primary-foreground/80"
                 >
-                  <div dangerouslySetInnerHTML={{ __html: longSummary }} />
+                  <div dangerouslySetInnerHTML={{ __html: longSummary ?? '' }} />
                 </TabsContent>
               </Tabs>
             </CardContent>
@@ -87,25 +101,35 @@ export default function OutputDisplay({
         </TabsContent>
 
         <TabsContent value="flashcards">
-          <Carousel className="w-full max-w-md mx-auto" opts={{ loop: true }}>
-            <CarouselContent>
-              {Array.isArray(flashcards) && flashcards.map((flashcard, index) => (
-                <CarouselItem key={index}>
-                  <div className="p-1 h-[200px]">
-                    <Flashcard flashcard={flashcard} />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          {!flashcards ? (
+            <Card className="rounded-xl border-2 border-primary/40 flex items-center justify-center h-[250px]">
+             {renderLoadingSkeletons()}
+            </Card>
+          ) : (
+            <Carousel className="w-full max-w-md mx-auto" opts={{ loop: true }}>
+              <CarouselContent>
+                {Array.isArray(flashcards) && flashcards.map((flashcard, index) => (
+                  <CarouselItem key={index}>
+                    <div className="p-1 h-[200px]">
+                      <Flashcard flashcard={flashcard} />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+          )}
         </TabsContent>
 
         <TabsContent value="mind-map">
           <Card className="rounded-xl border-2 border-primary/40">
-            <CardContent className="p-6 flex justify-center">
-              <MindMap data={mindMap} />
+            <CardContent className="p-6 flex justify-center min-h-[250px] items-center">
+              {!mindMap ? (
+                renderLoadingSkeletons()
+              ) : (
+                <MindMap data={mindMap} />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
