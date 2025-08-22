@@ -29,7 +29,7 @@ const DUMMY_DATA = {
   ],
   mindMap: `
 mindmap
-  Central Idea
+  root((Central Idea))
     Main Topic 1
       Sub-topic 1.1
       Sub-topic 1.2
@@ -132,7 +132,7 @@ export default function Home() {
             <BrainCircuit className="h-10 w-10 text-primary-foreground" />
         </div>
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">
-          Gemini Notes
+          NotesGPT
         </h1>
         <p className="mt-3 text-lg text-muted-foreground max-w-xl">
           Instantly transform your raw notes into beautiful summaries, flashcards, and mind maps.
