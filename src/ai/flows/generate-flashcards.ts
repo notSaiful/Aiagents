@@ -38,12 +38,12 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateFlashcardsOutputSchema},
   prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Generate flashcards from the notes in a {{style}} style.
 
-{{#ifCond style '==' 'Minimalist'}}
+{{#if (eq style 'Minimalist')}}
 Instructions for Minimalist / Quick Review style:
 - Generate 3-5 flashcards based on the provided notes.
 - Each flashcard must have a concise question and an accurate, exam-ready answer.
 - Prioritize key concepts, definitions, and important facts from the notes.
-{{/ifCond}}
+{{/if}}
 
 The output MUST be a valid JSON object containing a "flashcards" array.
 
@@ -57,8 +57,8 @@ const generateFlashcardsFlow = ai.defineFlow(
     inputSchema: GenerateFlashcardsInputSchema,
     outputSchema: GenerateFlashcardsOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const {output} = await prompt({...input, eq: (a: any, b: any) => a === b});
     return output!;
   }
 );

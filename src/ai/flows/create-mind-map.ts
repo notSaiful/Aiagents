@@ -34,7 +34,7 @@ const prompt = ai.definePrompt({
   output: {schema: CreateMindMapOutputSchema},
   prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Create a mind map from the notes in a {{style}} style.
 
-{{#ifCond style '==' 'Minimalist'}}
+{{#if (eq style 'Minimalist')}}
 Instructions for Minimalist / Quick Review style:
 - Create a mind map with a central idea and clear, structured nodes.
 - Use Mermaid mindmap syntax.
@@ -43,7 +43,7 @@ Instructions for Minimalist / Quick Review style:
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
 - Use minimal emojis like ✨, 📌, 📚, 🌸 to make it aesthetic.
-{{/ifCond}}
+{{/if}}
 
 Example of a valid mindmap:
 mindmap
@@ -67,8 +67,8 @@ const createMindMapFlow = ai.defineFlow(
     inputSchema: CreateMindMapInputSchema,
     outputSchema: CreateMindMapOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const {output} = await prompt({...input, eq: (a: any, b: any) => a === b});
     return output!;
   }
 );
