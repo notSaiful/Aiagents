@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sparkles, LoaderCircle, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,7 @@ export default function Home() {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -77,10 +78,18 @@ export default function Home() {
   };
 
   const handleUploadClick = () => {
-    toast({
-      title: 'Coming Soon!',
-      description: 'Handwriting recognition is not yet implemented.',
-    });
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      console.log('Selected file:', file.name);
+      toast({
+        title: 'File Uploaded!',
+        description: `${file.name} is ready for processing. OCR feature coming soon.`,
+      });
+    }
   };
 
   const renderContent = () => {
@@ -140,6 +149,13 @@ export default function Home() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             disabled={loading}
+          />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept="image/*"
           />
           <Button
             onClick={handleUploadClick}
