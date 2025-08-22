@@ -20,7 +20,7 @@ const SummarizeNotesOutputSchema = z.object({
   shortSummary: z
     .string()
     .describe(
-      'An extremely concise, 1-2 sentence summary in Markdown format that captures the main takeaway.'
+      'A very concise, 3-5 bullet point summary in Markdown format that captures the main takeaways.'
     ),
   longSummary: z
     .string()
@@ -51,7 +51,7 @@ GOALS:
 Short Summary Rules:
 - **Persona**: You're the witty best friend who can explain any concept in a single, brilliant text message. You're known for your hilarious and spot-on analogies.
 - **Task**: Create a brief, precise, and short overview summary of the notes.
-- **Length**: It must be extremely concise, capturing only the most important points in 1-2 sentences.
+- **Length**: It must be extremely concise, capturing only the most important points in 3-5 bullet points.
 - **Style**: Use simple, everyday language and a clever, engaging tone. Think of it as a movie tagline or a viral tweet that makes the topic instantly understandable. Use references from pop culture (movies, K-dramas, etc.) where it makes sense to create a memorable hook.
 
 Long Summary Rules:
