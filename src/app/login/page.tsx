@@ -11,5 +11,5 @@ export default function LoginPage() {
     router.replace('/login/email');
   }, [router]);
 
-  return null; // Render nothing, as the redirect will happen
+  return null;
 }
