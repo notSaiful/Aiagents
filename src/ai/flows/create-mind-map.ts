@@ -35,13 +35,14 @@ Instructions for Minimalist / Quick Review style:
 - Use Mermaid mindmap syntax.
 - Keep it SHORT, CONCISE, and BEAUTIFUL, stripping away clutter.
 - Prioritize clarity and exam-readiness.
+- Incorporate concise, motivational phrases or short, clever slogans where they naturally fit the content.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
 - Use minimal emojis like ✨, 📌, 📚, 🌸 to make it aesthetic.
 
 Example of a valid mindmap:
 mindmap
-  root((Photosynthesis 🌱))
+  root((Photosynthesis 'The Spark of Life' 🌱))
     Inputs
       CO₂
       H₂O
@@ -60,6 +61,7 @@ Instructions for Story (K-Drama) style:
 - The central idea should be the "Protagonist" or "Main Plot."
 - Main branches can be "Act 1: The Setup," "Act 2: The Conflict," "Act 3: The Resolution."
 - Connect concepts like they are characters or plot points.
+- Weave in relevant emotional dialogues or dramatic quotes that align with the concepts.
 - Use dramatic emojis like 💖, 🎭, 💔, 💥, 📚 to tell the story.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((The Tragic Hero's Journey 🎭)). This is a strict rule.
@@ -73,6 +75,7 @@ Instructions for Bold / Action-Oriented (Avengers Style):
 - The central idea is the "Headquarters" or "Main Mission."
 - Main branches are "Key Objectives," "Intel," "Threats," and "Strategies."
 - Use powerful, action-oriented language.
+- Use punchy, heroic slogans or meme references from popular movies where they fit the concept.
 - Use emojis like ⚡, 🔥, 🛡️, 💥, 🎯 to make it high-energy.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Mission: Defeat Thanos 💥)). This is a strict rule.
@@ -85,6 +88,7 @@ Instructions for Formal / Academic style:
 - Use Mermaid mindmap syntax.
 - The central idea must be the core academic concept.
 - Branches should represent main topics and sub-topics in a structured manner.
+- Include famous academic quotes, proverbs, or authoritative statements that fit the concepts.
 - Avoid informal language and excessive emojis. Use only scholarly emojis like 🏛️, 📑, 📌 sparingly.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((The Theory of Relativity 🏛️)). This is a strict rule.
@@ -114,6 +118,8 @@ const createMindMapFlow = ai.defineFlow(
       prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Create a mind map from the notes in a ${input.style} style.
 
 ${styleInstructions}
+
+First, correct any spelling and grammar mistakes from the notes, then generate the mind map based on the corrected text.
 
 Notes: ${input.notes}
 `,

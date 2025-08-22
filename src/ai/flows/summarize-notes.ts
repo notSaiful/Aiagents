@@ -40,35 +40,39 @@ const minimalistStyleInstructions = `
 Instructions for Minimalist / Quick Review style:
 - Vibe: Calm, organized, efficient. ✨📌🌸
 - Focus on clarity and fast comprehension. Strip away clutter and focus on what really matters.
-- Short Summary: 5-7 ultra-clean and concise bullet points that capture all main takeaways. Prioritize key facts. The output must be clean HTML.
-- Long Summary: A detailed, comprehensive summary with as many bullet points as needed to cover all aspects of the notes. Ensure clear hierarchy and no fluff. The output must be clean HTML.
-- Keep language simple, exam-friendly, and ensure minimal cognitive load.
+- Short Summary: 5-7 ultra-clean and concise bullet points that capture all main takeaways. Prioritize key facts.
+- Long Summary: A detailed, comprehensive summary with as many bullet points as needed to cover all aspects of the notes. Ensure clear hierarchy and no fluff.
+- Incorporate concise, motivational phrases or short, clever slogans where they naturally fit the content.
+- Keep language simple, exam-friendly, and ensure minimal cognitive load. The output must be clean HTML.
 `;
 
 const storyStyleInstructions = `
 Instructions for Story (K-Drama) style:
 - Vibe: Emotional, engaging, memorable. 💖🎭📚
 - Turn boring notes into short, memorable stories. Add an emotional twist, so even complex ideas stick in your memory.
-- Short Summary: A short, engaging narrative (2-3 paragraphs) that captures the main concept of the notes. Weave in a touch of K-Drama style emotion—a hint of conflict, a surprising connection, a moment of realization. Use emojis like 💖, 🎭, 📚. The output must be clean HTML.
-- Long Summary: A more detailed story, like a mini-series episode. Break down the notes into scenes or chapters. Use headings (<h3>) for each "scene." Flesh out the concepts with characters, dialogue, or a clear plot. Ensure the story arc covers all key points from the notes comprehensively. The output must be clean HTML.
+- Short Summary: A short, engaging narrative (2-3 paragraphs) that captures the main concept of the notes. Weave in a touch of K-Drama style emotion—a hint of conflict, a surprising connection, a moment of realization.
+- Long Summary: A more detailed story, like a mini-series episode. Break down the notes into scenes or chapters. Use headings (<h3>) for each "scene." Flesh out the concepts with characters, dialogue, or a clear plot. Ensure the story arc covers all key points from the notes comprehensively.
+- Weave in relevant emotional dialogues or romantic/dramatic quotes that align with the concepts. Use emojis like 💖, 🎭, 📚. The output must be clean HTML.
 `;
 
 const actionStyleInstructions = `
 Instructions for Bold / Action-Oriented (Avengers Style):
 - Vibe: Dramatic, powerful, energetic. ⚡🔥🛡️
 - Inject energy into the notes with a bold, action-oriented tone.
-- Short Summary: 5-7 punchy, high-impact bullet points. Use strong verbs and highlight the most critical "intel" or "objectives." The output must be clean HTML.
-- Long Summary: A detailed "mission briefing." Structure the summary with clear headings (<h3>) for sections like "Mission Critical," "Key Intel," and "Execution Strategy." Make it comprehensive and motivating. The output must be clean HTML.
-- Use emojis like ⚡, 🔥, 🛡️ to add excitement.
+- Short Summary: 5-7 punchy, high-impact bullet points. Use strong verbs and highlight the most critical "intel" or "objectives."
+- Long Summary: A detailed "mission briefing." Structure the summary with clear headings (<h3>) for sections like "Mission Critical," "Key Intel," and "Execution Strategy." Make it comprehensive and motivating.
+- Use punchy, heroic slogans or meme references from popular movies where they fit the concept.
+- Use emojis like ⚡, 🔥, 🛡️ to add excitement. The output must be clean HTML.
 `;
 
 const formalStyleInstructions = `
 Instructions for Formal / Academic style:
 - Vibe: Professional, reliable, scholarly. 🏛️📑📌
 - Create professional, exam-ready notes with clear, structured headings and bullet points.
-- Short Summary: A concise, professional summary of 5-7 bullet points covering all key academic points. The output must be clean HTML.
-- Long Summary: A detailed, well-structured academic summary. Use headings (<h3>, <h4>) to organize information logically. Ensure it is comprehensive and suitable for formal presentations or study. The output must be clean HTML.
-- Avoid informal language and emojis.
+- Short Summary: A concise, professional summary of 5-7 bullet points covering all key academic points.
+- Long Summary: A detailed, well-structured academic summary. Use headings (<h3>, <h4>) to organize information logically. Ensure it is comprehensive and suitable for formal presentations or study.
+- Include famous academic quotes, proverbs, or authoritative statements that fit the concepts.
+- Avoid informal language and emojis. The output must be clean HTML.
 `;
 
 const summarizeNotesFlow = ai.defineFlow(
