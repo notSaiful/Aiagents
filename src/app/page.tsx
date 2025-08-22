@@ -60,8 +60,7 @@ export default function Home() {
     setOutput(null);
 
     try {
-      const commonInput = { notes: notesToTransform, style };
-      const summaryRes = await summarizeNotes(commonInput);
+      const summaryRes = await summarizeNotes({ notes: notesToTransform, style });
 
       setOutput({
         shortSummary: summaryRes.shortSummary,
