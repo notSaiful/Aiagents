@@ -78,6 +78,17 @@ Instructions for Bold / Action-Oriented (Avengers Style):
 - The root node MUST be wrapped in double parentheses, like this: root((Mission: Defeat Thanos 💥)). This is a strict rule.
 `;
 
+const formalStyleInstructions = `
+Instructions for Formal / Academic style:
+- Vibe: Professional, reliable, scholarly. 🏛️📑📌
+- Create a logical, hierarchical mind map suitable for academic or professional use.
+- Use Mermaid mindmap syntax.
+- The central idea must be the core academic concept.
+- Branches should represent main topics and sub-topics in a structured manner.
+- Avoid informal language and excessive emojis. Use only scholarly emojis like 🏛️, 📑, 📌 sparingly.
+- The first line must be "mindmap".
+- The root node MUST be wrapped in double parentheses, like this: root((The Theory of Relativity 🏛️)). This is a strict rule.
+`;
 
 const createMindMapFlow = ai.defineFlow(
   {
@@ -93,6 +104,8 @@ const createMindMapFlow = ai.defineFlow(
       styleInstructions = storyStyleInstructions;
     } else if (input.style === 'Action') {
       styleInstructions = actionStyleInstructions;
+    } else if (input.style === 'Formal') {
+      styleInstructions = formalStyleInstructions;
     }
 
     const prompt = ai.definePrompt({

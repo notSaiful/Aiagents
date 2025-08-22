@@ -24,7 +24,7 @@ interface AIOutput {
   mindMap: string;
 }
 
-type NoteStyle = 'Minimalist' | 'Story' | 'Action';
+type NoteStyle = 'Minimalist' | 'Story' | 'Action' | 'Formal';
 
 export default function Home() {
   const [notes, setNotes] = useState('');
@@ -178,7 +178,7 @@ export default function Home() {
       </div>
 
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
-        <CardContent className="p-4 pb-0">
+        <CardContent className="p-4">
             <Textarea
               placeholder="Paste your notes here or upload a file..."
               className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-2"
@@ -186,7 +186,9 @@ export default function Home() {
               onChange={(e) => setNotes(e.target.value)}
               disabled={loading || isUploading}
             />
-             <div className="flex justify-start pt-2">
+        </CardContent>
+        <CardFooter className="p-4 pt-0 flex justify-start">
+             <div className="flex justify-start">
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -203,19 +205,19 @@ export default function Home() {
                   {isUploading ? (
                     <LoaderCircle className="animate-spin" />
                   ) : (
-                    <Upload className="h-5 w-5" />
+                    <>
+                      <Upload className="h-5 w-5 mr-2" />
+                      Upload
+                    </>
                   )}
-                    Upload
                 </Button>
             </div>
-        </CardContent>
-        <CardFooter className="p-4 pt-2 flex justify-start">
         </CardFooter>
       </Card>
       
       <div className="mt-6 flex flex-col items-center gap-4">
         <div className="flex flex-wrap justify-center gap-2">
-          {(['Minimalist', 'Story', 'Action'] as NoteStyle[]).map((styleName) => (
+          {(['Minimalist', 'Story', 'Action', 'Formal'] as NoteStyle[]).map((styleName) => (
             <Button
               key={styleName}
               variant={style === styleName ? 'default' : 'outline'}

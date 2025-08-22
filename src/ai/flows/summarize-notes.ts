@@ -62,6 +62,15 @@ Instructions for Bold / Action-Oriented (Avengers Style):
 - Use emojis like ⚡, 🔥, 🛡️ to add excitement.
 `;
 
+const formalStyleInstructions = `
+Instructions for Formal / Academic style:
+- Vibe: Professional, reliable, scholarly. 🏛️📑📌
+- Create professional, exam-ready notes with clear, structured headings and bullet points.
+- Short Summary: A concise, professional summary of 5-7 bullet points covering all key academic points. The output must be clean HTML.
+- Long Summary: A detailed, well-structured academic summary. Use headings (<h3>, <h4>) to organize information logically. Ensure it is comprehensive and suitable for formal presentations or study. The output must be clean HTML.
+- Avoid informal language and emojis.
+`;
+
 const summarizeNotesFlow = ai.defineFlow(
   {
     name: 'summarizeNotesFlow',
@@ -76,6 +85,8 @@ const summarizeNotesFlow = ai.defineFlow(
       styleInstructions = storyStyleInstructions;
     } else if (input.style === 'Action') {
       styleInstructions = actionStyleInstructions;
+    } else if (input.style === 'Formal') {
+      styleInstructions = formalStyleInstructions;
     }
     
     const summarizeNotesPrompt = ai.definePrompt({

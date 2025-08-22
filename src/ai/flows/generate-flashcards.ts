@@ -58,6 +58,14 @@ Instructions for Bold / Action-Oriented (Avengers Style):
 - Use strong, motivating language and emojis like ⚡, 🔥, 🛡️.
 `;
 
+const formalStyleInstructions = `
+Instructions for Formal / Academic style:
+- Vibe: Professional, reliable, scholarly. 🏛️📑📌
+- Generate 3-5 flashcards suitable for academic or professional settings.
+- Question: Must be clear, precise, and directly related to core academic concepts in the notes.
+- Answer: Must be accurate, well-defined, and structured. Avoid slang or informal language.
+`;
+
 const generateFlashcardsFlow = ai.defineFlow(
   {
     name: 'generateFlashcardsFlow',
@@ -72,6 +80,8 @@ const generateFlashcardsFlow = ai.defineFlow(
       styleInstructions = storyStyleInstructions;
     } else if (input.style === 'Action') {
       styleInstructions = actionStyleInstructions;
+    } else if (input.style === 'Formal') {
+      styleInstructions = formalStyleInstructions;
     }
     
     const prompt = ai.definePrompt({
