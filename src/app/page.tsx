@@ -52,8 +52,8 @@ export default function Home() {
     });
   };
 
-  const handleTransform = async () => {
-    if (!notes.trim()) {
+  const handleTransform = async (notesToTransform: string) => {
+    if (!notesToTransform.trim()) {
       toast({
         title: 'Error',
         description: 'Please paste your notes before transforming.',
@@ -66,7 +66,7 @@ export default function Home() {
     setOutput(null);
 
     try {
-      const commonInput = { notes, style };
+      const commonInput = { notes: notesToTransform, style };
       const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
         summarizeNotes(commonInput),
         generateFlashcards(commonInput),
@@ -114,7 +114,7 @@ export default function Home() {
           description: 'Your notes are ready to be transformed.',
         });
         // Automatically trigger transformation after text is extracted
-        await handleTransform();
+        await handleTransform(extractedText);
       } catch (error) {
         console.error('OCR failed:', error);
         toast({
@@ -133,7 +133,7 @@ export default function Home() {
   };
 
   const renderContent = () => {
-    if (loading && !notes && !output) {
+    if (loading && !output) {
       return (
         <div className="w-full space-y-4">
           <Skeleton className="h-8 w-1/3" />
@@ -229,7 +229,7 @@ export default function Home() {
           ))}
         </div>
 
-        <Button onClick={handleTransform} disabled={loading || !notes} size="lg" className="w-full max-w-xs font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+        <Button onClick={() => handleTransform(notes)} disabled={loading || !notes} size="lg" className="w-full max-w-xs font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
           {loading ? (
             <LoaderCircle className="animate-spin" />
           ) : (
