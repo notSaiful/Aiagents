@@ -7,25 +7,21 @@ const DEFAULT_CONFIG: MermaidConfig = {
   startOnLoad: false,
   theme: "base",
   themeVariables: {
-    background: '#FFFFFF', // white background
-    primaryColor: '#FFFFFF', // node background
-    primaryTextColor: '#24292e', // dark text for readability
-    primaryBorderColor: '#FFB6C1', // pale rose for borders
-    lineColor: '#333333', // dark line color
-    secondaryColor: '#FFB6C1', // pale rose
-    tertiaryColor: '#FFE4E1', // lighter rose
+    background: 'hsl(var(--background))',
+    primaryColor: 'hsl(var(--background))',
+    primaryTextColor: 'hsl(var(--foreground))',
+    primaryBorderColor: 'hsl(var(--primary))',
+    lineColor: 'hsl(var(--foreground))',
+    secondaryColor: 'hsl(var(--primary))',
+    tertiaryColor: 'hsl(var(--primary))',
     fontFamily: '"Inter", sans-serif',
     fontSize: '16px',
-    // Node-specific styling
-    nodeBorder: '#FFB6C1',
-    mainBkg: '#FFFFFF',
-    // Root node styling
+    nodeBorder: 'hsl(var(--primary))',
+    mainBkg: 'hsl(var(--background))',
     pieTitleTextSize: '18px',
-    pieTitleTextColor: '#24292e',
-    // Edge label styling
-    edgeLabelBackground: '#FFFFFF',
-    // Class styles
-    classText: '#24292e',
+    pieTitleTextColor: 'hsl(var(--foreground))',
+    edgeLabelBackground: 'hsl(var(--background))',
+    classText: 'hsl(var(--foreground))',
   },
   flowchart: {
     useMaxWidth: true,
@@ -54,7 +50,6 @@ export default function Mermaid({
 
     const renderMermaid = async () => {
       try {
-        // ID generation moved here to avoid server-client mismatch
         const id = `mermaid-graph-${Math.random().toString(36).substring(2, 9)}`;
         const { svg: newSvg } = await mermaid.render(
           id,
@@ -63,16 +58,19 @@ export default function Mermaid({
         setSvg(newSvg);
       } catch (error) {
         console.error("Error rendering Mermaid diagram:", error);
-        // Display an error message in the container if rendering fails
         setSvg('<div class="p-4 text-destructive">Error rendering diagram.</div>');
       }
     };
 
-    renderMermaid();
+    if (chart) {
+      renderMermaid();
+    } else {
+      setSvg(null);
+    }
   }, [chart, config]);
   
   if (!svg) {
-    return <div className="p-4 text-muted-foreground">Loading diagram...</div>;
+    return <div className="p-4 text-muted-foreground w-full text-center">Loading diagram...</div>;
   }
   
   return <div className="w-full flex justify-center" dangerouslySetInnerHTML={{ __html: svg }} />;
