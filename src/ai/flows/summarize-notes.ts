@@ -53,6 +53,15 @@ Instructions for Story (K-Drama) style:
 - Long Summary: A more detailed story, like a mini-series episode. Break down the notes into scenes or chapters. Use headings (<h3>) for each "scene." Flesh out the concepts with characters, dialogue, or a clear plot. Ensure the story arc covers all key points from the notes comprehensively. The output must be clean HTML.
 `;
 
+const actionStyleInstructions = `
+Instructions for Bold / Action-Oriented (Avengers Style):
+- Vibe: Dramatic, powerful, energetic. ⚡🔥🛡️
+- Inject energy into the notes with a bold, action-oriented tone.
+- Short Summary: 5-7 punchy, high-impact bullet points. Use strong verbs and highlight the most critical "intel" or "objectives." The output must be clean HTML.
+- Long Summary: A detailed "mission briefing." Structure the summary with clear headings (<h3>) for sections like "Mission Critical," "Key Intel," and "Execution Strategy." Make it comprehensive and motivating. The output must be clean HTML.
+- Use emojis like ⚡, 🔥, 🛡️ to add excitement.
+`;
+
 const summarizeNotesFlow = ai.defineFlow(
   {
     name: 'summarizeNotesFlow',
@@ -65,6 +74,8 @@ const summarizeNotesFlow = ai.defineFlow(
       styleInstructions = minimalistStyleInstructions;
     } else if (input.style === 'Story') {
       styleInstructions = storyStyleInstructions;
+    } else if (input.style === 'Action') {
+      styleInstructions = actionStyleInstructions;
     }
     
     const summarizeNotesPrompt = ai.definePrompt({

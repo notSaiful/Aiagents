@@ -49,6 +49,15 @@ Instructions for Story (K-Drama) style:
 - Use emojis like 💖, 🎭, 📚 to add emotional context.
 `;
 
+const actionStyleInstructions = `
+Instructions for Bold / Action-Oriented (Avengers Style):
+- Vibe: Dramatic, powerful, energetic. ⚡🔥🛡️
+- Generate 3-5 high-impact flashcards designed for action-takers.
+- Question: Frame it as a "Mission" or "Objective."
+- Answer: Provide the "Intel" or "Strategy" needed to complete the mission.
+- Use strong, motivating language and emojis like ⚡, 🔥, 🛡️.
+`;
+
 const generateFlashcardsFlow = ai.defineFlow(
   {
     name: 'generateFlashcardsFlow',
@@ -60,7 +69,9 @@ const generateFlashcardsFlow = ai.defineFlow(
     if (input.style === 'Minimalist') {
       styleInstructions = minimalistStyleInstructions;
     } else if (input.style === 'Story') {
-        styleInstructions = storyStyleInstructions;
+      styleInstructions = storyStyleInstructions;
+    } else if (input.style === 'Action') {
+      styleInstructions = actionStyleInstructions;
     }
     
     const prompt = ai.definePrompt({

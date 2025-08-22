@@ -24,7 +24,7 @@ interface AIOutput {
   mindMap: string;
 }
 
-type NoteStyle = 'Minimalist' | 'Story' | 'Action' | 'Formal';
+type NoteStyle = 'Minimalist' | 'Story' | 'Action';
 
 export default function Home() {
   const [notes, setNotes] = useState('');
@@ -215,7 +215,7 @@ export default function Home() {
       
       <div className="mt-6 flex flex-col items-center gap-4">
         <div className="flex flex-wrap justify-center gap-2">
-          {(['Minimalist', 'Story', 'Action', 'Formal'] as NoteStyle[]).map((styleName) => (
+          {(['Minimalist', 'Story', 'Action'] as NoteStyle[]).map((styleName) => (
             <Button
               key={styleName}
               variant={style === styleName ? 'default' : 'outline'}
