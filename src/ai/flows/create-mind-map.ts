@@ -51,6 +51,18 @@ mindmap
       Oxygen
 `;
 
+const storyStyleInstructions = `
+Instructions for Story (K-Drama) style:
+- Create a mind map that follows a narrative structure.
+- Use Mermaid mindmap syntax.
+- The central idea should be the "Protagonist" or "Main Plot."
+- Main branches can be "Act 1: The Setup," "Act 2: The Conflict," "Act 3: The Resolution."
+- Connect concepts like they are characters or plot points.
+- Use dramatic emojis like 💖, 🎭, 💔, 💥, 📚 to tell the story.
+- The first line must be "mindmap".
+- The root node MUST be wrapped in double parentheses, like this: root((The Tragic Hero's Journey 🎭)). This is a strict rule.
+`;
+
 const createMindMapFlow = ai.defineFlow(
   {
     name: 'createMindMapFlow',
@@ -61,6 +73,8 @@ const createMindMapFlow = ai.defineFlow(
     let styleInstructions = '';
     if (input.style === 'Minimalist') {
       styleInstructions = minimalistStyleInstructions;
+    } else if (input.style === 'Story') {
+        styleInstructions = storyStyleInstructions;
     }
 
     const prompt = ai.definePrompt({

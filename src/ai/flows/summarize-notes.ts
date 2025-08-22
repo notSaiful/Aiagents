@@ -44,6 +44,13 @@ Instructions for Minimalist / Quick Review style:
 - Keep language simple, exam-friendly, and ensure minimal cognitive load.
 `;
 
+const storyStyleInstructions = `
+Instructions for Story (K-Drama) style:
+- Vibe: Emotional, engaging, memorable. 💖🎭📚
+- Short Summary: A short, engaging narrative (2-3 paragraphs) that captures the main concept of the notes. Weave in a touch of K-Drama style emotion—a hint of conflict, a surprising connection, a moment of realization. Use emojis like 💖, 🎭, 📚. The output must be clean HTML.
+- Long Summary: A more detailed story, like a mini-series episode. Break down the notes into scenes or chapters. Use headings (<h3>) for each "scene." Flesh out the concepts with characters, dialogue, or a clear plot. Ensure the story arc covers all key points from the notes comprehensively. The output must be clean HTML.
+`;
+
 const summarizeNotesFlow = ai.defineFlow(
   {
     name: 'summarizeNotesFlow',
@@ -54,6 +61,8 @@ const summarizeNotesFlow = ai.defineFlow(
     let styleInstructions = '';
     if (input.style === 'Minimalist') {
       styleInstructions = minimalistStyleInstructions;
+    } else if (input.style === 'Story') {
+      styleInstructions = storyStyleInstructions;
     }
     
     const summarizeNotesPrompt = ai.definePrompt({

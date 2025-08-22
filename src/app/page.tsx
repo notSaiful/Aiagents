@@ -186,28 +186,30 @@ export default function Home() {
               onChange={(e) => setNotes(e.target.value)}
               disabled={loading || isUploading}
             />
+             <div className="flex justify-start pt-2">
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/png,image/jpeg,application/pdf"
+                />
+                <Button
+                    onClick={handleUploadClick}
+                    disabled={loading || isUploading}
+                    variant="ghost"
+                    className="h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
+                >
+                  {isUploading ? (
+                    <LoaderCircle className="animate-spin" />
+                  ) : (
+                    <Upload className="h-5 w-5" />
+                  )}
+                    Upload
+                </Button>
+            </div>
         </CardContent>
-        <CardFooter className="p-4 pt-0 flex justify-start">
-            <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/png,image/jpeg,application/pdf"
-            />
-            <Button
-                onClick={handleUploadClick}
-                disabled={loading || isUploading}
-                variant="ghost"
-                className="h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
-            >
-              {isUploading ? (
-                <LoaderCircle className="animate-spin" />
-              ) : (
-                <Upload className="h-5 w-5" />
-              )}
-                Upload
-            </Button>
+        <CardFooter className="p-4 pt-2 flex justify-start">
         </CardFooter>
       </Card>
       

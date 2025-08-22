@@ -39,6 +39,14 @@ Instructions for Minimalist / Quick Review style:
 - Prioritize key concepts, definitions, and important facts from the notes.
 `;
 
+const storyStyleInstructions = `
+Instructions for Story (K-Drama) style:
+- Generate 3-5 flashcards that feel like mini-scenarios or dramatic turning points.
+- Question: Frame it as a situation or a conflict a character might face.
+- Answer: Provide the key concept as the resolution or the lesson learned.
+- Use emojis like 💖, 🎭, 📚 to add emotional context.
+`;
+
 const generateFlashcardsFlow = ai.defineFlow(
   {
     name: 'generateFlashcardsFlow',
@@ -49,6 +57,8 @@ const generateFlashcardsFlow = ai.defineFlow(
     let styleInstructions = '';
     if (input.style === 'Minimalist') {
       styleInstructions = minimalistStyleInstructions;
+    } else if (input.style === 'Story') {
+        styleInstructions = storyStyleInstructions;
     }
     
     const prompt = ai.definePrompt({
