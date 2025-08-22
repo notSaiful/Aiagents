@@ -7,23 +7,23 @@ const DEFAULT_CONFIG: MermaidConfig = {
   startOnLoad: false,
   theme: "base",
   themeVariables: {
-    background: '#F5F5DC', // light beige
-    primaryColor: '#E6E6FA', // soft lavender
+    background: '#FFFFFF', // white background
+    primaryColor: '#FFFFFF', // node background
     primaryTextColor: '#24292e', // dark text for readability
-    primaryBorderColor: '#D1C4E9', // slightly darker lavender
+    primaryBorderColor: '#FFB6C1', // pale rose for borders
     lineColor: '#333333', // dark line color
     secondaryColor: '#FFB6C1', // pale rose
     tertiaryColor: '#FFE4E1', // lighter rose
     fontFamily: '"Inter", sans-serif',
     fontSize: '16px',
     // Node-specific styling
-    nodeBorder: '#D1C4E9',
-    mainBkg: '#E6E6FA',
+    nodeBorder: '#FFB6C1',
+    mainBkg: '#FFFFFF',
     // Root node styling
     pieTitleTextSize: '18px',
     pieTitleTextColor: '#24292e',
     // Edge label styling
-    edgeLabelBackground: '#F5F5DC',
+    edgeLabelBackground: '#FFFFFF',
     // Class styles
     classText: '#24292e',
   },

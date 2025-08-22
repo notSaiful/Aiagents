@@ -31,7 +31,7 @@ export async function createMindMap(input: CreateMindMapInput): Promise<CreateMi
 const minimalistStyleInstructions = `
 Instructions for Minimalist / Quick Review style:
 - Vibe: Calm, organized, efficient. ✨📌🌸
-- Create a mind map with a central idea and clear, structured nodes.
+- Create a mind map with a central idea and clear, structured nodes in a horizontal layout.
 - Use Mermaid mindmap syntax.
 - Keep it SHORT, CONCISE, and BEAUTIFUL, stripping away clutter.
 - Prioritize clarity and exam-readiness.
@@ -57,7 +57,7 @@ mindmap
 const storyStyleInstructions = `
 Instructions for Story (K-Drama) style:
 - Vibe: Emotional, engaging, memorable. 💖🎭📚
-- Create a mind map that follows a narrative structure.
+- Create a mind map that follows a narrative structure in a horizontal layout.
 - Use Mermaid mindmap syntax.
 - The central idea should be the "Protagonist" or "Main Plot."
 - Main branches can be "Act 1: The Setup," "Act 2: The Conflict," "Act 3: The Resolution."
@@ -72,7 +72,7 @@ Instructions for Story (K-Drama) style:
 const actionStyleInstructions = `
 Instructions for Bold / Action-Oriented (Avengers Style):
 - Vibe: Dramatic, powerful, energetic. ⚡🔥🛡️
-- Create a mind map that feels like a superhero's mission briefing.
+- Create a mind map that feels like a superhero's mission briefing in a horizontal layout.
 - Use Mermaid mindmap syntax.
 - The central idea is the "Headquarters" or "Main Mission."
 - Main branches are "Key Objectives," "Intel," "Threats," and "Strategies."
@@ -87,7 +87,7 @@ Instructions for Bold / Action-Oriented (Avengers Style):
 const formalStyleInstructions = `
 Instructions for Formal / Academic style:
 - Vibe: Professional, reliable, scholarly. 🏛️📑📌
-- Create a logical, hierarchical mind map suitable for academic or professional use.
+- Create a logical, hierarchical mind map in a horizontal layout, suitable for academic or professional use.
 - Use Mermaid mindmap syntax.
 - The central idea must be the core academic concept.
 - Branches should represent main topics and sub-topics in a structured manner.
