@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Share2, ZoomIn, ZoomOut, RotateCcw, Download } from 'lucide-react';
-import Image from 'next/image';
+import { Share2 } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -18,21 +17,17 @@ import Flashcard from './flashcard';
 import MindMap from './mind-map';
 import type { Flashcard as FlashcardType } from '@/types';
 import ShareDialog from './share-dialog';
-import Mermaid from './mermaid';
 
 interface OutputDisplayProps {
   shortSummary: string;
   longSummary: string;
   flashcards: FlashcardType[];
   mindMap: string;
-  diagram: string;
-  napkin: string;
 }
 
-export default function OutputDisplay({ shortSummary, longSummary, flashcards, mindMap, diagram, napkin }: OutputDisplayProps) {
+export default function OutputDisplay({ shortSummary, longSummary, flashcards, mindMap }: OutputDisplayProps) {
   const { toast } = useToast();
   const [isShareDialogOpen, setShareDialogOpen] = useState(false);
-  const [diagramScale, setDiagramScale] = useState(1);
   
   const handleCopyLink = async () => {
     await navigator.clipboard.writeText(window.location.href);
@@ -43,19 +38,6 @@ export default function OutputDisplay({ shortSummary, longSummary, flashcards, m
     setShareDialogOpen(false);
   }
 
-  const handleDownloadNapkin = () => {
-    const link = document.createElement('a');
-    link.href = napkin;
-    link.download = 'napkin-diagram.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast({
-        title: 'Image Downloaded',
-        description: 'The napkin diagram has been downloaded.',
-    });
-  }
-
   return (
     <div className="relative">
       <Tabs defaultValue="summary" className="w-full">
@@ -64,8 +46,6 @@ export default function OutputDisplay({ shortSummary, longSummary, flashcards, m
             <TabsTrigger value="summary" className="text-base rounded-full h-10">Summary</TabsTrigger>
             <TabsTrigger value="flashcards" className="text-base rounded-full h-10">Flashcards</TabsTrigger>
             <TabsTrigger value="mind-map" className="text-base rounded-full h-10">Mind Map</TabsTrigger>
-            <TabsTrigger value="diagram" className="text-base rounded-full h-10">Diagram</TabsTrigger>
-            <TabsTrigger value="napkin" className="text-base rounded-full h-10">Napkin</TabsTrigger>
           </TabsList>
         </div>
 
@@ -106,35 +86,6 @@ export default function OutputDisplay({ shortSummary, longSummary, flashcards, m
            <Card className="rounded-xl border-2 border-primary/40">
             <CardContent className="p-6">
                 <MindMap data={mindMap} />
-            </CardContent>
-           </Card>
-        </TabsContent>
-         <TabsContent value="diagram">
-            <Card className="rounded-xl border-2 border-primary/40">
-            <CardContent className="p-6">
-                <div className="relative overflow-hidden">
-                <div className="absolute top-2 right-2 z-10 flex space-x-2">
-                    <Button variant="outline" size="icon" onClick={() => setDiagramScale(s => s * 1.2)}><ZoomIn className="h-4 w-4" /></Button>
-                    <Button variant="outline" size="icon" onClick={() => setDiagramScale(s => s / 1.2)}><ZoomOut className="h-4 w-4" /></Button>
-                    <Button variant="outline" size="icon" onClick={() => setDiagramScale(1)}><RotateCcw className="h-4 w-4" /></Button>
-                </div>
-                <div className="overflow-auto flex justify-center items-center">
-                    <div style={{ transform: `scale(${diagramScale})`, transformOrigin: 'center center', transition: 'transform 0.2s' }}>
-                        <Mermaid chart={diagram} />
-                    </div>
-                </div>
-                </div>
-            </CardContent>
-           </Card>
-        </TabsContent>
-        <TabsContent value="napkin">
-           <Card className="rounded-xl border-2 border-primary/40">
-            <CardContent className="p-6 flex flex-col items-center">
-                <Image src={napkin} alt="Napkin Diagram" width={1024} height={576} className="rounded-lg shadow-lg" data-ai-hint="diagram comic" />
-                <Button onClick={handleDownloadNapkin} className="mt-4">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download Image
-                </Button>
             </CardContent>
            </Card>
         </TabsContent>

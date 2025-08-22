@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Sparkles, LoaderCircle, BrainCircuit } from 'lucide-react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,8 +9,6 @@ import { useToast } from '@/hooks/use-toast';
 import { summarizeNotes } from '@/ai/flows/summarize-notes';
 import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
-import { generateDiagram } from '@/ai/flows/generate-diagram';
-import { generateNapkin } from '@/ai/flows/generate-napkin';
 import type { Flashcard } from '@/types';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -32,7 +29,7 @@ const DUMMY_DATA = {
 `,
   flashcards: [
     { question: 'What is the main benefit of this app?', answer: 'It makes studying more efficient and fun!' },
-    { question: 'What kind of outputs can be generated?', answer: 'Summaries, flashcards, mind maps, and diagrams.' },
+    { question: 'What kind of outputs can be generated?', answer: 'Summaries, flashcards, and mind maps.' },
     { question: 'How do I start?', answer: 'Just paste your notes in the text box and click "Transform".' },
   ],
   mindMap: `
@@ -43,16 +40,7 @@ mindmap
       Engaging Flashcards
     Visual Learning
       Mind Maps
-      Diagrams
   `,
-  diagram: `
-graph TD
-    A[Paste Notes] --> B{Transform};
-    B --> C[Get Summary];
-    B --> D[Get Flashcards];
-    B --> E[Get Mind Map];
-  `,
-  napkin: 'https://placehold.co/1024x576.png',
 };
 
 interface AIOutput {
@@ -60,8 +48,6 @@ interface AIOutput {
   longSummary: string;
   flashcards: Flashcard[];
   mindMap: string;
-  diagram: string;
-  napkin: string;
 }
 
 export default function Home() {
@@ -84,12 +70,10 @@ export default function Home() {
     setOutput(null);
 
     try {
-      const [summaryRes, flashcardsRes, mindMapRes, diagramRes, napkinRes] = await Promise.all([
+      const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
         summarizeNotes({ notes }),
         generateFlashcards({ notes }),
         createMindMap({ notes }),
-        generateDiagram({ notes }),
-        generateNapkin({ notes }),
       ]);
 
       setOutput({
@@ -97,8 +81,6 @@ export default function Home() {
         longSummary: summaryRes.longSummary,
         flashcards: flashcardsRes.flashcards,
         mindMap: mindMapRes.mindMap,
-        diagram: diagramRes.diagram,
-        napkin: napkinRes.imageUrl,
       });
     } catch (error) {
       console.error('Transformation failed:', error);

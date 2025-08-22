@@ -6,11 +6,3 @@ export interface Flashcard {
 export interface MindMapData {
   mindMap: string;
 }
-
-export interface DiagramData {
-    diagram: string;
-}
-
-export interface NapkinData {
-    imageUrl: string;
-}
