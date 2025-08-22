@@ -49,7 +49,8 @@ GOALS:
 - No long paragraphs. Max 2 lines per point.
 
 Short Summary Rules:
-- You are an expert copy editor. Refine the notes into an extremely concise summary (1-2 sentences only).
+- Your task is to create a brief, precise, and short overview summary of the notes.
+- It must be extremely concise, capturing only the most important points in 1-2 sentences.
 - Keep only the main takeaway. Use simple, everyday language.
 - Ensure it has a natural, engaging flow and avoids a robotic tone.
 
