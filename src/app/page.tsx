@@ -13,36 +13,6 @@ import type { Flashcard } from '@/types';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const DUMMY_DATA = {
-  shortSummary: `
-### ✨ Key Concepts
-- This is a short placeholder summary.
-- Paste your notes to see them transformed!
-`,
-  longSummary: `
-### 📚 Detailed Breakdown
-- This is a longer placeholder summary.
-- It provides more detail than the short version.
-- The output will be beautiful and easy to read.
-- You can generate flashcards and mind maps too.
-- It's designed to make studying more effective.
-`,
-  flashcards: [
-    { question: 'What is the main benefit of this app?', answer: 'It makes studying more efficient and fun!' },
-    { question: 'What kind of outputs can be generated?', answer: 'Summaries, flashcards, and mind maps.' },
-    { question: 'How do I start?', answer: 'Just paste your notes in the text box and click "Transform".' },
-  ],
-  mindMap: `
-mindmap
-  root((Study Smarter ✨))
-    Aesthetic Notes
-      Beautiful Summaries
-      Engaging Flashcards
-    Visual Learning
-      Mind Maps
-  `,
-};
-
 interface AIOutput {
   shortSummary: string;
   longSummary: string;
@@ -113,8 +83,11 @@ export default function Home() {
       );
     }
     
-    const dataToDisplay = output || DUMMY_DATA;
-    return <OutputDisplay {...dataToDisplay} />;
+    if (output) {
+      return <OutputDisplay {...output} />;
+    }
+
+    return null;
   };
 
   return (
