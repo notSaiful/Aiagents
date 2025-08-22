@@ -9,20 +9,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { summarizeNotes } from '@/ai/flows/summarize-notes';
-import { generateFlashcards } from '@/ai/flows/generate-flashcards';
-import { createMindMap } from '@/ai/flows/create-mind-map';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
-import type { Flashcard } from '@/types';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
-import { cn } from '@/lib/utils';
 
 interface AIOutput {
   shortSummary: string;
   longSummary: string;
-  flashcards: Flashcard[];
-  mindMap: string;
 }
 
 type NoteStyle = 'Minimalist' | 'Story' | 'Action' | 'Formal';
@@ -67,17 +61,11 @@ export default function Home() {
 
     try {
       const commonInput = { notes: notesToTransform, style };
-      const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
-        summarizeNotes(commonInput),
-        generateFlashcards(commonInput),
-        createMindMap(commonInput),
-      ]);
+      const summaryRes = await summarizeNotes(commonInput);
 
       setOutput({
         shortSummary: summaryRes.shortSummary,
         longSummary: summaryRes.longSummary,
-        flashcards: flashcardsRes.flashcards,
-        mindMap: mindMapRes.mindMap,
       });
     } catch (error) {
       console.error('Transformation failed:', error);
@@ -113,7 +101,6 @@ export default function Home() {
           title: 'Text Extracted!',
           description: 'Your notes are ready to be transformed.',
         });
-        // Automatically trigger transformation after text is extracted
         await handleTransform(extractedText);
       } catch (error) {
         console.error('OCR failed:', error);
@@ -124,7 +111,6 @@ export default function Home() {
         });
       } finally {
         setLoading(false);
-        // Reset file input
         if(fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -152,7 +138,7 @@ export default function Home() {
     }
     
     if (output) {
-      return <OutputDisplay {...output} />;
+      return <OutputDisplay shortSummary={output.shortSummary} longSummary={output.longSummary} />;
     }
 
     return null;
@@ -167,7 +153,7 @@ export default function Home() {
   }
 
   if (!user) {
-    return null; // or a splash screen
+    return null;
   }
 
   return (

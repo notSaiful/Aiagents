@@ -2,30 +2,18 @@
 
 import { useState } from 'react';
 import { Share2 } from 'lucide-react';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import Flashcard from './flashcard';
-import MindMap from './mind-map';
-import type { Flashcard as FlashcardType } from '@/types';
 import ShareDialog from './share-dialog';
 
 interface OutputDisplayProps {
   shortSummary: string;
   longSummary: string;
-  flashcards: FlashcardType[];
-  mindMap: string;
 }
 
-export default function OutputDisplay({ shortSummary, longSummary, flashcards, mindMap }: OutputDisplayProps) {
+export default function OutputDisplay({ shortSummary, longSummary }: OutputDisplayProps) {
   const { toast } = useToast();
   const [isShareDialogOpen, setShareDialogOpen] = useState(false);
   
@@ -44,8 +32,6 @@ export default function OutputDisplay({ shortSummary, longSummary, flashcards, m
         <div className="flex justify-center mb-6">
           <TabsList className="bg-primary/80 rounded-full h-12 px-2">
             <TabsTrigger value="summary" className="text-base rounded-full h-10">Summary</TabsTrigger>
-            <TabsTrigger value="flashcards" className="text-base rounded-full h-10">Flashcards</TabsTrigger>
-            <TabsTrigger value="mind-map" className="text-base rounded-full h-10">Mind Map</TabsTrigger>
           </TabsList>
         </div>
 
@@ -66,28 +52,6 @@ export default function OutputDisplay({ shortSummary, longSummary, flashcards, m
               </Tabs>
             </CardContent>
           </Card>
-        </TabsContent>
-        <TabsContent value="flashcards" className="h-[450px]">
-          <Carousel className="w-full h-full max-w-md mx-auto">
-            <CarouselContent className="h-full">
-              {flashcards.map((fc, index) => (
-                <CarouselItem key={index} className="h-full p-2">
-                   <div className="p-1 h-full">
-                     <Flashcard flashcard={fc} />
-                   </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </TabsContent>
-        <TabsContent value="mind-map">
-           <Card className="rounded-xl border-2 border-primary/40">
-            <CardContent className="p-6">
-                <MindMap data={mindMap} />
-            </CardContent>
-           </Card>
         </TabsContent>
       </Tabs>
       <ShareDialog 
