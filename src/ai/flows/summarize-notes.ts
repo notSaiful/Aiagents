@@ -59,11 +59,14 @@ Instructions for Story (K-Drama & Pop Culture) style:
 const actionStyleInstructions = `
 Instructions for Bold / Action-Oriented (Avengers Style):
 - Vibe: Dramatic, powerful, energetic. Inspired by Avengers, Justice League, and superhero comics. ⚡🔥🛡️
+- **Heroic Analogy:** Represent key concepts as battles, missions, or heroes vs villains.
+- **Action Words:** Use energetic, motivating verbs (conquer, defeat, ignite, rise, unleash).
+- **Micro-Scenes:** Break concepts into short “action panels”: Setup → Challenge → Result.
+- **Visual Punch:** Use emojis and symbols ⚡🔥🛡️🏹 to emphasize energy and importance. Bold key terms.
 - Transform notes into a heroic saga. Frame the content as an unfolding mission or a battle against a great challenge.
 - Short Summary: A high-impact "Mission Briefing" (2-3 paragraphs) that sets the stage. Introduce the "Primary Objective" and the stakes. Use strong, action-oriented language to build excitement.
 - Long Summary: A detailed "Full Campaign" narrative. Structure it with headings (<h3>) like "Phase 1: The Gathering Storm," "Phase 2: The First Encounter," and "Phase 3: The Final Victory." Turn key concepts into strategic moves or heroic actions. Make it comprehensive, motivating, and feel like a complete story arc.
-- Use punchy, heroic slogans or memorable quotes where they fit (e.g., "The world is counting on us," "To infinity and beyond!").
-- Use emojis like ⚡, 🔥, 🛡️, 💥, 🎯 to add excitement and energy. The output must be clean HTML.
+- The output must be clean HTML.
 `;
 
 const formalStyleInstructions = `

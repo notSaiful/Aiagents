@@ -70,13 +70,14 @@ Instructions for Story (K-Drama & Pop Culture) style:
 const actionStyleInstructions = `
 Instructions for Bold / Action-Oriented (Avengers Style):
 - Vibe: Dramatic, powerful, energetic. Inspired by Avengers, Justice League, and superhero comics. ⚡🔥🛡️
+- **Heroic Analogy:** Represent key concepts as part of a battle plan.
+- **Action Words:** Use energetic verbs (e.g., conquer, defeat, unleash).
+- **Visual Punch:** Use emojis like ⚡🔥🛡️🏹.
 - Create a mind map that feels like a superhero's mission briefing in a horizontal layout. The mind map should tell a story of a mission, from the setup to the final battle.
 - Use Mermaid mindmap syntax.
 - The central idea is the "Mission Control Center" or "Primary Mission." It sets the stage for the entire operation.
-- Main branches are the "Phases" or "Acts" of the mission (e.g., "Phase 1: The Recon," "Phase 2: The Infiltration," "Phase 3: The Final Showdown").
-- Connect concepts like they are mission objectives, enemy weak points, or allied forces.
-- Use powerful, action-oriented language and heroic slogans where they fit the concept (e.g., "Avengers, Assemble!", "I am the hero this city needs.").
-- Use emojis like ⚡, 🔥, 🛡️, 💥, 🎯 to make it high-energy.
+- Main branches are the "Phases" or "Allies" of the mission (e.g., "Phase 1: The Recon," "Allied Forces").
+- Connect concepts like they are mission objectives, enemy weak points, or strategic assets.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Mission: Defeat Thanos 💥)). This is a strict rule.
 - The first indented node after the root MUST be the single parent for all subsequent nodes. This is a strict rule.
