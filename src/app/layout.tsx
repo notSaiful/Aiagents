@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
-import { Poppins } from 'next/font/google';
+import { Inter, Poppins } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
 import Header from '@/components/layout/header';
 import { cn } from '@/lib/utils';
+
+const inter = Inter({ 
+  subsets: ['latin'], 
+  variable: '--font-inter',
+});
 
 const poppins = Poppins({ 
   subsets: ['latin'], 
@@ -24,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-sans antialiased', poppins.variable)} suppressHydrationWarning>
+      <body className={cn('font-sans antialiased', inter.variable, poppins.variable)} suppressHydrationWarning>
         <AuthProvider>
             <Header />
             <main>{children}</main>
