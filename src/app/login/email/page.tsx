@@ -7,12 +7,13 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  fetchSignInMethodsForEmail,
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { ArrowLeft, LoaderCircle } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,7 +21,6 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { auth, db } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -44,46 +44,59 @@ export default function EmailLoginPage() {
   const handleFormSubmit = async ({ email, password }: FormData) => {
     setLoading(true);
     try {
-      // Try to sign in first
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push('/');
-    } catch (signInError: any) {
-      if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/invalid-credential') {
-        // If user not found, try to create a new account
-        try {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          const user = userCredential.user;
-          
-          const displayName = email.split('@')[0];
-          await updateProfile(user, { displayName });
+      const methods = await fetchSignInMethodsForEmail(auth, email);
 
-          // Add user to Firestore
-          await setDoc(doc(db, 'users', user.uid), {
-            uid: user.uid,
-            email: user.email,
-            displayName,
-            createdAt: serverTimestamp(),
-          });
-
-          toast({
-            title: 'Account Created!',
-            description: "Welcome! We've created your account and signed you in.",
-          });
-          router.push('/');
-        } catch (signUpError: any) {
-          toast({
-            title: 'Sign-up Failed',
-            description: signUpError.message || 'Could not create an account. Please try again.',
-            variant: 'destructive',
-          });
-        }
+      if (methods.length > 0) {
+        // User exists, sign them in
+        await signInWithEmailAndPassword(auth, email, password);
+        router.push('/');
       } else {
-        toast({
-          title: 'Sign-in Failed',
-          description: signInError.message || 'An unexpected error occurred. Please try again.',
-          variant: 'destructive',
+        // User does not exist, create a new account
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        const displayName = email.split('@')[0];
+        await updateProfile(user, { displayName });
+
+        // Add user to Firestore
+        await setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
+          email: user.email,
+          displayName,
+          createdAt: serverTimestamp(),
         });
+
+        toast({
+          title: 'Account Created!',
+          description: "Welcome! We've created your account and signed you in.",
+        });
+        router.push('/');
       }
+    } catch (error: any) {
+      let errorMessage = 'An unexpected error occurred. Please try again.';
+      if (error.code) {
+        switch (error.code) {
+          case 'auth/wrong-password':
+            errorMessage = 'Incorrect password. Please try again.';
+            break;
+          case 'auth/invalid-email':
+            errorMessage = 'Please enter a valid email address.';
+            break;
+          case 'auth/user-disabled':
+            errorMessage = 'This account has been disabled.';
+            break;
+          case 'auth/too-many-requests':
+             errorMessage = 'Too many requests. Please try again later.';
+             break;
+          default:
+            errorMessage = error.message;
+        }
+      }
+      toast({
+        title: 'Authentication Failed',
+        description: errorMessage,
+        variant: 'destructive',
+      });
     } finally {
       setLoading(false);
     }
@@ -91,16 +104,10 @@ export default function EmailLoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-       <Button asChild variant="ghost" className="absolute top-4 left-4">
-        <Link href="/login">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-        </Link>
-      </Button>
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight">Email Sign In</h1>
-          <p className="text-muted-foreground">Enter your email and password to continue. If you don't have an account, we'll create one for you.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Welcome</h1>
+          <p className="text-muted-foreground">Sign in or create an account to continue.</p>
         </div>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
           <div className="space-y-2">
@@ -135,7 +142,7 @@ export default function EmailLoginPage() {
             {loading ? (
               <LoaderCircle className="animate-spin" />
             ) : (
-              'Continue'
+              'Continue with Email'
             )}
           </Button>
         </form>
