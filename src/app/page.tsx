@@ -51,8 +51,8 @@ export default function Home() {
     });
   };
 
-  const handleTransform = async (notesToTransform: string) => {
-    if (!notesToTransform.trim()) {
+  const handleTransform = async () => {
+    if (!notes.trim()) {
       toast({
         title: 'Error',
         description: 'Please paste your notes before transforming.',
@@ -66,9 +66,9 @@ export default function Home() {
 
     try {
       const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
-        summarizeNotes({ notes: notesToTransform, style }),
-        generateFlashcards({ notes: notesToTransform, style }),
-        createMindMap({ notes: notesToTransform, style }),
+        summarizeNotes({ notes: notes, style }),
+        generateFlashcards({ notes: notes, style }),
+        createMindMap({ notes: notes, style }),
       ]);
 
       setOutput({
@@ -111,7 +111,6 @@ export default function Home() {
           title: 'Text Extracted!',
           description: 'Your notes are ready to be transformed.',
         });
-        await handleTransform(extractedText);
       } catch (error) {
         console.error('OCR failed:', error);
         toast({
@@ -178,35 +177,33 @@ export default function Home() {
       </div>
 
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
-        <CardContent className="p-2 pt-4">
-            <div className="relative">
-                <Textarea
-                  placeholder="Paste your notes here or upload a file..."
-                  className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-4 pb-12"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  disabled={loading}
-                />
-                 <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                    accept="image/png,image/jpeg,application/pdf"
-                />
-                <div className="absolute bottom-2 left-2">
-                    <Button
-                    onClick={handleUploadClick}
-                    disabled={loading}
-                    variant="ghost"
-                    className="h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
-                    >
-                    <Upload className="h-5 w-5" />
-                    Upload
-                    </Button>
-                </div>
-            </div>
+        <CardContent className="p-4">
+            <Textarea
+              placeholder="Paste your notes here or upload a file..."
+              className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-2"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              disabled={loading}
+            />
         </CardContent>
+        <CardFooter className="p-4 pt-0 flex justify-start">
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/png,image/jpeg,application/pdf"
+            />
+            <Button
+                onClick={handleUploadClick}
+                disabled={loading}
+                variant="ghost"
+                className="h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
+            >
+                <Upload className="h-5 w-5" />
+                Upload
+            </Button>
+        </CardFooter>
       </Card>
       
       <div className="mt-6 flex flex-col items-center gap-4">
@@ -224,7 +221,7 @@ export default function Home() {
         </div>
 
         <div className="w-full max-w-md">
-            <Button onClick={() => handleTransform(notes)} disabled={loading || !notes} size="lg" className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button onClick={handleTransform} disabled={loading || !notes} className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
             {loading ? (
                 <LoaderCircle className="animate-spin" />
             ) : (
