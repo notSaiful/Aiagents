@@ -34,6 +34,7 @@ const DEFAULT_CONFIG: MermaidConfig = {
   mindmap: {
     padding: 20,
     maxDepth: 6,
+    useMaxWidth: true,
   }
 };
 
@@ -53,8 +54,9 @@ export default function Mermaid({
 
     const renderMermaid = async () => {
       try {
+        const id = `mermaid-graph-${Math.random().toString(36).substring(2, 9)}`;
         const { svg: newSvg } = await mermaid.render(
-          `mermaid-graph-${Math.random().toString(36).substring(2, 9)}`,
+          id,
           chart
         );
         setSvg(newSvg);
