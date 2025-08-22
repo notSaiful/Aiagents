@@ -58,7 +58,7 @@ export default function LoginPage() {
             className="w-full py-6 text-base"
           >
             <Chrome className="mr-2 h-5 w-5" />
-            Sign Up with Google
+            Continue with Google
           </Button>
           <Button
             onClick={() => router.push('/login/email')}
