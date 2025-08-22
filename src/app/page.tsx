@@ -66,25 +66,20 @@ export default function Home() {
     setOutput(null);
 
     try {
-      // Step 1: Generate summaries first and display them.
-      const summaryRes = await summarizeNotes({ notes, style });
-      setOutput({
-        shortSummary: summaryRes.shortSummary,
-        longSummary: summaryRes.longSummary,
-      });
-
-      // Step 2: Generate flashcards and mind map in parallel.
-      const [flashcardsRes, mindMapRes] = await Promise.all([
+      // Run all AI generation requests in parallel for faster results.
+      const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
+        summarizeNotes({ notes, style }),
         generateFlashcards({ notes, style }),
         createMindMap({ notes, style }),
       ]);
 
-      // Step 3: Update the state with the new data.
-      setOutput((prevOutput) => ({
-        ...prevOutput,
+      // Update the state with all the new data at once.
+      setOutput({
+        shortSummary: summaryRes.shortSummary,
+        longSummary: summaryRes.longSummary,
         flashcards: flashcardsRes.flashcards,
         mindMap: mindMapRes.mindMap,
-      }));
+      });
     } catch (error) {
       console.error('Transformation failed:', error);
       toast({
