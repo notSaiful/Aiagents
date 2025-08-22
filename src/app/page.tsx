@@ -1,6 +1,8 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Sparkles, LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,6 +14,7 @@ import { createMindMap } from '@/ai/flows/create-mind-map';
 import type { Flashcard } from '@/types';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/context/auth-context';
 
 interface AIOutput {
   shortSummary: string;
@@ -25,6 +28,15 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [output, setOutput] = useState<AIOutput | null>(null);
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, authLoading, router]);
+
 
   const handleTransform = async () => {
     if (!notes.trim()) {
@@ -89,6 +101,18 @@ export default function Home() {
 
     return null;
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // or a splash screen
+  }
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">

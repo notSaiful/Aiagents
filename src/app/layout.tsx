@@ -22,11 +22,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn('font-sans antialiased', inter.variable)} suppressHydrationWarning>
         <AuthProvider>
-          <div className="flex min-h-screen w-full flex-col">
             <Header />
-            <main className="flex-1">{children}</main>
-          </div>
-          <Toaster />
+            <main>{children}</main>
+            <Toaster />
         </AuthProvider>
       </body>
     </html>
