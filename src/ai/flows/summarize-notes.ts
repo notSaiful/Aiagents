@@ -50,7 +50,7 @@ const storyStyleInstructions = `
 Instructions for Story (K-Drama & Pop Culture) style:
 - Vibe: Emotional, engaging, memorable, and relatable. 💖🎭📚
 - Transform abstract notes into a compelling narrative using popular culture references, analogies, and scene-based structures.
-- Short Summary: A short, engaging narrative (2-3 paragraphs) that captures the main concept. Use a central analogy from a famous show/movie (e.g., "The political tension was like a Game of Thrones palace intrigue...").
+- Short Summary: Turn key concepts into short, narrative scenes with characters, events, or conflicts. Use emotional phrasing, symbols, and emojis 💖🎭⚔️🏰 to make points stick. Each point should be 1–2 sentences max. Flow from context → introduce main concepts → show conflicts/challenges → end with outcome. Ensure the story emphasizes key concepts for maximum recall.
 - Long Summary: A detailed story broken into "Scenes" (<h3>Scene 1: The Setup</h3>, <h4>Scene 2: The Conflict</h4>, etc.). Each scene should use analogies, iconic dialogues, or character archetypes from well-known media (K-Dramas, anime, blockbuster movies) to explain the concepts. Ensure the pop culture reference illustrates the point, not replaces it.
 - Use recognizable quotes where they fit naturally (e.g., "With great power comes great responsibility" to explain a concept about ethics).
 - The output must be clean HTML.
