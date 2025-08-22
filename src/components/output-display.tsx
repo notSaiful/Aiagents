@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Share2, LoaderCircle } from 'lucide-react';
+import { Share2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -101,25 +101,25 @@ export default function OutputDisplay({
         </TabsContent>
 
         <TabsContent value="flashcards">
-          {!flashcards ? (
-            <Card className="rounded-xl border-2 border-primary/40 flex items-center justify-center h-[250px]">
-             {renderLoadingSkeletons()}
+            <Card className="rounded-xl border-2 border-primary/40 flex items-center justify-center min-h-[250px]">
+             {!flashcards ? (
+                renderLoadingSkeletons()
+              ) : (
+                <Carousel className="w-full max-w-md mx-auto" opts={{ loop: true }}>
+                  <CarouselContent>
+                    {Array.isArray(flashcards) && flashcards.map((flashcard, index) => (
+                      <CarouselItem key={index}>
+                        <div className="p-1 h-[200px]">
+                          <Flashcard flashcard={flashcard} />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
+              )}
             </Card>
-          ) : (
-            <Carousel className="w-full max-w-md mx-auto" opts={{ loop: true }}>
-              <CarouselContent>
-                {Array.isArray(flashcards) && flashcards.map((flashcard, index) => (
-                  <CarouselItem key={index}>
-                    <div className="p-1 h-[200px]">
-                      <Flashcard flashcard={flashcard} />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
-            </Carousel>
-          )}
         </TabsContent>
 
         <TabsContent value="mind-map">

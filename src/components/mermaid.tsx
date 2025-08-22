@@ -54,6 +54,7 @@ export default function Mermaid({
 
     const renderMermaid = async () => {
       try {
+        // ID generation moved here to avoid server-client mismatch
         const id = `mermaid-graph-${Math.random().toString(36).substring(2, 9)}`;
         const { svg: newSvg } = await mermaid.render(
           id,
@@ -62,16 +63,17 @@ export default function Mermaid({
         setSvg(newSvg);
       } catch (error) {
         console.error("Error rendering Mermaid diagram:", error);
-        setSvg(null);
+        // Display an error message in the container if rendering fails
+        setSvg('<div class="p-4 text-destructive">Error rendering diagram.</div>');
       }
     };
 
     renderMermaid();
   }, [chart, config]);
-
+  
   if (!svg) {
     return <div className="p-4 text-muted-foreground">Loading diagram...</div>;
   }
-
+  
   return <div className="w-full flex justify-center" dangerouslySetInnerHTML={{ __html: svg }} />;
 }
