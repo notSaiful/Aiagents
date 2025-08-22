@@ -35,7 +35,7 @@ export async function generateFlashcards(input: GenerateFlashcardsInput): Promis
 const minimalistStyleInstructions = `
 Instructions for Minimalist / Quick Review style:
 - Vibe: Calm, organized, efficient. ✨📌🌸
-- Generate 3-5 flashcards based on the provided notes.
+- Generate 8-10 flashcards based on the provided notes.
 - Each flashcard must have a concise, clutter-free question and an accurate, exam-ready answer.
 - Prioritize key concepts, definitions, and essential facts from the notes.
 - Incorporate concise, motivational phrases or short, clever slogans where they naturally fit the content.
@@ -44,7 +44,7 @@ Instructions for Minimalist / Quick Review style:
 const storyStyleInstructions = `
 Instructions for Story (K-Drama) style:
 - Vibe: Emotional, engaging, memorable. 💖🎭📚
-- Generate 3-5 flashcards that feel like mini-scenarios or dramatic turning points.
+- Generate 8-10 flashcards that feel like mini-scenarios or dramatic turning points.
 - Question: Frame it as a situation or a conflict a character might face.
 - Answer: Provide the key concept as the resolution or the lesson learned.
 - Weave in relevant emotional dialogues or dramatic quotes that align with the concepts.
@@ -54,7 +54,7 @@ Instructions for Story (K-Drama) style:
 const actionStyleInstructions = `
 Instructions for Bold / Action-Oriented (Avengers Style):
 - Vibe: Dramatic, powerful, energetic. ⚡🔥🛡️
-- Generate 3-5 high-impact flashcards designed for action-takers.
+- Generate 8-10 high-impact flashcards designed for action-takers.
 - Question: Frame it as a "Mission" or "Objective."
 - Answer: Provide the "Intel" or "Strategy" needed to complete the mission.
 - Use punchy, heroic slogans or meme references from popular movies where they fit the concept.
@@ -64,7 +64,7 @@ Instructions for Bold / Action-Oriented (Avengers Style):
 const formalStyleInstructions = `
 Instructions for Formal / Academic style:
 - Vibe: Professional, reliable, scholarly. 🏛️📑📌
-- Generate 3-5 flashcards suitable for academic or professional settings.
+- Generate 8-10 flashcards suitable for academic or professional settings.
 - Question: Must be clear, precise, and directly related to core academic concepts in the notes.
 - Answer: Must be accurate, well-defined, and structured.
 - Include famous academic quotes, proverbs, or authoritative statements that fit the concepts.
