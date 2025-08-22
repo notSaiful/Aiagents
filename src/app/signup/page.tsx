@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, NextLink } from 'next/link';
+import { useRouter } from 'next/navigation';
+import NextLink from 'next/link';
 import {
   createUserWithEmailAndPassword,
   updateProfile,
