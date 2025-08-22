@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkles, LoaderCircle, BrainCircuit } from 'lucide-react';
+import { Sparkles, LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
@@ -93,10 +93,7 @@ export default function Home() {
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
       <div className="flex flex-col items-center text-center mb-8">
-        <div className="p-3 rounded-full bg-primary mb-4">
-            <BrainCircuit className="h-10 w-10 text-primary-foreground" />
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60 pt-8">
           NotesGPT
         </h1>
         <p className="mt-3 text-lg text-muted-foreground max-w-xl">
