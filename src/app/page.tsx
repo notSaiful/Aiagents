@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Sparkles, LoaderCircle, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { summarizeNotes } from '@/ai/flows/summarize-notes';
 import { generateFlashcards } from '@/ai/flows/generate-flashcards';
@@ -179,7 +179,6 @@ export default function Home() {
 
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
         <CardContent className="p-2 pt-4">
-          <div className="relative">
             <Textarea
               placeholder="Paste your notes here or upload a file..."
               className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-4"
@@ -194,8 +193,8 @@ export default function Home() {
               className="hidden"
               accept="image/png,image/jpeg,application/pdf"
             />
-          </div>
-          <div className="flex items-center p-2 pt-0">
+        </CardContent>
+        <CardFooter className="flex items-center p-2 pt-0">
             <Button
               onClick={handleUploadClick}
               disabled={loading}
@@ -205,8 +204,7 @@ export default function Home() {
               <Upload className="h-5 w-5" />
               Upload
             </Button>
-          </div>
-        </CardContent>
+        </CardFooter>
       </Card>
       
       <div className="mt-6 flex flex-col items-center gap-4">
