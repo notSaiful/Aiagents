@@ -88,6 +88,9 @@ export default function EmailLoginPage() {
           case 'auth/too-many-requests':
              errorMessage = 'Too many requests. Please try again later.';
              break;
+          case 'auth/email-already-in-use':
+              errorMessage = 'This email is already in use. Please sign in.';
+              break;
           default:
             errorMessage = error.message;
         }
