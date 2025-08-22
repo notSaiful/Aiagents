@@ -179,32 +179,34 @@ export default function Home() {
 
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
         <CardContent className="p-2 pt-4">
-            <Textarea
-              placeholder="Paste your notes here or upload a file..."
-              className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-4"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              disabled={loading}
-            />
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-              accept="image/png,image/jpeg,application/pdf"
-            />
+            <div className="relative">
+                <Textarea
+                  placeholder="Paste your notes here or upload a file..."
+                  className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-4 pb-12"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  disabled={loading}
+                />
+                 <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/png,image/jpeg,application/pdf"
+                />
+                <div className="absolute bottom-2 right-2">
+                    <Button
+                    onClick={handleUploadClick}
+                    disabled={loading}
+                    variant="ghost"
+                    className="h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
+                    >
+                    <Upload className="h-5 w-5" />
+                    Upload
+                    </Button>
+                </div>
+            </div>
         </CardContent>
-        <CardFooter className="flex items-center p-2 pt-0">
-            <Button
-              onClick={handleUploadClick}
-              disabled={loading}
-              variant="ghost"
-              className="h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
-            >
-              <Upload className="h-5 w-5" />
-              Upload
-            </Button>
-        </CardFooter>
       </Card>
       
       <div className="mt-6 flex flex-col items-center gap-4">
@@ -221,14 +223,16 @@ export default function Home() {
           ))}
         </div>
 
-        <Button onClick={() => handleTransform(notes)} disabled={loading || !notes} size="lg" className="w-full max-w-xs font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
-          {loading ? (
-            <LoaderCircle className="animate-spin" />
-          ) : (
-            <Sparkles className="mr-2 h-5 w-5" />
-          )}
-          Transform
-        </Button>
+        <div className="w-full max-w-md">
+            <Button onClick={() => handleTransform(notes)} disabled={loading || !notes} size="lg" className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+            {loading ? (
+                <LoaderCircle className="animate-spin" />
+            ) : (
+                <Sparkles className="mr-2 h-5 w-5" />
+            )}
+            Transform
+            </Button>
+        </div>
       </div>
 
       <div className="mt-12 min-h-[300px] w-full">
