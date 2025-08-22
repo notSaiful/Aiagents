@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LoaderCircle } from 'lucide-react';
+import { Sparkles, LoaderCircle, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
@@ -76,6 +76,13 @@ export default function Home() {
     }
   };
 
+  const handleUploadClick = () => {
+    toast({
+      title: 'Coming Soon!',
+      description: 'Handwriting recognition is not yet implemented.',
+    });
+  };
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -137,7 +144,11 @@ export default function Home() {
         </CardContent>
       </Card>
       
-      <div className="mt-6">
+      <div className="mt-6 flex flex-col sm:flex-row gap-4">
+        <Button onClick={handleUploadClick} disabled={loading} size="lg" className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg" variant="outline">
+          <Upload className="mr-2 h-5 w-5" />
+          Upload Notes
+        </Button>
         <Button onClick={handleTransform} disabled={loading} size="lg" className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
           {loading ? (
             <LoaderCircle className="animate-spin" />
