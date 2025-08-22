@@ -55,17 +55,15 @@ mindmap
 `;
 
 const storyStyleInstructions = `
-Instructions for Story (K-Drama) style:
+Instructions for Story (K-Drama & Pop Culture) style:
 - Vibe: Emotional, engaging, memorable. 💖🎭📚
 - Create a mind map that follows a narrative structure in a horizontal layout.
 - Use Mermaid mindmap syntax.
-- The central idea should be the "Protagonist" or "Main Plot."
-- Main branches can be "Act 1: The Setup," "Act 2: The Conflict," "Act 3: The Resolution."
-- Connect concepts like they are characters or plot points.
-- Weave in relevant emotional dialogues or dramatic quotes that align with the concepts.
-- Use dramatic emojis like 💖, 🎭, 💔, 💥, 📚 to tell the story.
+- The central idea is the "Main Plot" or "Protagonist's Goal." Frame it with a pop culture analogy (e.g., "Defeating the Demogorgon").
+- Main branches are the "Acts" or "Character Arcs." Use iconic dialogues or thematic quotes as node text to illustrate the concepts.
+- Use emojis like 💖, 🎭, 💥, 📚 to tell the story.
 - The first line must be "mindmap".
-- The root node MUST be wrapped in double parentheses, like this: root((The Tragic Hero's Journey 🎭)). This is a strict rule.
+- The root node MUST be wrapped in double parentheses, like this: root((The Hero's Journey 🎭)). This is a strict rule.
 - The first indented node after the root MUST be the single parent for all subsequent nodes. This is a strict rule.
 `;
 

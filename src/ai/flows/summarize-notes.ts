@@ -47,12 +47,13 @@ Instructions for Minimalist / Quick Review style:
 `;
 
 const storyStyleInstructions = `
-Instructions for Story (K-Drama) style:
-- Vibe: Emotional, engaging, memorable. 💖🎭📚
-- Turn boring notes into short, memorable stories. Add an emotional twist, so even complex ideas stick in your memory.
-- Short Summary: A short, engaging narrative (2-3 paragraphs) that captures the main concept of the notes. Weave in a touch of K-Drama style emotion—a hint of conflict, a surprising connection, a moment of realization.
-- Long Summary: A more detailed story, like a mini-series episode. Break down the notes into scenes or chapters. Use headings (<h3>) for each "scene." Flesh out the concepts with characters, dialogue, or a clear plot. Ensure the story arc covers all key points from the notes comprehensively.
-- Weave in relevant emotional dialogues or romantic/dramatic quotes that align with the concepts. Use emojis like 💖, 🎭, 📚. The output must be clean HTML.
+Instructions for Story (K-Drama & Pop Culture) style:
+- Vibe: Emotional, engaging, memorable, and relatable. 💖🎭📚
+- Transform abstract notes into a compelling narrative using popular culture references, analogies, and scene-based structures.
+- Short Summary: A short, engaging narrative (2-3 paragraphs) that captures the main concept. Use a central analogy from a famous show/movie (e.g., "The political tension was like a Game of Thrones palace intrigue...").
+- Long Summary: A detailed story broken into "Scenes" (<h3>Scene 1: The Setup</h3>, <h4>Scene 2: The Conflict</h4>, etc.). Each scene should use analogies, iconic dialogues, or character archetypes from well-known media (K-Dramas, anime, blockbuster movies) to explain the concepts. Ensure the pop culture reference illustrates the point, not replaces it.
+- Use recognizable quotes where they fit naturally (e.g., "With great power comes great responsibility" to explain a concept about ethics).
+- The output must be clean HTML.
 `;
 
 const actionStyleInstructions = `

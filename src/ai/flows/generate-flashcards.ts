@@ -42,13 +42,12 @@ Instructions for Minimalist / Quick Review style:
 `;
 
 const storyStyleInstructions = `
-Instructions for Story (K-Drama) style:
+Instructions for Story (K-Drama & Pop Culture) style:
 - Vibe: Emotional, engaging, memorable. 💖🎭📚
-- Generate 8-10 flashcards that feel like mini-scenarios or dramatic turning points.
-- Question: Frame it as a situation or a conflict a character might face.
-- Answer: Provide the key concept as the resolution or the lesson learned.
-- Weave in relevant emotional dialogues or dramatic quotes that align with the concepts.
-- Use emojis like 💖, 🎭, 📚 to add emotional context.
+- Generate 8-10 flashcards that feel like mini-scenes or dramatic turning points from a popular show.
+- Question: Frame it as a situation or conflict a character might face, using a pop culture analogy (e.g., "In this 'Squid Game'-like scenario, what is the key rule for survival?").
+- Answer: Provide the key concept as the resolution or the lesson learned, reinforcing it with a thematic quote or takeaway.
+- Use emojis like 💖, 🎭, 📚 to add emotional context. Ensure the reference illustrates the academic point.
 `;
 
 const actionStyleInstructions = `
