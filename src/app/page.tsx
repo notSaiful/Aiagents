@@ -16,7 +16,7 @@ import type { Flashcard } from '@/types';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 interface AIOutput {
   shortSummary: string;
@@ -210,21 +210,20 @@ export default function Home() {
       </Card>
       
       <div className="mt-6 flex flex-col items-center gap-4">
-        <div className="w-full max-w-xs">
-          <Select onValueChange={(value: NoteStyle) => setStyle(value)} defaultValue={style}>
-            <SelectTrigger className="w-full h-12 rounded-xl text-base">
-              <SelectValue placeholder="Select a style..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Minimalist">Minimalist</SelectItem>
-              <SelectItem value="Story">Story (K-Drama Style)</SelectItem>
-              <SelectItem value="Action">Action (Avengers Style)</SelectItem>
-              <SelectItem value="Formal">Formal</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex flex-wrap justify-center gap-2">
+          {(['Minimalist', 'Story', 'Action', 'Formal'] as NoteStyle[]).map((styleName) => (
+            <Button
+              key={styleName}
+              variant={style === styleName ? 'default' : 'outline'}
+              onClick={() => setStyle(styleName)}
+              className="rounded-full"
+            >
+              {styleName === 'Story' ? 'Story (K-Drama)' : styleName === 'Action' ? 'Action (Avengers)' : styleName}
+            </Button>
+          ))}
         </div>
 
-        <Button onClick={handleTransform} disabled={loading || !notes} size="lg" className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+        <Button onClick={handleTransform} disabled={loading || !notes} size="lg" className="w-full max-w-xs font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
           {loading ? (
             <LoaderCircle className="animate-spin" />
           ) : (
