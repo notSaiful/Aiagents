@@ -133,22 +133,28 @@ export default function Home() {
       </div>
 
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
-        <CardContent className="p-4">
+        <CardContent className="p-2 relative">
           <Textarea
             placeholder="Paste your notes here..."
-            className="min-h-[200px] text-base border-0 focus-visible:ring-0 p-2 shadow-none bg-transparent"
+            className="min-h-[200px] text-base border-0 focus-visible:ring-0 p-2 shadow-none bg-transparent pl-12"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             disabled={loading}
           />
+          <Button
+            onClick={handleUploadClick}
+            disabled={loading}
+            size="icon"
+            variant="ghost"
+            className="absolute bottom-4 left-4 h-8 w-8 rounded-full"
+          >
+            <Upload className="h-5 w-5" />
+            <span className="sr-only">Upload Notes</span>
+          </Button>
         </CardContent>
       </Card>
       
-      <div className="mt-6 flex flex-col sm:flex-row gap-4">
-        <Button onClick={handleUploadClick} disabled={loading} size="lg" className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg" variant="outline">
-          <Upload className="mr-2 h-5 w-5" />
-          Upload Notes
-        </Button>
+      <div className="mt-6 flex flex-col gap-4">
         <Button onClick={handleTransform} disabled={loading} size="lg" className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
           {loading ? (
             <LoaderCircle className="animate-spin" />
