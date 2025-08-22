@@ -7,7 +7,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
-  fetchSignInMethodsForEmail,
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useForm } from 'react-hook-form';
@@ -44,62 +43,70 @@ export default function EmailLoginPage() {
   const handleFormSubmit = async ({ email, password }: FormData) => {
     setLoading(true);
     try {
-      const methods = await fetchSignInMethodsForEmail(auth, email);
-
-      if (methods.length > 0) {
-        // User exists, sign them in
-        await signInWithEmailAndPassword(auth, email, password);
-        router.push('/');
-      } else {
-        // User does not exist, create a new account
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        
-        const displayName = email.split('@')[0];
-        await updateProfile(user, { displayName });
-
-        // Add user to Firestore
-        await setDoc(doc(db, 'users', user.uid), {
-          uid: user.uid,
-          email: user.email,
-          displayName,
-          createdAt: serverTimestamp(),
-        });
-
-        toast({
-          title: 'Account Created!',
-          description: "Welcome! We've created your account and signed you in.",
-        });
-        router.push('/');
-      }
+      // First, try to sign in the user
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push('/');
     } catch (error: any) {
-      let errorMessage = 'An unexpected error occurred. Please try again.';
-      if (error.code) {
-        switch (error.code) {
-          case 'auth/wrong-password':
-            errorMessage = 'Incorrect password. Please try again.';
-            break;
-          case 'auth/invalid-email':
-            errorMessage = 'Please enter a valid email address.';
-            break;
-          case 'auth/user-disabled':
-            errorMessage = 'This account has been disabled.';
-            break;
-          case 'auth/too-many-requests':
-             errorMessage = 'Too many requests. Please try again later.';
-             break;
-          case 'auth/email-already-in-use':
-              errorMessage = 'This email is already in use. Please sign in.';
-              break;
-          default:
-            errorMessage = error.message;
+      // If the user does not exist, create a new account
+      if (error.code === 'auth/user-not-found') {
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          
+          const displayName = email.split('@')[0];
+          await updateProfile(user, { displayName });
+
+          // Add user to Firestore
+          await setDoc(doc(db, 'users', user.uid), {
+            uid: user.uid,
+            email: user.email,
+            displayName,
+            createdAt: serverTimestamp(),
+          });
+
+          toast({
+            title: 'Account Created!',
+            description: "Welcome! We've created your account and signed you in.",
+          });
+          router.push('/');
+        } catch (createError: any) {
+            let errorMessage = createError.message;
+             if (createError.code === 'auth/email-already-in-use') {
+                errorMessage = 'This email is already in use. Please sign in.';
+            }
+            toast({
+                title: 'Sign Up Failed',
+                description: errorMessage,
+                variant: 'destructive',
+            });
         }
+      } else {
+        // Handle other sign-in errors
+        let errorMessage = 'An unexpected error occurred. Please try again.';
+        if (error.code) {
+          switch (error.code) {
+            case 'auth/wrong-password':
+              errorMessage = 'Incorrect password. Please try again.';
+              break;
+            case 'auth/invalid-email':
+              errorMessage = 'Please enter a valid email address.';
+              break;
+            case 'auth/user-disabled':
+              errorMessage = 'This account has been disabled.';
+              break;
+            case 'auth/too-many-requests':
+               errorMessage = 'Too many requests. Please try again later.';
+               break;
+            default:
+              errorMessage = error.message;
+          }
+        }
+        toast({
+          title: 'Authentication Failed',
+          description: errorMessage,
+          variant: 'destructive',
+        });
       }
-      toast({
-        title: 'Authentication Failed',
-        description: errorMessage,
-        variant: 'destructive',
-      });
     } finally {
       setLoading(false);
     }
