@@ -29,6 +29,7 @@ type NoteStyle = 'Minimalist' | 'Story' | 'Action' | 'Formal';
 export default function Home() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [output, setOutput] = useState<AIOutput | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
   const { toast } = useToast();
@@ -96,7 +97,7 @@ export default function Home() {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setLoading(true);
+      setIsUploading(true);
       setOutput(null);
       setNotes('');
       toast({
@@ -119,7 +120,7 @@ export default function Home() {
           variant: 'destructive',
         });
       } finally {
-        setLoading(false);
+        setIsUploading(false);
         if(fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -177,13 +178,13 @@ export default function Home() {
       </div>
 
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
-        <CardContent className="p-4">
+        <CardContent className="p-4 pb-0">
             <Textarea
               placeholder="Paste your notes here or upload a file..."
               className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-2"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              disabled={loading}
+              disabled={loading || isUploading}
             />
         </CardContent>
         <CardFooter className="p-4 pt-0 flex justify-start">
@@ -196,11 +197,15 @@ export default function Home() {
             />
             <Button
                 onClick={handleUploadClick}
-                disabled={loading}
+                disabled={loading || isUploading}
                 variant="ghost"
                 className="h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
             >
+              {isUploading ? (
+                <LoaderCircle className="animate-spin" />
+              ) : (
                 <Upload className="h-5 w-5" />
+              )}
                 Upload
             </Button>
         </CardFooter>
@@ -220,8 +225,8 @@ export default function Home() {
           ))}
         </div>
 
-        <div className="w-full max-w-md">
-            <Button onClick={handleTransform} disabled={loading || !notes} className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+        <div className="w-full">
+            <Button onClick={handleTransform} disabled={loading || isUploading || !notes} className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
             {loading ? (
                 <LoaderCircle className="animate-spin" />
             ) : (
