@@ -182,30 +182,34 @@ export default function Home() {
       </div>
 
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
-        <CardContent className="p-2 relative pt-12">
-          <Textarea
-            placeholder="Paste your notes here or upload a file..."
-            className="min-h-[200px] text-base border-0 focus-visible:ring-0 p-2 shadow-none bg-transparent pb-14"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            disabled={loading}
-          />
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-            accept="image/png, image/jpeg, application/pdf"
-          />
-          <Button
-            onClick={handleUploadClick}
-            disabled={loading}
-            variant="ghost"
-            className="absolute bottom-4 left-4 h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
-          >
-            <Upload className="h-5 w-5" />
-            Upload
-          </Button>
+        <CardContent className="p-2 pt-4">
+          <div className="relative">
+            <Textarea
+              placeholder="Paste your notes here or upload a file..."
+              className="min-h-[200px] text-base border-0 focus-visible:ring-0 p-2 shadow-none bg-transparent resize-none"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              disabled={loading}
+            />
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept="image/png, image/jpeg, application/pdf"
+            />
+          </div>
+          <div className="flex items-center p-2">
+            <Button
+              onClick={handleUploadClick}
+              disabled={loading}
+              variant="ghost"
+              className="h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
+            >
+              <Upload className="h-5 w-5" />
+              Upload
+            </Button>
+          </div>
         </CardContent>
       </Card>
       
