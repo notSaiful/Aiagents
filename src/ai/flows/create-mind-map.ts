@@ -38,6 +38,7 @@ Instructions for Minimalist / Quick Review style:
 - Incorporate concise, motivational phrases or short, clever slogans where they naturally fit the content.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
+- The first indented node after the root MUST be the single parent for all subsequent nodes. This is a strict rule.
 - Use minimal emojis like ✨, 📌, 📚, 🌸 to make it aesthetic.
 
 Example of a valid mindmap:
@@ -65,6 +66,7 @@ Instructions for Story (K-Drama) style:
 - Use dramatic emojis like 💖, 🎭, 💔, 💥, 📚 to tell the story.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((The Tragic Hero's Journey 🎭)). This is a strict rule.
+- The first indented node after the root MUST be the single parent for all subsequent nodes. This is a strict rule.
 `;
 
 const actionStyleInstructions = `
@@ -79,6 +81,7 @@ Instructions for Bold / Action-Oriented (Avengers Style):
 - Use emojis like ⚡, 🔥, 🛡️, 💥, 🎯 to make it high-energy.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Mission: Defeat Thanos 💥)). This is a strict rule.
+- The first indented node after the root MUST be the single parent for all subsequent nodes. This is a strict rule.
 `;
 
 const formalStyleInstructions = `
@@ -92,6 +95,7 @@ Instructions for Formal / Academic style:
 - Avoid informal language and excessive emojis. Use only scholarly emojis like 🏛️, 📑, 📌 sparingly.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((The Theory of Relativity 🏛️)). This is a strict rule.
+- The first indented node after the root MUST be the single parent for all subsequent nodes. This is a strict rule.
 `;
 
 const createMindMapFlow = ai.defineFlow(
