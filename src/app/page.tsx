@@ -16,6 +16,7 @@ import type { Flashcard } from '@/types';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface AIOutput {
   shortSummary: string;
@@ -24,10 +25,13 @@ interface AIOutput {
   mindMap: string;
 }
 
+type NoteStyle = 'Minimalist' | 'Story' | 'Action' | 'Formal';
+
 export default function Home() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [output, setOutput] = useState<AIOutput | null>(null);
+  const [style, setStyle] = useState<NoteStyle>('Minimalist');
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -62,6 +66,7 @@ export default function Home() {
     setOutput(null);
 
     try {
+      // TODO: Pass the selected style to the AI flows
       const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
         summarizeNotes({ notes }),
         generateFlashcards({ notes }),
@@ -108,6 +113,8 @@ export default function Home() {
           title: 'Text Extracted!',
           description: 'Your notes are ready to be transformed.',
         });
+        // Automatically trigger transformation after text is extracted
+        await handleTransform();
       } catch (error) {
         console.error('OCR failed:', error);
         toast({
@@ -202,7 +209,21 @@ export default function Home() {
         </CardContent>
       </Card>
       
-      <div className="mt-6 flex flex-col gap-4">
+      <div className="mt-6 flex flex-col items-center gap-4">
+        <div className="w-full max-w-xs">
+          <Select onValueChange={(value: NoteStyle) => setStyle(value)} defaultValue={style}>
+            <SelectTrigger className="w-full h-12 rounded-xl text-base">
+              <SelectValue placeholder="Select a style..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Minimalist">Minimalist</SelectItem>
+              <SelectItem value="Story">Story (K-Drama Style)</SelectItem>
+              <SelectItem value="Action">Action (Avengers Style)</SelectItem>
+              <SelectItem value="Formal">Formal</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <Button onClick={handleTransform} disabled={loading || !notes} size="lg" className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
           {loading ? (
             <LoaderCircle className="animate-spin" />
