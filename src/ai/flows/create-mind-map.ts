@@ -123,6 +123,7 @@ const createMindMapFlow = ai.defineFlow(
 
 ${styleInstructions}
 
+The output must be a valid Mermaid mindmap string. Do not include any other text or explanations.
 First, correct any spelling and grammar mistakes from the notes, then generate the mind map based on the corrected text.
 
 Notes: ${input.notes}
