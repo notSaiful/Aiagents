@@ -63,17 +63,16 @@ export default function SignupPage() {
         description: "Welcome! We've created your account and signed you in.",
       });
       router.push('/');
-    } catch (error: any) { {
-        let errorMessage = 'An unexpected error occurred. Please try again.';
-        if (error.code === 'auth/email-already-in-use') {
-            errorMessage = 'This email is already in use. Please sign in instead.';
-        }
-        toast({
-            title: 'Sign Up Failed',
-            description: errorMessage,
-            variant: 'destructive',
-        });
-    }
+    } catch (error: any) {
+      let errorMessage = 'An unexpected error occurred. Please try again.';
+      if (error.code === 'auth/email-already-in-use') {
+          errorMessage = 'This email is already in use. Please sign in instead.';
+      }
+      toast({
+          title: 'Sign Up Failed',
+          description: errorMessage,
+          variant: 'destructive',
+      });
     } finally {
       setLoading(false);
     }
