@@ -155,7 +155,7 @@ export default function Home() {
             ref={fileInputRef}
             onChange={handleFileChange}
             className="hidden"
-            accept="image/*"
+            accept="image/png, image/jpeg, application/pdf"
           />
           <Button
             onClick={handleUploadClick}
