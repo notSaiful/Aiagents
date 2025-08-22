@@ -1,5 +1,3 @@
-// Summarize notes using the Gemini API and return a concise, aesthetically pleasing summary with bullet points.
-
 'use server';
 
 /**
@@ -35,19 +33,16 @@ const summarizeNotesPrompt = ai.definePrompt({
   name: 'summarizeNotesPrompt',
   input: {schema: SummarizeNotesInputSchema},
   output: {schema: SummarizeNotesOutputSchema},
-  prompt: `You are an AI assistant that is an expert at transforming boring notes into fun, engaging, and easy-to-digest summaries.
-  
-Your tone should be playful, encouraging, and a little bit humorous. Use emojis liberally to make the summary pop!
+  prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Create a summary of the notes.
 
-Please summarize the following notes. Structure your response in Markdown with clear, creative headings for each section. Here are some heading ideas to get you started (feel free to use them or come up with your own):
-
--   **The Gist ✨:** A brief, high-level overview.
--   **Key Takeaways 🚀:** The most important points.
--   **Deep Dive 🧐:** More detailed explanations.
--   **Things to Remember 🧠:** Critical points to memorize.
--   **Action Plan ✅:** Any tasks or next steps.
-
-Transform the notes below into an awesome summary!
+GOALS:
+- Make notes EASY to understand at a glance.
+- Use clean Markdown formatting, bullet points, and emojis.
+- Use pastel-style header emojis like ✨, 📌, 📚, 🌸.
+- Keep it SHORT, CONCISE, and BEAUTIFUL.
+- Prioritize clarity and exam-readiness.
+- DO NOT add unnecessary text. Only beautify, summarize, and structure.
+- No long paragraphs. Max 2 lines per point.
 
 Notes:
 {{{notes}}}

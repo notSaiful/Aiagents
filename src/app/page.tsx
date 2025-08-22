@@ -18,31 +18,32 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const DUMMY_DATA = {
   summary: `
+### ✨ Key Concepts
 - This is a placeholder summary.
-- Paste your own notes to see the AI in action.
-- The output will be nicely formatted.
+- Paste your notes to see them transformed!
+- The output will be beautiful and easy to read.
 `,
   flashcards: [
-    { question: 'What is the capital of France?', answer: 'Paris' },
-    { question: 'How many continents are there?', answer: 'Seven' },
-    { question: 'What is the powerhouse of the cell?', answer: 'Mitochondria' },
+    { question: 'What is the main benefit of this app?', answer: 'It makes studying more efficient and fun!' },
+    { question: 'What kind of outputs can be generated?', answer: 'Summaries, flashcards, mind maps, and diagrams.' },
+    { question: 'How do I start?', answer: 'Just paste your notes in the text box and click "Transform".' },
   ],
   mindMap: `
 mindmap
-  root((Central Idea))
-    Main Topic 1
-      Sub-topic 1.1
-      Sub-topic 1.2
-    Main Topic 2
-      Sub-topic 2.1
+  root((Study Smarter ✨))
+    Aesthetic Notes
+      Beautiful Summaries
+      Engaging Flashcards
+    Visual Learning
+      Mind Maps
+      Diagrams
   `,
   diagram: `
 graph TD
-    A[Start] --> B{Is it?};
-    B -->|Yes| C[OK];
-    C --> D[End];
-    B -->|No| E[Don't];
-    E --> D[End];
+    A[Paste Notes] --> B{Transform};
+    B --> C[Get Summary];
+    B --> D[Get Flashcards];
+    B --> E[Get Mind Map];
   `,
   napkin: 'https://placehold.co/1024x576.png',
 };

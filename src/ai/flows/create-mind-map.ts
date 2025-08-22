@@ -30,11 +30,15 @@ const prompt = ai.definePrompt({
   name: 'createMindMapPrompt',
   input: {schema: CreateMindMapInputSchema},
   output: {schema: CreateMindMapOutputSchema},
-  prompt: `You are an AI expert in creating mind maps. Transform the given notes into a Mermaid syntax mind map.
-  
-  The diagram should be well-structured, with a clear central idea and logical branches.
-  Ensure the Mermaid syntax is valid and accurately represents the information in the notes.
-  The first line must be "mindmap" and the root node should be the first indented item, representing the central idea of the notes.
+  prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Create a mind map from the notes.
+
+GOALS:
+- Use Mermaid mindmap syntax.
+- Keep it SHORT, CONCISE, and BEAUTIFUL.
+- Prioritize clarity and exam-readiness.
+- The first line must be "mindmap".
+- The root node should be the central idea.
+- Use emojis like ✨, 📌, 📚, 🌸 to make it aesthetic.
 
 Notes: {{{notes}}}
 `,

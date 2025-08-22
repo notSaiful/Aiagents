@@ -34,27 +34,15 @@ const prompt = ai.definePrompt({
   name: 'generateFlashcardsPrompt',
   input: {schema: GenerateFlashcardsInputSchema},
   output: {schema: GenerateFlashcardsOutputSchema},
-  prompt: `You are an expert in creating flashcards for efficient learning.
+  prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Generate flashcards from the notes.
 
-  Given the following notes, generate a set of flashcards in a question and answer format.
-  The flashcards should cover the key concepts and details from the notes.
-  Ensure each flashcard has a clear and concise question and a corresponding accurate answer.
+GOALS:
+- Generate 3-5 flashcards.
+- Each flashcard should have a clear question and a concise, exam-ready answer.
+- Prioritize key concepts and definitions from the notes.
 
-  Notes: {{{notes}}}
-
-  Format the output as a JSON array of objects, where each object has a "question" and an "answer" field.
-  Example:
-  [
-    {
-      "question": "What is the capital of France?",
-      "answer": "Paris"
-    },
-    {
-      "question": "What is the formula for water?",
-      "answer": "H2O"
-    }
-  ]
-  `,
+Notes: {{{notes}}}
+`,
 });
 
 const generateFlashcardsFlow = ai.defineFlow(
