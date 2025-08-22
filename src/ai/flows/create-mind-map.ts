@@ -30,9 +30,10 @@ export async function createMindMap(input: CreateMindMapInput): Promise<CreateMi
 
 const minimalistStyleInstructions = `
 Instructions for Minimalist / Quick Review style:
+- Vibe: Calm, organized, efficient. ✨📌🌸
 - Create a mind map with a central idea and clear, structured nodes.
 - Use Mermaid mindmap syntax.
-- Keep it SHORT, CONCISE, and BEAUTIFUL.
+- Keep it SHORT, CONCISE, and BEAUTIFUL, stripping away clutter.
 - Prioritize clarity and exam-readiness.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
@@ -53,6 +54,7 @@ mindmap
 
 const storyStyleInstructions = `
 Instructions for Story (K-Drama) style:
+- Vibe: Emotional, engaging, memorable. 💖🎭📚
 - Create a mind map that follows a narrative structure.
 - Use Mermaid mindmap syntax.
 - The central idea should be the "Protagonist" or "Main Plot."

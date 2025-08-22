@@ -34,13 +34,15 @@ export async function generateFlashcards(input: GenerateFlashcardsInput): Promis
 
 const minimalistStyleInstructions = `
 Instructions for Minimalist / Quick Review style:
+- Vibe: Calm, organized, efficient. ✨📌🌸
 - Generate 3-5 flashcards based on the provided notes.
-- Each flashcard must have a concise question and an accurate, exam-ready answer.
-- Prioritize key concepts, definitions, and important facts from the notes.
+- Each flashcard must have a concise, clutter-free question and an accurate, exam-ready answer.
+- Prioritize key concepts, definitions, and essential facts from the notes.
 `;
 
 const storyStyleInstructions = `
 Instructions for Story (K-Drama) style:
+- Vibe: Emotional, engaging, memorable. 💖🎭📚
 - Generate 3-5 flashcards that feel like mini-scenarios or dramatic turning points.
 - Question: Frame it as a situation or a conflict a character might face.
 - Answer: Provide the key concept as the resolution or the lesson learned.
