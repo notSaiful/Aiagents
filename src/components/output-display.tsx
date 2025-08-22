@@ -21,14 +21,15 @@ import ShareDialog from './share-dialog';
 import Mermaid from './mermaid';
 
 interface OutputDisplayProps {
-  summary: string;
+  shortSummary: string;
+  longSummary: string;
   flashcards: FlashcardType[];
   mindMap: string;
   diagram: string;
   napkin: string;
 }
 
-export default function OutputDisplay({ summary, flashcards, mindMap, diagram, napkin }: OutputDisplayProps) {
+export default function OutputDisplay({ shortSummary, longSummary, flashcards, mindMap, diagram, napkin }: OutputDisplayProps) {
   const { toast } = useToast();
   const [isShareDialogOpen, setShareDialogOpen] = useState(false);
   const [diagramScale, setDiagramScale] = useState(1);
@@ -70,8 +71,19 @@ export default function OutputDisplay({ summary, flashcards, mindMap, diagram, n
 
         <TabsContent value="summary">
           <Card className="rounded-xl border-2 border-primary/40">
-            <CardContent className="p-6 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground prose-li:marker:text-primary-foreground/80">
-              <div dangerouslySetInnerHTML={{ __html: summary.replace(/\n/g, '<br />') }} />
+            <CardContent className="p-6">
+               <Tabs defaultValue="short" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="short">Short Summary</TabsTrigger>
+                  <TabsTrigger value="long">Long Summary</TabsTrigger>
+                </TabsList>
+                <TabsContent value="short" className="pt-4 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground prose-li:marker:text-primary-foreground/80">
+                  <div dangerouslySetInnerHTML={{ __html: shortSummary.replace(/\n/g, '<br />') }} />
+                </TabsContent>
+                <TabsContent value="long" className="pt-4 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground prose-li:marker:text-primary-foreground/80">
+                   <div dangerouslySetInnerHTML={{ __html: longSummary.replace(/\n/g, '<br />') }} />
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </TabsContent>

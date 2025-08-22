@@ -17,11 +17,18 @@ import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const DUMMY_DATA = {
-  summary: `
+  shortSummary: `
 ### ✨ Key Concepts
-- This is a placeholder summary.
+- This is a short placeholder summary.
 - Paste your notes to see them transformed!
+`,
+  longSummary: `
+### 📚 Detailed Breakdown
+- This is a longer placeholder summary.
+- It provides more detail than the short version.
 - The output will be beautiful and easy to read.
+- You can generate flashcards and mind maps too.
+- It's designed to make studying more effective.
 `,
   flashcards: [
     { question: 'What is the main benefit of this app?', answer: 'It makes studying more efficient and fun!' },
@@ -49,7 +56,8 @@ graph TD
 };
 
 interface AIOutput {
-  summary: string;
+  shortSummary: string;
+  longSummary: string;
   flashcards: Flashcard[];
   mindMap: string;
   diagram: string;
@@ -85,7 +93,8 @@ export default function Home() {
       ]);
 
       setOutput({
-        summary: summaryRes.summary,
+        shortSummary: summaryRes.shortSummary,
+        longSummary: summaryRes.longSummary,
         flashcards: flashcardsRes.flashcards,
         mindMap: mindMapRes.mindMap,
         diagram: diagramRes.diagram,

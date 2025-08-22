@@ -17,10 +17,15 @@ const SummarizeNotesInputSchema = z.object({
 export type SummarizeNotesInput = z.infer<typeof SummarizeNotesInputSchema>;
 
 const SummarizeNotesOutputSchema = z.object({
-  summary: z
+  shortSummary: z
     .string()
     .describe(
-      'A concise, aesthetically pleasing summary with bullet points, in Markdown format.'
+      'A very concise, 3-5 bullet point summary in Markdown format.'
+    ),
+  longSummary: z
+    .string()
+    .describe(
+      'A more detailed, 6-10 bullet point summary in Markdown format.'
     ),
 });
 export type SummarizeNotesOutput = z.infer<typeof SummarizeNotesOutputSchema>;
@@ -33,16 +38,21 @@ const summarizeNotesPrompt = ai.definePrompt({
   name: 'summarizeNotesPrompt',
   input: {schema: SummarizeNotesInputSchema},
   output: {schema: SummarizeNotesOutputSchema},
-  prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Create a summary of the notes.
+  prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Create two summaries of the notes: one short and one long.
 
 GOALS:
 - Make notes EASY to understand at a glance.
 - Use clean Markdown formatting, bullet points, and emojis.
 - Use pastel-style header emojis like ✨, 📌, 📚, 🌸.
-- Keep it SHORT, CONCISE, and BEAUTIFUL.
 - Prioritize clarity and exam-readiness.
 - DO NOT add unnecessary text. Only beautify, summarize, and structure.
 - No long paragraphs. Max 2 lines per point.
+
+Short Summary Rules:
+- Generate 3-5 ultra-concise bullet points for a quick review.
+
+Long Summary Rules:
+- Generate 6-10 detailed bullet points. Still concise, but more comprehensive than the short summary.
 
 Notes:
 {{{notes}}}
