@@ -46,14 +46,17 @@ export default function SignupPage() {
       const user = userCredential.user;
       
       const displayName = email.split('@')[0];
-      await updateProfile(user, { displayName });
-
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        email: user.email,
-        displayName,
-        createdAt: serverTimestamp(),
-      });
+      
+      // Run user profile update and Firestore document creation in parallel
+      await Promise.all([
+        updateProfile(user, { displayName }),
+        setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
+          email: user.email,
+          displayName,
+          createdAt: serverTimestamp(),
+        })
+      ]);
 
       toast({
         title: 'Account Created!',
