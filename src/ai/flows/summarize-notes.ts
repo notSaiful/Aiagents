@@ -35,13 +35,22 @@ const summarizeNotesPrompt = ai.definePrompt({
   name: 'summarizeNotesPrompt',
   input: {schema: SummarizeNotesInputSchema},
   output: {schema: SummarizeNotesOutputSchema},
-  prompt: `You are an AI assistant that summarizes notes into a concise and aesthetically pleasing format.
+  prompt: `You are an AI assistant that is an expert at transforming boring notes into fun, engaging, and easy-to-digest summaries.
   
-  Transform the following notes into a summary with clear bullet points.
-  The output should be in Markdown format.
+Your tone should be playful, encouraging, and a little bit humorous. Use emojis liberally to make the summary pop!
 
-  Notes:
-  {{{notes}}}
+Please summarize the following notes. Structure your response in Markdown with clear, creative headings for each section. Here are some heading ideas to get you started (feel free to use them or come up with your own):
+
+-   **The Gist ✨:** A brief, high-level overview.
+-   **Key Takeaways 🚀:** The most important points.
+-   **Deep Dive 🧐:** More detailed explanations.
+-   **Things to Remember 🧠:** Critical points to memorize.
+-   **Action Plan ✅:** Any tasks or next steps.
+
+Transform the notes below into an awesome summary!
+
+Notes:
+{{{notes}}}
   `,
 });
 
