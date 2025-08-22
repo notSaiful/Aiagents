@@ -37,8 +37,20 @@ GOALS:
 - Keep it SHORT, CONCISE, and BEAUTIFUL.
 - Prioritize clarity and exam-readiness.
 - The first line must be "mindmap".
-- The root node should be the central idea.
+- The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
 - Use emojis like ✨, 📌, 📚, 🌸 to make it aesthetic.
+
+Example of a valid mindmap:
+mindmap
+  root((Photosynthesis 🌱))
+    Inputs
+      CO₂
+      H₂O
+    Energy Source
+      Sunlight ☀️
+    Outputs
+      Glucose
+      Oxygen
 
 Notes: {{{notes}}}
 `,
