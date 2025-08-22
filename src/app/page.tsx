@@ -136,7 +136,7 @@ export default function Home() {
         <CardContent className="p-2 relative">
           <Textarea
             placeholder="Paste your notes here..."
-            className="min-h-[200px] text-base border-0 focus-visible:ring-0 p-2 shadow-none bg-transparent pl-12"
+            className="min-h-[200px] text-base border-0 focus-visible:ring-0 p-2 shadow-none bg-transparent pl-4 pb-12"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             disabled={loading}
@@ -144,12 +144,11 @@ export default function Home() {
           <Button
             onClick={handleUploadClick}
             disabled={loading}
-            size="icon"
             variant="ghost"
-            className="absolute bottom-4 left-4 h-8 w-8 rounded-full"
+            className="absolute bottom-4 left-4 h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
           >
             <Upload className="h-5 w-5" />
-            <span className="sr-only">Upload Notes</span>
+            Upload
           </Button>
         </CardContent>
       </Card>
