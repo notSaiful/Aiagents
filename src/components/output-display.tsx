@@ -89,7 +89,7 @@ export default function OutputDisplay({
         <TabsContent value="flashcards">
           <Carousel className="w-full max-w-md mx-auto" opts={{ loop: true }}>
             <CarouselContent>
-              {flashcards.map((flashcard, index) => (
+              {Array.isArray(flashcards) && flashcards.map((flashcard, index) => (
                 <CarouselItem key={index}>
                   <div className="p-1 h-[200px]">
                     <Flashcard flashcard={flashcard} />
