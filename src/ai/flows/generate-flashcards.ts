@@ -32,24 +32,12 @@ export async function generateFlashcards(input: GenerateFlashcardsInput): Promis
   return generateFlashcardsFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateFlashcardsPrompt',
-  input: {schema: GenerateFlashcardsInputSchema},
-  output: {schema: GenerateFlashcardsOutputSchema},
-  prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Generate flashcards from the notes in a {{style}} style.
-
-{{#if (eq style 'Minimalist')}}
+const minimalistStyleInstructions = `
 Instructions for Minimalist / Quick Review style:
 - Generate 3-5 flashcards based on the provided notes.
 - Each flashcard must have a concise question and an accurate, exam-ready answer.
 - Prioritize key concepts, definitions, and important facts from the notes.
-{{/if}}
-
-The output MUST be a valid JSON object containing a "flashcards" array.
-
-Notes: {{{notes}}}
-`,
-});
+`;
 
 const generateFlashcardsFlow = ai.defineFlow(
   {
@@ -58,7 +46,25 @@ const generateFlashcardsFlow = ai.defineFlow(
     outputSchema: GenerateFlashcardsOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt({...input, eq: (a: any, b: any) => a === b});
+    let styleInstructions = '';
+    if (input.style === 'Minimalist') {
+      styleInstructions = minimalistStyleInstructions;
+    }
+    
+    const prompt = ai.definePrompt({
+      name: 'generateFlashcardsPrompt',
+      output: {schema: GenerateFlashcardsOutputSchema},
+      prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Generate flashcards from the notes in a ${input.style} style.
+
+${styleInstructions}
+
+The output MUST be a valid JSON object containing a "flashcards" array.
+
+Notes: ${input.notes}
+`,
+    });
+
+    const {output} = await prompt({});
     return output!;
   }
 );
