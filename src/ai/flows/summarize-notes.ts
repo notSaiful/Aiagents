@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -13,6 +14,7 @@ import {z} from 'genkit';
 
 const SummarizeNotesInputSchema = z.object({
   notes: z.string().describe('The notes to summarize.'),
+  style: z.string().describe('The style of notes to generate.'),
 });
 export type SummarizeNotesInput = z.infer<typeof SummarizeNotesInputSchema>;
 
@@ -38,25 +40,19 @@ const summarizeNotesPrompt = ai.definePrompt({
   name: 'summarizeNotesPrompt',
   input: {schema: SummarizeNotesInputSchema},
   output: {schema: SummarizeNotesOutputSchema},
-  prompt: `You are an AI assistant that transforms raw notes into a structured, professional summary, as if it were a clean Google Doc.
+  prompt: `You are an AI study assistant. Transform the following notes into concise, aesthetic study material in a {{style}} style.
 
-GOALS:
-- Format the output using clean HTML (p, ul, li, strong, blockquote, h3, h4).
-- Structure the content with clear headings and bullet points for readability.
-- Maintain a professional and objective tone.
-- Use standard formatting for clarity and exam-readiness.
-- DO NOT use emojis or overly casual language.
+{{#ifCond style '==' 'Minimalist'}}
+Instructions for Minimalist / Quick Review style:
+- Focus on clarity and fast comprehension.
+- Short Summary: 3-5 ultra-concise bullet points. Use minimal emojis like ✨, 📌, 🌸. The output must be clean HTML.
+- Long Summary: 6-10 bullets, clear hierarchy, no fluff. The output must be clean HTML.
+- Keep language simple, exam-friendly, and ensure minimal cognitive load.
+{{/ifCond}}
 
-Short Summary Rules:
-- **Task**: Create a brief, precise summary that captures the main takeaways from the notes.
-- **Length**: It must be concise, capturing the most important points in 3-5 bullet points (li tags).
-- **Style**: Use clear, direct language. Think of it as an executive summary at the top of a report.
+You are an expert at correcting spelling and grammar mistakes from OCR-extracted text. First, fix any errors in the notes, then generate the summaries based on the corrected text.
 
-Long Summary Rules:
-- **Task**: Create a detailed and comprehensive summary of the notes.
-- **Tone**: Professional, clear, and informative.
-- **Content**: Break down the information into well-organized sections with clear headings (h3, h4). Use bullet points to list key details. Use <blockquote> for important definitions or key concepts.
-- **Format**: Structure the content like a well-organized document.
+Format the output using clean HTML (p, ul, li, strong, blockquote, h3, h4).
 
 Notes:
 {{{notes}}}

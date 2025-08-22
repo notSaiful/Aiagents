@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -13,6 +14,7 @@ import {z} from 'genkit';
 
 const GenerateFlashcardsInputSchema = z.object({
   notes: z.string().describe('The notes to generate flashcards from.'),
+  style: z.string().describe('The style of notes to generate.'),
 });
 export type GenerateFlashcardsInput = z.infer<typeof GenerateFlashcardsInputSchema>;
 
@@ -34,13 +36,16 @@ const prompt = ai.definePrompt({
   name: 'generateFlashcardsPrompt',
   input: {schema: GenerateFlashcardsInputSchema},
   output: {schema: GenerateFlashcardsOutputSchema},
-  prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Generate flashcards from the notes.
+  prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Generate flashcards from the notes in a {{style}} style.
 
-GOALS:
+{{#ifCond style '==' 'Minimalist'}}
+Instructions for Minimalist / Quick Review style:
 - Generate 3-5 flashcards based on the provided notes.
-- Each flashcard must have a clear, concise question and an accurate, exam-ready answer.
+- Each flashcard must have a concise question and an accurate, exam-ready answer.
 - Prioritize key concepts, definitions, and important facts from the notes.
-- The output MUST be a valid JSON object containing a "flashcards" array.
+{{/ifCond}}
+
+The output MUST be a valid JSON object containing a "flashcards" array.
 
 Notes: {{{notes}}}
 `,

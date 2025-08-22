@@ -66,11 +66,11 @@ export default function Home() {
     setOutput(null);
 
     try {
-      // TODO: Pass the selected style to the AI flows
+      const commonInput = { notes, style };
       const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
-        summarizeNotes({ notes }),
-        generateFlashcards({ notes }),
-        createMindMap({ notes }),
+        summarizeNotes(commonInput),
+        generateFlashcards(commonInput),
+        createMindMap(commonInput),
       ]);
 
       setOutput({
@@ -184,19 +184,21 @@ export default function Home() {
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
         <CardContent className="p-2 pt-4">
           <div className="relative">
-            <Textarea
-              placeholder="Paste your notes here or upload a file..."
-              className="min-h-[200px] text-base border-0 focus-visible:ring-0 p-2 shadow-none bg-transparent resize-none"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              disabled={loading}
-            />
+            <div className="p-2">
+              <Textarea
+                placeholder="Paste your notes here or upload a file..."
+                className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-0"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                disabled={loading}
+              />
+            </div>
             <input
               type="file"
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"
-              accept="image/png, image/jpeg, application/pdf"
+              accept="image/png,image/jpeg,application/pdf"
             />
           </div>
           <div className="flex items-center p-2">
@@ -222,7 +224,7 @@ export default function Home() {
               onClick={() => setStyle(styleName)}
               className="rounded-full"
             >
-              {styleName === 'Story' ? 'Story (K-Drama)' : styleName === 'Action' ? 'Action (Avengers)' : styleName}
+              {styleName}
             </Button>
           ))}
         </div>

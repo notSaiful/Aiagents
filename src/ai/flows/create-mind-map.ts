@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -13,6 +14,7 @@ import {z} from 'genkit';
 
 const CreateMindMapInputSchema = z.object({
   notes: z.string().describe('The notes to transform into a mind map.'),
+  style: z.string().describe('The style of notes to generate.'),
 });
 export type CreateMindMapInput = z.infer<typeof CreateMindMapInputSchema>;
 
@@ -30,15 +32,18 @@ const prompt = ai.definePrompt({
   name: 'createMindMapPrompt',
   input: {schema: CreateMindMapInputSchema},
   output: {schema: CreateMindMapOutputSchema},
-  prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Create a mind map from the notes.
+  prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Create a mind map from the notes in a {{style}} style.
 
-GOALS:
+{{#ifCond style '==' 'Minimalist'}}
+Instructions for Minimalist / Quick Review style:
+- Create a mind map with a central idea and clear, structured nodes.
 - Use Mermaid mindmap syntax.
 - Keep it SHORT, CONCISE, and BEAUTIFUL.
 - Prioritize clarity and exam-readiness.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
-- Use emojis like ✨, 📌, 📚, 🌸 to make it aesthetic.
+- Use minimal emojis like ✨, 📌, 📚, 🌸 to make it aesthetic.
+{{/ifCond}}
 
 Example of a valid mindmap:
 mindmap
