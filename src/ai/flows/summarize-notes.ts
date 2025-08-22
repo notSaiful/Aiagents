@@ -54,7 +54,9 @@ Short Summary Rules:
 - Ensure it has a natural, engaging flow and avoids a robotic tone.
 
 Long Summary Rules:
-- Generate 6-10 detailed bullet points. Still concise, but more comprehensive than the short summary.
+- Create a comprehensive and detailed summary that includes all essential information.
+- Do not miss any key concepts, definitions, or important details from the notes.
+- Structure the output with clear bullet points for readability.
 
 Notes:
 {{{notes}}}
