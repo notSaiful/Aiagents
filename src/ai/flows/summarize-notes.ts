@@ -58,9 +58,10 @@ Instructions for Story (K-Drama) style:
 const actionStyleInstructions = `
 Instructions for Bold / Action-Oriented (Avengers Style):
 - Vibe: Dramatic, powerful, energetic. Inspired by Avengers, Justice League, and superhero comics. ⚡🔥🛡️
-- Short Summary: A high-impact "mission briefing" with 5-7 punchy bullet points. Frame key concepts as "Primary Objectives" or "Intel." Use strong, action-oriented verbs and heroic language.
-- Long Summary: A detailed "strategic overview." Structure it with headings like "Mission Critical," "Threat Analysis," and "Strategic Imperatives." Make it comprehensive, motivating, and ready for deployment.
-- Use punchy, heroic slogans or memorable quotes from popular superhero movies/comics where they fit the concept (e.g., "On your left," "I can do this all day," "Some men just want to watch the world burn").
+- Transform notes into a heroic saga. Frame the content as an unfolding mission or a battle against a great challenge.
+- Short Summary: A high-impact "Mission Briefing" (2-3 paragraphs) that sets the stage. Introduce the "Primary Objective" and the stakes. Use strong, action-oriented language to build excitement.
+- Long Summary: A detailed "Full Campaign" narrative. Structure it with headings (<h3>) like "Phase 1: The Gathering Storm," "Phase 2: The First Encounter," and "Phase 3: The Final Victory." Turn key concepts into strategic moves or heroic actions. Make it comprehensive, motivating, and feel like a complete story arc.
+- Use punchy, heroic slogans or memorable quotes where they fit (e.g., "The world is counting on us," "To infinity and beyond!").
 - Use emojis like ⚡, 🔥, 🛡️, 💥, 🎯 to add excitement and energy. The output must be clean HTML.
 `;
 

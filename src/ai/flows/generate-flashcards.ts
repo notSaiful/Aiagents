@@ -54,10 +54,10 @@ Instructions for Story (K-Drama) style:
 const actionStyleInstructions = `
 Instructions for Bold / Action-Oriented (Avengers Style):
 - Vibe: Dramatic, powerful, energetic. Inspired by Avengers, Justice League, and superhero comics. ⚡🔥🛡️
-- Generate 8-10 high-impact flashcards designed for action-takers.
-- Question: Frame it as a "Mission," "Objective," or a "Threat Alert."
-- Answer: Provide the "Intel," "Strategy," or "Counter-Measure" needed to succeed.
-- Use punchy, heroic slogans or memorable quotes from popular superhero movies/comics where they fit the concept.
+- Generate 8-10 high-impact flashcards that tell a small part of a larger heroic story.
+- Question: Frame it as a critical "Mission Objective" or a "Threat" that the hero must overcome. (e.g., "With the city's power grid failing, how can our hero restore it?").
+- Answer: Provide the "Intel," "Strategy," or "Key to Victory" needed to succeed. The answer should feel like a piece of crucial information that leads to mission success.
+- Use punchy, heroic slogans or memorable quotes where they fit (e.g., "With great power comes great responsibility.").
 - Use strong, motivating language and emojis like ⚡, 🔥, 🛡️, 💥, 🎯.
 `;
 
