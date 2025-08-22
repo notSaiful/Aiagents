@@ -37,9 +37,10 @@ const prompt = ai.definePrompt({
   prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Generate flashcards from the notes.
 
 GOALS:
-- Generate 3-5 flashcards.
-- Each flashcard should have a clear question and a concise, exam-ready answer.
-- Prioritize key concepts and definitions from the notes.
+- Generate 3-5 flashcards based on the provided notes.
+- Each flashcard must have a clear, concise question and an accurate, exam-ready answer.
+- Prioritize key concepts, definitions, and important facts from the notes.
+- The output MUST be a valid JSON object containing a "flashcards" array.
 
 Notes: {{{notes}}}
 `,
