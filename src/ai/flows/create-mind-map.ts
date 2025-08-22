@@ -71,13 +71,13 @@ Instructions for Story (K-Drama) style:
 
 const actionStyleInstructions = `
 Instructions for Bold / Action-Oriented (Avengers Style):
-- Vibe: Dramatic, powerful, energetic. ⚡🔥🛡️
+- Vibe: Dramatic, powerful, energetic. Inspired by Avengers, Justice League, and superhero comics. ⚡🔥🛡️
 - Create a mind map that feels like a superhero's mission briefing in a horizontal layout.
 - Use Mermaid mindmap syntax.
-- The central idea is the "Headquarters" or "Main Mission."
-- Main branches are "Key Objectives," "Intel," "Threats," and "Strategies."
+- The central idea is the "Headquarters" or "Primary Mission."
+- Main branches are "Key Objectives," "Intel," "Threats," and "Strategic Alliances."
 - Use powerful, action-oriented language.
-- Use punchy, heroic slogans or meme references from popular movies where they fit the concept.
+- Use punchy, heroic slogans or memorable quotes from popular superhero movies/comics where they fit the concept.
 - Use emojis like ⚡, 🔥, 🛡️, 💥, 🎯 to make it high-energy.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Mission: Defeat Thanos 💥)). This is a strict rule.
