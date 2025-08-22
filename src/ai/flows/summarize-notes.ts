@@ -20,7 +20,7 @@ const SummarizeNotesOutputSchema = z.object({
   shortSummary: z
     .string()
     .describe(
-      'A very concise, 3-5 bullet point summary in Markdown format.'
+      'An extremely concise, 1-2 sentence summary in Markdown format that captures the main takeaway.'
     ),
   longSummary: z
     .string()
@@ -49,7 +49,9 @@ GOALS:
 - No long paragraphs. Max 2 lines per point.
 
 Short Summary Rules:
-- Generate 3-5 ultra-concise bullet points for a quick review.
+- You are an expert copy editor. Refine the notes into an extremely concise summary (1-2 sentences only).
+- Keep only the main takeaway. Use simple, everyday language.
+- Ensure it has a natural, engaging flow and avoids a robotic tone.
 
 Long Summary Rules:
 - Generate 6-10 detailed bullet points. Still concise, but more comprehensive than the short summary.
