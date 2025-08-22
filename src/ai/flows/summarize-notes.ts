@@ -22,12 +22,12 @@ const SummarizeNotesOutputSchema = z.object({
   shortSummary: z
     .string()
     .describe(
-      'A very concise, 3-5 bullet point summary in clean HTML format that captures the main takeaways.'
+      'A concise, 5-7 bullet point summary in clean HTML format that captures all the main takeaways without leaving important points out.'
     ),
   longSummary: z
     .string()
     .describe(
-      'A more detailed, 6-10 bullet point summary in clean HTML format.'
+      'A very detailed and comprehensive summary in clean HTML format, encompassing all points from the notes.'
     ),
 });
 export type SummarizeNotesOutput = z.infer<typeof SummarizeNotesOutputSchema>;
@@ -39,8 +39,8 @@ export async function summarizeNotes(input: SummarizeNotesInput): Promise<Summar
 const minimalistStyleInstructions = `
 Instructions for Minimalist / Quick Review style:
 - Focus on clarity and fast comprehension.
-- Short Summary: 3-5 ultra-concise bullet points. Use minimal emojis like ✨, 📌, 🌸. The output must be clean HTML.
-- Long Summary: 6-10 bullets, clear hierarchy, no fluff. The output must be clean HTML.
+- Short Summary: 5-7 concise bullet points. Use minimal emojis like ✨, 📌, 🌸. Make sure not to leave any important points out. The output must be clean HTML.
+- Long Summary: A detailed, comprehensive summary with as many bullet points as needed to cover all aspects of the notes. Ensure clear hierarchy and no fluff. The output must be clean HTML.
 - Keep language simple, exam-friendly, and ensure minimal cognitive load.
 `;
 
