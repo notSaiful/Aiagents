@@ -131,7 +131,7 @@ export default function Home() {
   };
 
   const renderContent = () => {
-    if (loading && !output) {
+    if (loading) {
       return (
         <div className="w-full space-y-4">
           <Skeleton className="h-8 w-1/3" />
