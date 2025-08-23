@@ -21,6 +21,7 @@ interface ShareDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCopyLink: () => void;
+  isSharing: boolean;
   activeTab: string;
   refs: {
     summary: RefObject<HTMLDivElement>;
@@ -34,6 +35,7 @@ export default function ShareDialog({
   open, 
   onOpenChange, 
   onCopyLink,
+  isSharing,
   activeTab,
   refs,
 }: ShareDialogProps) {
@@ -75,7 +77,6 @@ export default function ShareDialog({
             cacheBust: true, 
             pixelRatio: 2,
             style: {
-                // Ensure the background is not transparent for better results
                 backgroundColor: 'white',
             }
         });
@@ -126,16 +127,16 @@ export default function ShareDialog({
           <DialogTitle>Export &amp; Share</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col space-y-4">
-          <Button variant="outline" onClick={() => exportContent('pdf')} disabled={isExporting}>
+          <Button variant="outline" onClick={() => exportContent('pdf')} disabled={isExporting || isSharing}>
             {isExporting ? <LoaderCircle className="mr-2 animate-spin" /> : <FileDown className="mr-2 h-4 w-4" />}
             Export as PDF
           </Button>
-          <Button variant="outline" onClick={() => exportContent('png')} disabled={isExporting}>
+          <Button variant="outline" onClick={() => exportContent('png')} disabled={isExporting || isSharing}>
             {isExporting ? <LoaderCircle className="mr-2 animate-spin" /> : <Image className="mr-2 h-4 w-4" />}
             Export as Image
           </Button>
-          <Button variant="outline" onClick={onCopyLink} disabled={isExporting}>
-            <LinkIcon className="mr-2 h-4 w-4" />
+          <Button variant="outline" onClick={onCopyLink} disabled={isExporting || isSharing}>
+            {isSharing ? <LoaderCircle className="mr-2 animate-spin" /> : <LinkIcon className="mr-2 h-4 w-4" />}
             Share Link
           </Button>
         </div>

@@ -19,13 +19,14 @@ import Flashcard from './flashcard';
 import MindMap from './mind-map';
 import type { Flashcard as FlashcardType } from '@/types';
 import { Skeleton } from './ui/skeleton';
-
+import { shareGeneration } from '@/ai/flows/share-generation';
 
 interface OutputDisplayProps {
   shortSummary?: string;
   longSummary?: string;
   flashcards?: FlashcardType[];
   mindMap?: string;
+  isShareable?: boolean;
 }
 
 export default function OutputDisplay({
@@ -33,30 +34,53 @@ export default function OutputDisplay({
   longSummary,
   flashcards,
   mindMap,
+  isShareable = false,
 }: OutputDisplayProps) {
   const { toast } = useToast();
   const [isShareDialogOpen, setShareDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('summary');
+  const [shareId, setShareId] = useState<string | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
 
   const summaryRef = useRef<HTMLDivElement>(null);
   const flashcardsRef = useRef<HTMLDivElement>(null);
   const mindMapRef = useRef<HTMLDivElement>(null);
 
   const handleCopyLink = async () => {
+    setIsSharing(true);
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      let currentShareId = shareId;
+      if (!currentShareId) {
+        toast({
+          title: 'Creating Share Link...',
+          description: 'Please wait a moment.',
+        });
+        const result = await shareGeneration({
+          shortSummary: shortSummary ?? '',
+          longSummary: longSummary ?? '',
+          flashcards: flashcards ?? [],
+          mindMap: mindMap ?? '',
+        });
+        currentShareId = result.shareId;
+        setShareId(currentShareId);
+      }
+      
+      const shareUrl = `${window.location.origin}/share/${currentShareId}`;
+      await navigator.clipboard.writeText(shareUrl);
       toast({
-        title: 'Link Copied',
-        description: 'The link has been copied to your clipboard.',
+        title: 'Link Copied!',
+        description: 'The shareable link is in your clipboard.',
       });
+
     } catch (error) {
-       console.error('Failed to copy link:', error);
+       console.error('Failed to create or copy share link:', error);
        toast({
-        title: 'Copy Failed',
-        description: 'Could not copy link to clipboard. Please try again.',
+        title: 'Sharing Failed',
+        description: 'Could not create a shareable link. Please try again.',
         variant: 'destructive',
       });
     } finally {
+      setIsSharing(false);
       setShareDialogOpen(false);
     }
   };
@@ -149,11 +173,12 @@ export default function OutputDisplay({
           </Card>
         </TabsContent>
       </Tabs>
-      {(shortSummary || longSummary || flashcards || mindMap) && activeTab !== 'flashcards' && (
+      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && activeTab !== 'flashcards' && (
         <ShareDialog
           open={isShareDialogOpen}
           onOpenChange={setShareDialogOpen}
           onCopyLink={handleCopyLink}
+          isSharing={isSharing}
           activeTab={activeTab}
           refs={{
             summary: summaryRef,

@@ -155,6 +155,7 @@ export default function Home() {
         longSummary={output.longSummary}
         flashcards={output.flashcards}
         mindMap={output.mindMap}
+        isShareable={true}
       />;
     }
 

@@ -1,0 +1,21 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+    // Logged-in users can read/write their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Shared generations are public and read-only for everyone.
+    // Only the application's backend (via a Flow) should write to this collection.
+    // We are keeping the write rule open for simplicity for this demo,
+    // but in a production app, you would lock this down.
+    match /shared_generations/{shareId} {
+      allow read: if true;
+      allow write: if true; // In production, restrict this to your server/backend.
+    }
+  }
+}
