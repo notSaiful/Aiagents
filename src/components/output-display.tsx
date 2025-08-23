@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef } from 'react';
@@ -42,12 +43,22 @@ export default function OutputDisplay({
   const mindMapRef = useRef<HTMLDivElement>(null);
 
   const handleCopyLink = async () => {
-    await navigator.clipboard.writeText(window.location.href);
-    toast({
-      title: 'Link Copied',
-      description: 'The link has been copied to your clipboard.',
-    });
-    setShareDialogOpen(false);
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: 'Link Copied',
+        description: 'The link has been copied to your clipboard.',
+      });
+    } catch (error) {
+       console.error('Failed to copy link:', error);
+       toast({
+        title: 'Copy Failed',
+        description: 'Could not copy link to clipboard. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setShareDialogOpen(false);
+    }
   };
   
   const renderLoadingSkeletons = () => (
