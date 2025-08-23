@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Share2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -36,6 +36,11 @@ export default function OutputDisplay({
 }: OutputDisplayProps) {
   const { toast } = useToast();
   const [isShareDialogOpen, setShareDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('summary');
+
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const flashcardsRef = useRef<HTMLDivElement>(null);
+  const mindMapRef = useRef<HTMLDivElement>(null);
 
   const handleCopyLink = async () => {
     await navigator.clipboard.writeText(window.location.href);
@@ -60,7 +65,7 @@ export default function OutputDisplay({
 
   return (
     <div className="relative">
-      <Tabs defaultValue="summary" className="w-full">
+      <Tabs defaultValue="summary" className="w-full" onValueChange={setActiveTab}>
         <div className="flex justify-center mb-6">
           <TabsList className="bg-primary/80 rounded-full h-12 px-2">
             <TabsTrigger value="summary" className="text-base rounded-full h-10">
@@ -76,7 +81,7 @@ export default function OutputDisplay({
         </div>
 
         <TabsContent value="summary">
-          <Card className="rounded-xl border-2 border-primary/40">
+          <Card ref={summaryRef} className="rounded-xl border-2 border-primary/40">
             <CardContent className="p-6">
               <Tabs defaultValue="short" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
@@ -101,7 +106,7 @@ export default function OutputDisplay({
         </TabsContent>
 
         <TabsContent value="flashcards">
-            <Card className="rounded-xl border-2 border-primary/40 flex items-center justify-center min-h-[250px]">
+            <Card ref={flashcardsRef} className="rounded-xl border-2 border-primary/40 flex items-center justify-center min-h-[250px] py-4">
              {!flashcards ? (
                 renderLoadingSkeletons()
               ) : (
@@ -123,7 +128,7 @@ export default function OutputDisplay({
         </TabsContent>
 
         <TabsContent value="mind-map">
-          <Card className="rounded-xl border-2 border-primary/40">
+          <Card ref={mindMapRef} className="rounded-xl border-2 border-primary/40">
             <CardContent className="p-6 flex justify-center min-h-[250px] items-center">
               {!mindMap ? (
                 renderLoadingSkeletons()
@@ -139,6 +144,12 @@ export default function OutputDisplay({
           open={isShareDialogOpen}
           onOpenChange={setShareDialogOpen}
           onCopyLink={handleCopyLink}
+          activeTab={activeTab}
+          refs={{
+            summary: summaryRef,
+            flashcards: flashcardsRef,
+            'mind-map': mindMapRef,
+          }}
         >
           <Button
             onClick={() => setShareDialogOpen(true)}
