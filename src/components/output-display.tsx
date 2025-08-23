@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef } from 'react';
@@ -139,7 +138,7 @@ export default function OutputDisplay({
           </Card>
         </TabsContent>
       </Tabs>
-      {(shortSummary || longSummary || flashcards || mindMap) && (
+      {(shortSummary || longSummary || flashcards || mindMap) && activeTab !== 'flashcards' && (
         <ShareDialog
           open={isShareDialogOpen}
           onOpenChange={setShareDialogOpen}
