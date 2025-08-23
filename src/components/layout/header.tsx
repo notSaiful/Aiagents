@@ -2,7 +2,16 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import AuthButton from '@/components/auth-button';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Dynamically import the AuthButton component with SSR turned off.
+// This ensures the component only renders on the client-side, preventing
+// hydration mismatches caused by browser extensions modifying the DOM.
+const AuthButton = dynamic(() => import('@/components/auth-button'), {
+  ssr: false,
+  loading: () => <Skeleton className="h-8 w-8 rounded-full" />,
+});
 
 export default function Header() {
   const pathname = usePathname();
