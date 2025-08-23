@@ -24,8 +24,7 @@ export default function RootLayout({
           fontSans.variable, 
           fontSerif.variable, 
           fontPlayfair.variable
-        )} 
-        suppressHydrationWarning
+        )}
       >
         <AuthProvider>
           <Header />

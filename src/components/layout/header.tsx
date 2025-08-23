@@ -14,27 +14,13 @@ export default function Header() {
     return null;
   }
   
-  // While loading, or if no user is logged in, render a placeholder to prevent hydration errors.
-  if (loading || !user) {
-    return (
+  return (
      <header className="absolute top-0 z-50 w-full">
         <div className="container flex h-16 max-w-screen-2xl items-center">
           <div className="flex flex-1 items-center justify-end space-x-2">
-            {/* Render an empty div or a skeleton button to match the authenticated layout */}
-            <div className="h-8 w-8" />
+            <AuthButton />
           </div>
         </div>
       </header>
-    );
-  }
-
-  return (
-    <header className="absolute top-0 z-50 w-full">
-      <div className="container flex h-16 max-w-screen-2xl items-center">
-        <div className="flex flex-1 items-center justify-end space-x-2">
-          <AuthButton />
-        </div>
-      </div>
-    </header>
   );
 }
