@@ -29,36 +29,33 @@ export async function generatePodcast(input: GeneratePodcastInput): Promise<Gene
 }
 
 const minimalistStyleInstructions = `
-- **Voice Type**: Smooth, neutral, concise, friendly.
-- **Inspiration**: Minimalist narrators, tech explainer voices, ASMR-like clarity.
-- **Dialogue Flavor**: Use short, digestible sentences and simplified explanations.
-- **Effect**: Focused learning, reduces cognitive load, very easy to digest.
+- **Vibe**: Smooth, neutral, concise, friendly. Inspired by minimalist narrators, tech explainers, and ASMR-like clarity.
+- **Dialogue Flavor**: Use short, digestible sentences, simplified explanations, and a calm, friendly tone. Include pauses for thought.
+- **Content Focus**: Prioritize clarity and focused learning, reducing cognitive load. The conversation should be very easy to digest.
 - **Characters**: Two speakers, "Speaker1" (neutral, smooth, male voice - Algenib) and "Speaker2" (clear, informative, female voice - Achernar).
 `;
 
 const storyStyleInstructions = `
-- **Voice Type**: Soft, emotional, expressive.
-- **Inspiration**: Popular K-drama actors, romantic couples, slightly dramatic tones.
-- **Dialogue Flavor**: Use storytelling, cliffhangers, and emotional phrasing.
-- **Effect**: Makes learning feel like watching a story unfold, easy to remember.
+- **Vibe**: Soft, emotional, expressive. Inspired by popular K-drama actors, romantic couples, and slightly dramatic tones.
+- **Dialogue Flavor**: Use storytelling techniques, cliffhangers, and emotional phrasing. Weave in famous quotes from movies or pop culture where they fit naturally (e.g., "As they say, with great power comes great responsibility...").
+- **Content Focus**: Make learning feel like watching a story unfold, making it highly memorable.
 - **Characters**: Two speakers, "Speaker1" (dramatic, expressive male voice - Algenib) and "Speaker2" (emotional, narrative female voice - Achernar).
 `;
 
 const actionStyleInstructions = `
-- **Voice Type**: Bold, energetic, heroic.
-- **Inspiration**: Avengers, Batman, Superman, fast-paced characters.
-- **Dialogue Flavor**: Punchy, dramatic, with excitement and urgency.
-- **Effect**: Turns notes into an adrenaline-fueled learning experience, keeps students alert.
+- **Vibe**: Bold, energetic, heroic. Inspired by Avengers, Batman, Superman, and fast-paced movie characters.
+- **Dialogue Flavor**: Use punchy, dramatic dialogue with a sense of excitement and urgency. Incorporate heroic slogans or famous one-liners from action movies (e.g., "Time to go to work," or "I can do this all day.").
+- **Content Focus**: Turn notes into an adrenaline-fueled learning experience that keeps students alert and engaged.
 - **Characters**: Two speakers, "Speaker1" (deep, heroic male voice - Algenib) and "Speaker2" (energetic, fast-paced female voice - Achernar).
 `;
 
 const formalStyleInstructions = `
-- **Voice Type**: Calm, clear, professional, slightly authoritative.
-- **Inspiration**: Professors, news anchors, motivational speakers.
-- **Dialogue Flavor**: Straightforward, explanatory, minimal fluff.
-- **Effect**: Perfect for serious learning and comprehension, no distraction.
+- **Vibe**: Calm, clear, professional, and slightly authoritative. Inspired by professors, news anchors, and motivational speakers.
+- **Dialogue Flavor**: Keep it straightforward, explanatory, and with minimal fluff. Use authoritative statements or well-known academic proverbs to reinforce points.
+- **Content Focus**: Perfect for serious learning and comprehension, with no distractions.
 - **Characters**: Two speakers, "Speaker1" (calm, authoritative male voice - Algenib) and "Speaker2" (clear, professional female voice - Achernar).
 `;
+
 
 async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 2): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -104,7 +101,7 @@ const generatePodcastFlow = ai.defineFlow(
       name: 'generatePodcastScriptPrompt',
       output: { schema: z.object({ script: z.string() }) },
       prompt: `You are a scriptwriter for a podcast. Your task is to convert the following notes into a conversational dialogue script between two characters: Speaker1 and Speaker2.
-The script should be engaging and reflect the specified style.
+The script should be engaging, realistic, and strictly adhere to the specified style. It should include realistic conversational elements like pauses or tone shifts.
 The output MUST be a script where each line is prefixed with "Speaker1:" or "Speaker2:".
 
 **Style Instructions**:
