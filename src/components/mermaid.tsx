@@ -1,3 +1,4 @@
+
 "use client"
 import { useEffect, useState } from "react";
 import type { MermaidConfig } from "mermaid";
@@ -17,7 +18,7 @@ const DEFAULT_CONFIG: MermaidConfig = {
     fontFamily: '"Inter", sans-serif',
     fontSize: '16px',
     nodeBorder: 'hsl(var(--primary))',
-    mainBkg: 'hsl(var(--background))',
+    mainBkg: 'hsl(var(--primary))',
     pieTitleTextSize: '18px',
     pieTitleTextColor: 'hsl(var(--foreground))',
     edgeLabelBackground: 'hsl(var(--background))',
@@ -46,7 +47,28 @@ export default function Mermaid({
   const [svg, setSvg] = useState<string | null>(null);
 
   useEffect(() => {
-    mermaid.initialize(config);
+    const getResolvedColor = (cssVar: string) => {
+        if (typeof window === 'undefined') return '';
+        const value = cssVar.match(/var\(([^)]+)\)/)?.[1] ?? '';
+        if (!value) return cssVar;
+        return getComputedStyle(document.documentElement).getPropertyValue(value.trim()).trim();
+    };
+    
+    const resolvedConfig = JSON.parse(JSON.stringify(config));
+    
+    if (resolvedConfig.themeVariables) {
+        for (const key in resolvedConfig.themeVariables) {
+            const value = resolvedConfig.themeVariables[key];
+            if (typeof value === 'string' && value.includes('var(--')) {
+                 const resolvedColor = getResolvedColor(value);
+                 if (resolvedColor) {
+                    resolvedConfig.themeVariables[key] = resolvedColor;
+                 }
+            }
+        }
+    }
+    
+    mermaid.initialize(resolvedConfig);
 
     const renderMermaid = async () => {
       try {
