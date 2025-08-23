@@ -18,9 +18,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    // The suppressHydrationWarning prop is added here to prevent React from
+    // throwing errors when browser extensions (like Grammarly) inject attributes
+    // into the DOM. This is the recommended, production-safe way to handle
+    // these specific, unavoidable hydration mismatches.
+    <html lang="en" suppressHydrationWarning={true}>
       <body 
-        suppressHydrationWarning={true}
         className={cn(
           'min-h-screen bg-background font-sans antialiased', 
           fontSans.variable, 
