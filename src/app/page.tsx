@@ -151,8 +151,8 @@ export default function Home() {
     
     if (output) {
       return <OutputDisplay 
-        shortSummary={output.shortSummary ?? ''}
-        longSummary={output.longSummary ?? ''}
+        shortSummary={output.shortSummary}
+        longSummary={output.longSummary}
         flashcards={output.flashcards}
         mindMap={output.mindMap}
       />;

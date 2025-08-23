@@ -134,21 +134,23 @@ export default function OutputDisplay({
           </Card>
         </TabsContent>
       </Tabs>
-      <ShareDialog
-        open={isShareDialogOpen}
-        onOpenChange={setShareDialogOpen}
-        onCopyLink={handleCopyLink}
-      >
-        <Button
-          onClick={() => setShareDialogOpen(true)}
-          variant="default"
-          size="icon"
-          className="fixed bottom-8 right-8 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
+      {(shortSummary || longSummary || flashcards || mindMap) && (
+        <ShareDialog
+          open={isShareDialogOpen}
+          onOpenChange={setShareDialogOpen}
+          onCopyLink={handleCopyLink}
         >
-          <Share2 className="h-6 w-6" />
-          <span className="sr-only">Share</span>
-        </Button>
-      </ShareDialog>
+          <Button
+            onClick={() => setShareDialogOpen(true)}
+            variant="default"
+            size="icon"
+            className="fixed bottom-8 right-8 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
+          >
+            <Share2 className="h-6 w-6" />
+            <span className="sr-only">Share</span>
+          </Button>
+        </ShareDialog>
+      )}
     </div>
   );
 }
