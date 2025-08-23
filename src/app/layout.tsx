@@ -1,26 +1,10 @@
 import type { Metadata } from 'next';
-import { Inter, Poppins, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/auth-context';
 import Header from '@/components/layout/header';
 import { cn } from '@/lib/utils';
-
-const inter = Inter({ 
-  subsets: ['latin'], 
-  variable: '--font-inter',
-});
-
-const poppins = Poppins({ 
-  subsets: ['latin'], 
-  variable: '--font-poppins',
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] 
-});
-
-const playfairDisplay = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
-});
+import { fontSans, fontSerif, fontPlayfair } from '@/lib/fonts';
 
 export const metadata: Metadata = {
   title: 'NotesGPT | Transform Your Notes Instantly',
@@ -34,11 +18,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-sans antialiased', inter.variable, poppins.variable, playfairDisplay.variable)} suppressHydrationWarning>
+      <body 
+        className={cn(
+          'min-h-screen bg-background font-sans antialiased', 
+          fontSans.variable, 
+          fontSerif.variable, 
+          fontPlayfair.variable
+        )} 
+        suppressHydrationWarning
+      >
         <AuthProvider>
-            <Header />
-            <main>{children}</main>
-            <Toaster />
+          <Header />
+          <main>{children}</main>
+          <Toaster />
         </AuthProvider>
       </body>
     </html>
