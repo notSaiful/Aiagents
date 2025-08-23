@@ -97,6 +97,9 @@ export default function ShareDialog({
                 pdf.addImage(dataUrl, 'PNG', 0, 0, img.width, img.height);
                 pdf.save(`notes-gpt-${activeTab}.pdf`);
             };
+            img.onerror = () => {
+              throw new Error('Failed to load image for PDF generation.');
+            }
         }
         toast({
             title: 'Export Successful!',
