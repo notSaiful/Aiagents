@@ -39,6 +39,7 @@ Instructions for Minimalist / Quick Review style:
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
 - Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
+- All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
 
 Example of a valid mindmap:
 mindmap
@@ -65,6 +66,7 @@ Instructions for Story (K-Drama & Pop Culture) style:
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((The Hero's Journey 🎭)). This is a strict rule.
 - Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
+- All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
 `;
 
 const actionStyleInstructions = `
@@ -81,6 +83,7 @@ Instructions for Bold / Action-Oriented (Avengers Style):
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Mission: Defeat Thanos 💥)). This is a strict rule.
 - Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
+- All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
 `;
 
 const formalStyleInstructions = `
@@ -95,6 +98,7 @@ Instructions for Formal / Academic style:
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((The Theory of Relativity 🏛️)). This is a strict rule.
 - Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
+- All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
 `;
 
 const createMindMapFlow = ai.defineFlow(
