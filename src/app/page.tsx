@@ -11,7 +11,6 @@ import { useToast } from '@/hooks/use-toast';
 import { summarizeNotes } from '@/ai/flows/summarize-notes';
 import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
-import { generateImage } from '@/ai/flows/generate-image';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -23,7 +22,6 @@ interface AIOutput {
   longSummary: string;
   flashcards: Flashcard[];
   mindMap: string;
-  imageUrl: string;
 }
 
 type NoteStyle = 'Minimalist' | 'Story' | 'Action' | 'Formal';
@@ -69,11 +67,10 @@ export default function Home() {
 
     try {
       // Run all AI generation requests in parallel for faster results.
-      const [summaryRes, flashcardsRes, mindMapRes, imageRes] = await Promise.all([
+      const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
         summarizeNotes({ notes, style }),
         generateFlashcards({ notes, style }),
         createMindMap({ notes, style }),
-        generateImage({ notes, style }),
       ]);
 
       // Update the state with all the new data at once.
@@ -82,7 +79,6 @@ export default function Home() {
         longSummary: summaryRes.longSummary,
         flashcards: flashcardsRes.flashcards,
         mindMap: mindMapRes.mindMap,
-        imageUrl: imageRes.imageUrl,
       });
     } catch (error) {
       console.error('Transformation failed:', error);
@@ -159,7 +155,6 @@ export default function Home() {
         longSummary={output.longSummary}
         flashcards={output.flashcards}
         mindMap={output.mindMap}
-        imageUrl={output.imageUrl}
         isShareable={true}
       />;
     }

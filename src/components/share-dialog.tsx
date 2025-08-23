@@ -27,7 +27,6 @@ interface ShareDialogProps {
     summary: RefObject<HTMLDivElement>;
     flashcards: RefObject<HTMLDivElement>;
     'mind-map': RefObject<HTMLDivElement>;
-    canvas: RefObject<HTMLDivElement>;
   };
 }
 
@@ -51,8 +50,6 @@ export default function ShareDialog({
         return refs.flashcards;
       case 'mind-map':
         return refs['mind-map'];
-      case 'canvas':
-        return refs.canvas;
       default:
         return null;
     }
