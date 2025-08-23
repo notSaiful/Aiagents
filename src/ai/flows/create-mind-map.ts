@@ -38,17 +38,17 @@ Instructions for Minimalist / Quick Review style:
 - Incorporate concise, motivational phrases or short, clever slogans where they naturally fit the content.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
-- The first indented node after the root MUST be the single parent for all subsequent nodes. This is a strict rule.
+- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 
 Example of a valid mindmap:
 mindmap
   root((Photosynthesis 'The Spark of Life' 🌱))
-    Core Process
+    CoreProcess("Core Process")
       Inputs
-        CO₂
-        H₂O
-      Energy Source
-        Sunlight ☀️
+        CO2("CO₂")
+        H2O("H₂O")
+      EnergySource("Energy Source")
+        Sunlight("Sunlight ☀️")
       Outputs
         Glucose
         Oxygen
@@ -64,7 +64,7 @@ Instructions for Story (K-Drama & Pop Culture) style:
 - Use emojis like 💖, 🎭, 💥, 📚 to tell the story.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((The Hero's Journey 🎭)). This is a strict rule.
-- The first indented node after the root MUST be the single parent for all subsequent nodes. This is a strict rule.
+- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 `;
 
 const actionStyleInstructions = `
@@ -80,7 +80,7 @@ Instructions for Bold / Action-Oriented (Avengers Style):
 - Connect concepts like they are mission objectives, enemy weak points, or strategic assets.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Mission: Defeat Thanos 💥)). This is a strict rule.
-- The first indented node after the root MUST be the single parent for all subsequent nodes. This is a strict rule.
+- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 `;
 
 const formalStyleInstructions = `
@@ -94,7 +94,7 @@ Instructions for Formal / Academic style:
 - Avoid informal language and excessive emojis. Use only scholarly emojis like 🏛️, 📑, 📌 sparingly.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((The Theory of Relativity 🏛️)). This is a strict rule.
-- The first indented node after the root MUST be the single parent for all subsequent nodes. This is a strict rule.
+- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 `;
 
 const createMindMapFlow = ai.defineFlow(
