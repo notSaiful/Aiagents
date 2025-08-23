@@ -26,7 +26,6 @@ const ShareGenerationInputSchema = z.object({
     })
   ),
   mindMap: z.string(),
-  imageUrl: z.string(),
 });
 export type ShareGenerationInput = z.infer<typeof ShareGenerationInputSchema>;
 
