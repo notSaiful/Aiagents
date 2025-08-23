@@ -13,7 +13,7 @@ export default function Header() {
   }
   
   return (
-     <header className="absolute top-0 z-50 w-full">
+     <header className="absolute top-0 z-50 w-full" suppressHydrationWarning>
         <div className="container flex h-16 max-w-screen-2xl items-center justify-end">
           <AuthButton />
         </div>
