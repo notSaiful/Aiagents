@@ -54,6 +54,7 @@ export default function Mermaid({
         if (!varName) return cssVar;
         // Returns the HSL value string "H S% L%"
         const hslValue = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+        if (!hslValue) return cssVar;
         // Returns a valid CSS color string
         return `hsl(${hslValue})`;
     };
@@ -85,7 +86,7 @@ export default function Mermaid({
         setSvg(newSvg);
       } catch (error) {
         console.error("Error rendering Mermaid diagram:", error);
-        setSvg('<div class="p-4 text-destructive">Error rendering diagram.</div>');
+        setSvg('<div class="p-4 text-destructive">Error rendering diagram. Please check the Mermaid syntax.</div>');
       }
     };
 

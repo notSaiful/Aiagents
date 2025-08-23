@@ -40,6 +40,7 @@ Instructions for Minimalist / Quick Review style:
 - The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
 - Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 - All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
+- Ensure all text within nodes is properly escaped for Mermaid syntax.
 
 Example of a valid mindmap:
 mindmap
@@ -67,6 +68,7 @@ Instructions for Story (K-Drama & Pop Culture) style:
 - The root node MUST be wrapped in double parentheses, like this: root((The Hero's Journey 🎭)). This is a strict rule.
 - Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 - All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
+- Ensure all text within nodes is properly escaped for Mermaid syntax.
 `;
 
 const actionStyleInstructions = `
@@ -84,6 +86,7 @@ Instructions for Bold / Action-Oriented (Avengers Style):
 - The root node MUST be wrapped in double parentheses, like this: root((Mission: Defeat Thanos 💥)). This is a strict rule.
 - Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 - All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
+- Ensure all text within nodes is properly escaped for Mermaid syntax.
 `;
 
 const formalStyleInstructions = `
@@ -99,6 +102,7 @@ Instructions for Formal / Academic style:
 - The root node MUST be wrapped in double parentheses, like this: root((The Theory of Relativity 🏛️)). This is a strict rule.
 - Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 - All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
+- Ensure all text within nodes is properly escaped for Mermaid syntax.
 `;
 
 const createMindMapFlow = ai.defineFlow(
