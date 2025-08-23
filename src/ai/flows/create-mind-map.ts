@@ -38,13 +38,13 @@ Instructions for Minimalist / Quick Review style:
 - Incorporate concise, motivational phrases or short, clever slogans where they naturally fit the content.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
-- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
+- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 - All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
 - Ensure all text within nodes is properly escaped for Mermaid syntax.
 
 Example of a valid mindmap:
 mindmap
-  root((Photosynthesis 'The Spark of Life' 🌱))
+  root(("Photosynthesis 'The Spark of Life' 🌱"))
     CoreProcess("Core Process")
       Inputs
         CO2("CO₂")
@@ -66,7 +66,7 @@ Instructions for Story (K-Drama & Pop Culture) style:
 - Use emojis like 💖, 🎭, 💥, 📚 to tell the story.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((The Hero's Journey 🎭)). This is a strict rule.
-- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
+- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 - All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
 - Ensure all text within nodes is properly escaped for Mermaid syntax.
 `;
@@ -84,7 +84,7 @@ Instructions for Bold / Action-Oriented (Avengers Style):
 - Connect concepts like they are mission objectives, enemy weak points, or strategic assets.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((Mission: Defeat Thanos 💥)). This is a strict rule.
-- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
+- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 - All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
 - Ensure all text within nodes is properly escaped for Mermaid syntax.
 `;
@@ -100,7 +100,7 @@ Instructions for Formal / Academic style:
 - Avoid informal language and excessive emojis. Use only scholarly emojis like 🏛️, 📑, 📌 sparingly.
 - The first line must be "mindmap".
 - The root node MUST be wrapped in double parentheses, like this: root((The Theory of Relativity 🏛️)). This is a strict rule.
-- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
+- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
 - All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
 - Ensure all text within nodes is properly escaped for Mermaid syntax.
 `;
