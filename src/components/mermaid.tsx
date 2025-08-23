@@ -49,11 +49,16 @@ export default function Mermaid({
   useEffect(() => {
     const getResolvedColor = (cssVar: string) => {
         if (typeof window === 'undefined') return '';
-        const value = cssVar.match(/var\(([^)]+)\)/)?.[1] ?? '';
-        if (!value) return cssVar;
-        return getComputedStyle(document.documentElement).getPropertyValue(value.trim()).trim();
+        // Extracts the variable name from hsl(var(--name))
+        const varName = cssVar.match(/var\((--[^)]+)\)/)?.[1];
+        if (!varName) return cssVar;
+        // Returns the HSL value string "H S% L%"
+        const hslValue = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+        // Returns a valid CSS color string
+        return `hsl(${hslValue})`;
     };
     
+    // Deep clone the config to avoid mutating the default object
     const resolvedConfig = JSON.parse(JSON.stringify(config));
     
     if (resolvedConfig.themeVariables) {
