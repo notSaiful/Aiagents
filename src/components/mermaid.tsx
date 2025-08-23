@@ -8,21 +8,21 @@ const DEFAULT_CONFIG: MermaidConfig = {
   startOnLoad: false,
   theme: "base",
   themeVariables: {
-    background: 'hsl(var(--background))',
-    primaryColor: 'hsl(var(--background))',
-    primaryTextColor: 'hsl(var(--foreground))',
-    primaryBorderColor: 'hsl(var(--primary))',
-    lineColor: 'hsl(var(--foreground))',
-    secondaryColor: 'hsl(var(--primary))',
-    tertiaryColor: 'hsl(var(--primary))',
+    background: 'var(--background)',
+    primaryColor: 'var(--background)',
+    primaryTextColor: 'var(--foreground)',
+    primaryBorderColor: 'var(--primary)',
+    lineColor: 'var(--foreground)',
+    secondaryColor: 'var(--primary)',
+    tertiaryColor: 'var(--primary)',
     fontFamily: '"Inter", sans-serif',
     fontSize: '16px',
-    nodeBorder: 'hsl(var(--primary))',
-    mainBkg: 'hsl(var(--primary))',
+    nodeBorder: 'var(--primary)',
+    mainBkg: 'var(--primary)',
     pieTitleTextSize: '18px',
-    pieTitleTextColor: 'hsl(var(--foreground))',
-    edgeLabelBackground: 'hsl(var(--background))',
-    classText: 'hsl(var(--foreground))',
+    pieTitleTextColor: 'var(--foreground)',
+    edgeLabelBackground: 'var(--background)',
+    classText: 'var(--foreground)',
   },
   flowchart: {
     useMaxWidth: true,
@@ -49,8 +49,8 @@ export default function Mermaid({
   useEffect(() => {
     const getResolvedColor = (cssVar: string) => {
         if (typeof window === 'undefined') return '';
-        // Extracts the variable name from hsl(var(--name))
-        const varName = cssVar.match(/var\((--[^)]+)\)/)?.[1];
+        // Extracts the variable name from var(--name)
+        const varName = cssVar.match(/--[\w-]+/)?.[0];
         if (!varName) return cssVar;
         // Returns the HSL value string "H S% L%"
         const hslValue = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
