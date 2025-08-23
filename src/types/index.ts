@@ -7,3 +7,7 @@ export interface Flashcard {
 export interface MindMapData {
   mindMap: string;
 }
+
+export interface ArtData {
+  imageUrl: string;
+}

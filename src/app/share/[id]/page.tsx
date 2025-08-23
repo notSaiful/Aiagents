@@ -10,6 +10,7 @@ interface SharedData {
   longSummary: string;
   flashcards: Flashcard[];
   mindMap: string;
+  imageUrl: string;
 }
 
 async function getSharedData(id: string): Promise<SharedData | null> {
@@ -51,6 +52,7 @@ export default async function SharePage({ params }: { params: { id: string } }) 
         longSummary={data.longSummary}
         flashcards={data.flashcards}
         mindMap={data.mindMap}
+        imageUrl={data.imageUrl}
         isShareable={false}
       />
     </div>

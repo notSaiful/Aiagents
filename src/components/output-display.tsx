@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/carousel';
 import Flashcard from './flashcard';
 import MindMap from './mind-map';
+import Art from './art';
 import type { Flashcard as FlashcardType } from '@/types';
 import { Skeleton } from './ui/skeleton';
 import { shareGeneration } from '@/ai/flows/share-generation';
@@ -26,6 +27,7 @@ interface OutputDisplayProps {
   longSummary?: string;
   flashcards?: FlashcardType[];
   mindMap?: string;
+  imageUrl?: string;
   isShareable?: boolean;
 }
 
@@ -34,6 +36,7 @@ export default function OutputDisplay({
   longSummary,
   flashcards,
   mindMap,
+  imageUrl,
   isShareable = false,
 }: OutputDisplayProps) {
   const { toast } = useToast();
@@ -45,6 +48,7 @@ export default function OutputDisplay({
   const summaryRef = useRef<HTMLDivElement>(null);
   const flashcardsRef = useRef<HTMLDivElement>(null);
   const mindMapRef = useRef<HTMLDivElement>(null);
+  const artRef = useRef<HTMLDivElement>(null);
 
   const handleCopyLink = async () => {
     setIsSharing(true);
@@ -60,6 +64,7 @@ export default function OutputDisplay({
           longSummary: longSummary ?? '',
           flashcards: flashcards ?? [],
           mindMap: mindMap ?? '',
+          imageUrl: imageUrl ?? '',
         });
         currentShareId = result.shareId;
         setShareId(currentShareId);
@@ -110,6 +115,9 @@ export default function OutputDisplay({
             </TabsTrigger>
             <TabsTrigger value="mind-map" className="text-base rounded-full h-10" disabled={!mindMap}>
               Mind Map
+            </TabsTrigger>
+             <TabsTrigger value="art" className="text-base rounded-full h-10" disabled={!imageUrl}>
+              Art
             </TabsTrigger>
           </TabsList>
         </div>
@@ -172,8 +180,20 @@ export default function OutputDisplay({
             </CardContent>
           </Card>
         </TabsContent>
+        
+        <TabsContent value="art">
+          <Card ref={artRef} className="rounded-xl border-2 border-primary/40">
+            <CardContent className="p-6 flex justify-center min-h-[250px] items-center">
+              {!imageUrl ? (
+                renderLoadingSkeletons()
+              ) : (
+                <Art imageUrl={imageUrl} />
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
-      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && activeTab !== 'flashcards' && (
+      {isShareable && (shortSummary || longSummary || flashcards || mindMap || imageUrl) && activeTab !== 'flashcards' && (
         <ShareDialog
           open={isShareDialogOpen}
           onOpenChange={setShareDialogOpen}
@@ -184,6 +204,7 @@ export default function OutputDisplay({
             summary: summaryRef,
             flashcards: flashcardsRef,
             'mind-map': mindMapRef,
+            art: artRef,
           }}
         >
           <Button
