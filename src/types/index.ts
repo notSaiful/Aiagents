@@ -11,3 +11,7 @@ export interface MindMapData {
 export interface ArtData {
   imageUrl: string;
 }
+
+export interface Podcast {
+  audioUrl: string;
+}

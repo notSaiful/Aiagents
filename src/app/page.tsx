@@ -11,17 +11,19 @@ import { useToast } from '@/hooks/use-toast';
 import { summarizeNotes } from '@/ai/flows/summarize-notes';
 import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
+import { generatePodcast } from '@/ai/flows/generate-podcast';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
-import type { Flashcard } from '@/types';
+import type { Flashcard, Podcast } from '@/types';
 
 interface AIOutput {
   shortSummary: string;
   longSummary: string;
   flashcards: Flashcard[];
   mindMap: string;
+  podcast?: Podcast;
 }
 
 type NoteStyle = 'Minimalist' | 'Story' | 'Action' | 'Formal';
@@ -92,6 +94,25 @@ export default function Home() {
     }
   };
 
+  const handleGeneratePodcast = async () => {
+    try {
+      const podcastRes = await generatePodcast({ notes, style });
+      setOutput(prevOutput => ({
+        ...prevOutput,
+        podcast: { audioUrl: podcastRes.podcastWavDataUri },
+      }));
+    } catch (error) {
+      console.error('Podcast generation failed:', error);
+      toast({
+        title: 'Podcast Generation Failed',
+        description: 'An error occurred while creating your podcast. Please try again.',
+        variant: 'destructive',
+      });
+      // Re-throw to be caught by the caller in OutputDisplay
+      throw error;
+    }
+  };
+
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
@@ -155,6 +176,8 @@ export default function Home() {
         longSummary={output.longSummary}
         flashcards={output.flashcards}
         mindMap={output.mindMap}
+        podcast={output.podcast}
+        onGeneratePodcast={handleGeneratePodcast}
         isShareable={true}
       />;
     }

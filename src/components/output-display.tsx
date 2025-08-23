@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Share2 } from 'lucide-react';
+import { Share2, LoaderCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/carousel';
 import Flashcard from './flashcard';
 import MindMap from './mind-map';
-import type { Flashcard as FlashcardType } from '@/types';
+import type { Flashcard as FlashcardType, Podcast as PodcastType } from '@/types';
 import { Skeleton } from './ui/skeleton';
 import { shareGeneration } from '@/ai/flows/share-generation';
 
@@ -26,6 +26,8 @@ interface OutputDisplayProps {
   longSummary?: string;
   flashcards?: FlashcardType[];
   mindMap?: string;
+  podcast?: PodcastType;
+  onGeneratePodcast?: () => Promise<void>;
   isShareable?: boolean;
 }
 
@@ -34,6 +36,8 @@ export default function OutputDisplay({
   longSummary,
   flashcards,
   mindMap,
+  podcast,
+  onGeneratePodcast,
   isShareable = false,
 }: OutputDisplayProps) {
   const { toast } = useToast();
@@ -41,10 +45,13 @@ export default function OutputDisplay({
   const [activeTab, setActiveTab] = useState('summary');
   const [shareId, setShareId] = useState<string | null>(null);
   const [isSharing, setIsSharing] = useState(false);
+  const [isGeneratingPodcast, setIsGeneratingPodcast] = useState(false);
 
   const summaryRef = useRef<HTMLDivElement>(null);
   const flashcardsRef = useRef<HTMLDivElement>(null);
   const mindMapRef = useRef<HTMLDivElement>(null);
+  const podcastRef = useRef<HTMLDivElement>(null);
+
 
   const handleCopyLink = async () => {
     setIsSharing(true);
@@ -84,6 +91,18 @@ export default function OutputDisplay({
       setShareDialogOpen(false);
     }
   };
+
+  const handlePodcastGeneration = async () => {
+    if (!onGeneratePodcast) return;
+    setIsGeneratingPodcast(true);
+    try {
+      await onGeneratePodcast();
+    } catch (error) {
+      // Error is already toasted in the parent component.
+    } finally {
+      setIsGeneratingPodcast(false);
+    }
+  };
   
   const renderLoadingSkeletons = () => (
     <div className="w-full space-y-4 p-6">
@@ -110,6 +129,9 @@ export default function OutputDisplay({
             </TabsTrigger>
             <TabsTrigger value="mind-map" className="text-base rounded-full h-10" disabled={!mindMap}>
               Mind Map
+            </TabsTrigger>
+            <TabsTrigger value="podcast" className="text-base rounded-full h-10">
+              Podcast
             </TabsTrigger>
           </TabsList>
         </div>
@@ -172,9 +194,41 @@ export default function OutputDisplay({
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="podcast">
+          <Card ref={podcastRef} className="rounded-xl border-2 border-primary/40">
+            <CardContent className="p-6 flex flex-col justify-center min-h-[250px] items-center">
+              {podcast?.audioUrl ? (
+                <audio controls src={podcast.audioUrl} className="w-full">
+                  Your browser does not support the audio element.
+                </audio>
+              ) : (
+                <div className="text-center">
+                  <p className="text-muted-foreground mb-4">
+                    Generate a podcast from your notes.
+                  </p>
+                  <Button
+                    onClick={handlePodcastGeneration}
+                    disabled={isGeneratingPodcast}
+                    className="font-semibold text-lg py-6 rounded-xl shadow-lg"
+                  >
+                    {isGeneratingPodcast ? (
+                      <>
+                        <LoaderCircle className="animate-spin mr-2" />
+                        Generating Podcast...
+                      </>
+                    ) : (
+                      'Generate Podcast'
+                    )}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
         
       </Tabs>
-      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && activeTab !== 'flashcards' && (
+      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && activeTab !== 'flashcards' && activeTab !== 'podcast' && (
         <ShareDialog
           open={isShareDialogOpen}
           onOpenChange={setShareDialogOpen}
