@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LoaderCircle, Upload } from 'lucide-react';
+import { Sparkles, LoaderCircle, Upload, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -13,6 +13,7 @@ import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
 import { generatePodcast } from '@/ai/flows/generate-podcast';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
+import { saveUserNotes } from '@/ai/flows/save-user-notes';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
@@ -32,6 +33,7 @@ export default function Home() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
   const { toast } = useToast();
@@ -108,6 +110,39 @@ export default function Home() {
         variant: 'destructive',
       });
       throw error;
+    }
+  };
+
+  const handleSaveNotes = async () => {
+    if (!user || !output) return;
+    setIsSaving(true);
+    toast({
+      title: 'Saving Notes...',
+      description: 'Your generated notes are being saved to your profile.',
+    });
+    try {
+      await saveUserNotes({
+        userId: user.uid,
+        sourceText: notes,
+        style: style,
+        shortSummary: output.shortSummary ?? '',
+        longSummary: output.longSummary ?? '',
+        flashcards: output.flashcards ?? [],
+        mindMap: output.mindMap ?? '',
+      });
+      toast({
+        title: 'Notes Saved!',
+        description: 'Your notes have been successfully saved.',
+      });
+    } catch (error) {
+      console.error('Failed to save notes:', error);
+      toast({
+        title: 'Save Failed',
+        description: 'Could not save your notes. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -218,7 +253,7 @@ export default function Home() {
               disabled={isLoading}
             />
         </CardContent>
-        <CardFooter className="flex flex-wrap items-center justify-start gap-2 p-4">
+        <CardFooter className="flex flex-wrap items-center justify-between gap-2 p-4">
             <input
                 type="file"
                 ref={fileInputRef}
@@ -242,6 +277,18 @@ export default function Home() {
                 </>
               )}
             </Button>
+            {output && (
+              <Button onClick={handleSaveNotes} disabled={isSaving} variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                  {isSaving ? (
+                      <LoaderCircle className="h-4 w-4 animate-spin" />
+                  ) : (
+                      <>
+                          <Save className="mr-2 h-4 w-4" />
+                          Save Notes
+                      </>
+                  )}
+              </Button>
+            )}
         </CardFooter>
       </Card>
       
