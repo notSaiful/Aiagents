@@ -253,59 +253,53 @@ export default function Home() {
         </p>
       </div>
 
-      <form onSubmit={handleYoutubeSubmit} className="flex gap-2 mb-4">
-          <Input 
-              type="url"
-              placeholder="Paste a YouTube video URL to get started..."
-              value={youtubeUrl}
-              onChange={(e) => setYoutubeUrl(e.target.value)}
-              disabled={isLoading}
-              className="h-12"
-          />
-          <Button type="submit" disabled={isLoading || !youtubeUrl} className="h-12 px-5">
-              {isTranscribing ? <LoaderCircle className="animate-spin" /> : <Youtube />}
-              <span className="sr-only">Transcribe</span>
-          </Button>
-      </form>
-      
-      <p className="text-center text-muted-foreground text-sm mb-4">...or paste your notes below.</p>
-
-
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
         <CardContent className="p-4">
             <Textarea
-              placeholder="Your video transcript or pasted notes will appear here..."
+              placeholder="Paste your notes here, or upload a file or YouTube link below..."
               className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-2"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               disabled={isLoading}
             />
         </CardContent>
-        <CardFooter className="p-4 pt-0 flex justify-start">
-             <div className="flex justify-start">
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                    accept="image/png,image/jpeg,application/pdf"
-                />
-                <Button
-                    onClick={handleUploadClick}
+        <CardFooter className="p-4 pt-0 flex flex-wrap items-center justify-start gap-4">
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/png,image/jpeg,application/pdf"
+            />
+            <Button
+                onClick={handleUploadClick}
+                disabled={isLoading}
+                variant="ghost"
+                className="h-10 rounded-full px-4 text-muted-foreground hover:text-foreground"
+            >
+              {isUploading ? (
+                <LoaderCircle className="animate-spin" />
+              ) : (
+                <>
+                  <Upload className="h-5 w-5 mr-2" />
+                  Upload Notes
+                </>
+              )}
+            </Button>
+            <form onSubmit={handleYoutubeSubmit} className="flex-grow sm:flex-grow-0 flex items-center gap-2">
+                <Input 
+                    type="url"
+                    placeholder="or paste a YouTube URL..."
+                    value={youtubeUrl}
+                    onChange={(e) => setYoutubeUrl(e.target.value)}
                     disabled={isLoading}
-                    variant="ghost"
-                    className="h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
-                >
-                  {isUploading ? (
-                    <LoaderCircle className="animate-spin" />
-                  ) : (
-                    <>
-                      <Upload className="h-5 w-5 mr-2" />
-                      Upload
-                    </>
-                  )}
+                    className="h-10 max-w-xs"
+                />
+                <Button type="submit" disabled={isLoading || !youtubeUrl} size="icon" className="h-10 w-10">
+                    {isTranscribing ? <LoaderCircle className="animate-spin" /> : <Youtube />}
+                    <span className="sr-only">Transcribe</span>
                 </Button>
-            </div>
+            </form>
         </CardFooter>
       </Card>
       
@@ -341,5 +335,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
