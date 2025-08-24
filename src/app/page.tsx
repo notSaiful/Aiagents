@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LoaderCircle, Upload } from 'lucide-react';
+import { Sparkles, LoaderCircle, Upload, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -13,10 +13,12 @@ import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
 import { generatePodcast } from '@/ai/flows/generate-podcast';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
+import { extractTranscriptFromYoutube } from '@/ai/flows/youtube-to-notes';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
 import type { Flashcard, Podcast } from '@/types';
+import { Input } from '@/components/ui/input';
 
 interface AIOutput {
   shortSummary: string;
@@ -32,6 +34,8 @@ export default function Home() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
   const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
   const { toast } = useToast();
@@ -150,6 +154,45 @@ export default function Home() {
       }
     }
   };
+  
+  const handleYoutubeSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!youtubeUrl.trim()) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a YouTube URL.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    setIsTranscribing(true);
+    setOutput(null);
+    setNotes('');
+    toast({
+        title: 'Transcribing YouTube Video...',
+        description: 'This may take a few moments. Please wait.',
+    });
+
+    try {
+        const { transcript } = await extractTranscriptFromYoutube({ youtubeUrl });
+        setNotes(transcript);
+        toast({
+            title: 'Transcription Complete!',
+            description: 'Your notes from the video are ready to be transformed.',
+        });
+    } catch (error) {
+        console.error('YouTube transcription failed:', error);
+        toast({
+            title: 'Transcription Failed',
+            description: 'Could not process the YouTube video. Please check the URL and try again.',
+            variant: 'destructive',
+        });
+    } finally {
+        setIsTranscribing(false);
+        setYoutubeUrl('');
+    }
+  };
 
   const renderContent = () => {
     if (loading) {
@@ -197,6 +240,8 @@ export default function Home() {
     return null;
   }
 
+  const isLoading = loading || isUploading || isTranscribing;
+
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
       <div className="flex flex-col items-center text-center mb-8">
@@ -204,18 +249,36 @@ export default function Home() {
           NotesGPT
         </h1>
         <p className="mt-3 text-lg text-muted-foreground max-w-xl">
-          Instantly transform your raw notes into beautiful summaries, flashcards, and mind maps.
+          Instantly transform your raw notes—or a YouTube video—into beautiful summaries, flashcards, and mind maps.
         </p>
       </div>
+
+      <form onSubmit={handleYoutubeSubmit} className="flex gap-2 mb-4">
+          <Input 
+              type="url"
+              placeholder="Paste a YouTube video URL to get started..."
+              value={youtubeUrl}
+              onChange={(e) => setYoutubeUrl(e.target.value)}
+              disabled={isLoading}
+              className="h-12"
+          />
+          <Button type="submit" disabled={isLoading || !youtubeUrl} className="h-12 px-5">
+              {isTranscribing ? <LoaderCircle className="animate-spin" /> : <Youtube />}
+              <span className="sr-only">Transcribe</span>
+          </Button>
+      </form>
+      
+      <p className="text-center text-muted-foreground text-sm mb-4">...or paste your notes below.</p>
+
 
       <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
         <CardContent className="p-4">
             <Textarea
-              placeholder="Paste your notes here or upload a file..."
+              placeholder="Your video transcript or pasted notes will appear here..."
               className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-2"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              disabled={loading || isUploading}
+              disabled={isLoading}
             />
         </CardContent>
         <CardFooter className="p-4 pt-0 flex justify-start">
@@ -229,7 +292,7 @@ export default function Home() {
                 />
                 <Button
                     onClick={handleUploadClick}
-                    disabled={loading || isUploading}
+                    disabled={isLoading}
                     variant="ghost"
                     className="h-8 rounded-full px-3 text-muted-foreground hover:text-foreground"
                 >
@@ -261,7 +324,7 @@ export default function Home() {
         </div>
 
         <div className="w-full">
-            <Button onClick={handleTransform} disabled={loading || isUploading || !notes} className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button onClick={handleTransform} disabled={isLoading || !notes} className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
             {loading ? (
                 <LoaderCircle className="animate-spin" />
             ) : (
@@ -278,3 +341,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
