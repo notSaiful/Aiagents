@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LoaderCircle, Upload, Youtube } from 'lucide-react';
+import { Sparkles, LoaderCircle, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -13,12 +13,10 @@ import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
 import { generatePodcast } from '@/ai/flows/generate-podcast';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
-import { generateNotesFromYoutube } from '@/ai/flows/generate-notes-from-youtube';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
 import type { Flashcard, Podcast } from '@/types';
-import { Input } from '@/components/ui/input';
 
 interface AIOutput {
   shortSummary: string;
@@ -32,7 +30,6 @@ type NoteStyle = 'Minimalist' | 'Story' | 'Action' | 'Formal';
 
 export default function Home() {
   const [notes, setNotes] = useState('');
-  const [youtubeUrl, setYoutubeUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
@@ -61,73 +58,39 @@ export default function Home() {
     setLoading(true);
     setOutput(null);
 
-    // Scenario 1: Process YouTube URL
-    if (youtubeUrl.trim()) {
-        toast({
-            title: 'Processing YouTube Video...',
-            description: 'This may take a few moments. We are transcribing and generating all materials for you.',
-        });
-        try {
-            const result = await generateNotesFromYoutube({ youtubeUrl, style });
-            setNotes(result.transcript);
-            setOutput({
-              shortSummary: result.shortSummary,
-              longSummary: result.longSummary,
-              flashcards: result.flashcards,
-              mindMap: result.mindMap,
-            });
-            toast({
-                title: 'YouTube Processing Complete!',
-                description: 'Your new study materials are ready.',
-            });
-        } catch (error) {
-            console.error('YouTube processing failed:', error);
-            toast({
-                title: 'Processing Failed',
-                description: 'Could not process the YouTube video. Please check the URL and try again.',
-                variant: 'destructive',
-            });
-        } finally {
-            setLoading(false);
-        }
-        return;
-    }
-
-    // Scenario 2: Process text notes
-    if (notes.trim()) {
-      try {
-        const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
-          summarizeNotes({ notes, style }),
-          generateFlashcards({ notes, style }),
-          createMindMap({ notes, style }),
-        ]);
-
-        setOutput({
-          shortSummary: summaryRes.shortSummary,
-          longSummary: summaryRes.longSummary,
-          flashcards: flashcardsRes.flashcards,
-          mindMap: mindMapRes.mindMap,
-        });
-      } catch (error) {
-        console.error('Transformation failed:', error);
-        toast({
-          title: 'Transformation Failed',
-          description: 'An error occurred while transforming your notes. Please try again.',
-          variant: 'destructive',
-        });
-      } finally {
-        setLoading(false);
-      }
+    if (!notes.trim()) {
+      toast({
+        title: 'Error',
+        description: 'Please paste or upload your notes before transforming.',
+        variant: 'destructive',
+      });
+      setLoading(false);
       return;
     }
-    
-    // Scenario 3: Nothing to process
-    toast({
-      title: 'Error',
-      description: 'Please paste notes or provide a YouTube URL before transforming.',
-      variant: 'destructive',
-    });
-    setLoading(false);
+
+    try {
+      const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
+        summarizeNotes({ notes, style }),
+        generateFlashcards({ notes, style }),
+        createMindMap({ notes, style }),
+      ]);
+
+      setOutput({
+        shortSummary: summaryRes.shortSummary,
+        longSummary: summaryRes.longSummary,
+        flashcards: flashcardsRes.flashcards,
+        mindMap: mindMapRes.mindMap,
+      });
+    } catch (error) {
+      console.error('Transformation failed:', error);
+      toast({
+        title: 'Transformation Failed',
+        description: 'An error occurred while transforming your notes. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGeneratePodcast = async () => {
@@ -158,7 +121,6 @@ export default function Home() {
       setIsUploading(true);
       setOutput(null);
       setNotes('');
-      setYoutubeUrl('');
       toast({
         title: 'Processing Upload...',
         description: `Extracting text from ${file.name}.`,
@@ -242,7 +204,7 @@ export default function Home() {
           NotesGPT
         </h1>
         <p className="mt-2 max-w-xl text-md text-muted-foreground">
-          Instantly transform your raw notes—or a YouTube video—into beautiful summaries, flashcards, and mind maps.
+          Instantly transform your raw notes into beautiful summaries, flashcards, and mind maps.
         </p>
       </div>
 
@@ -252,10 +214,7 @@ export default function Home() {
               placeholder="Paste your notes here to get started..."
               className="min-h-[150px] resize-none border-0 bg-transparent p-2 text-base shadow-none focus-visible:ring-0"
               value={notes}
-              onChange={(e) => {
-                setNotes(e.target.value);
-                if (e.target.value) setYoutubeUrl('');
-              }}
+              onChange={(e) => setNotes(e.target.value)}
               disabled={isLoading}
             />
         </CardContent>
@@ -283,21 +242,6 @@ export default function Home() {
                 </>
               )}
             </Button>
-            
-            <div className="flex items-center gap-2 flex-grow">
-                <Youtube className="h-5 w-5 text-muted-foreground"/>
-                <Input 
-                    type="url"
-                    placeholder="or paste a YouTube URL"
-                    value={youtubeUrl}
-                    onChange={(e) => {
-                        setYoutubeUrl(e.target.value);
-                        if (e.target.value) setNotes('');
-                    }}
-                    disabled={isLoading}
-                    className="h-9 flex-grow"
-                />
-            </div>
         </CardFooter>
       </Card>
       
@@ -317,7 +261,7 @@ export default function Home() {
         </div>
 
         <div className="w-full">
-            <Button onClick={handleTransform} disabled={isLoading || (!notes && !youtubeUrl)} className="w-full rounded-xl bg-accent py-5 text-lg font-semibold text-accent-foreground shadow-lg hover:bg-accent/90">
+            <Button onClick={handleTransform} disabled={isLoading || !notes} className="w-full rounded-xl bg-accent py-5 text-lg font-semibold text-accent-foreground shadow-lg hover:bg-accent/90">
             {loading ? (
                 <LoaderCircle className="animate-spin" />
             ) : (
