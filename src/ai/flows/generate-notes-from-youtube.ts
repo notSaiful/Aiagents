@@ -11,7 +11,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { media } from 'genkit';
 
 // Import the functions from other flows to reuse them
 import { summarizeNotes } from './summarize-notes';
@@ -53,7 +52,7 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
   },
   async ({ youtubeUrl, style }) => {
 
-    // 1. Transcribe the video using Gemini 1.5 Pro's multimodal capabilities
+    // 1. Transcribe the video using Gemini 1.5 Flash's multimodal capabilities
     const { text: transcript } = await ai.generate({
       prompt: `Please transcribe the following YouTube video. Provide a clean, accurate transcript.
         Remove filler words like "um" and "uh."
@@ -71,7 +70,7 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
           ],
         },
       ],
-      model: 'googleai/gemini-1.5-pro-latest'
+      model: 'googleai/gemini-1.5-flash-latest'
     });
 
     if (!transcript) {
