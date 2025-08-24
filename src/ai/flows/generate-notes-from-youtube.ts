@@ -54,11 +54,14 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
 
     // 1. Transcribe the video using Gemini 1.5 Flash's multimodal capabilities
     const { text: transcript } = await ai.generate({
-      prompt: `Please transcribe the following YouTube video. Provide a clean, accurate transcript of the video's audio content.
-        Remove filler words like "um" and "uh."
-        Ensure the output is well-structured and easy to read.
-        If the video has no discernible speech, return an empty string.
-        Do NOT transcribe the URL itself; process the video content referenced by the URL.`,
+      prompt: `You are a highly specialized AI assistant for video transcription. Your ONLY task is to process the video content from the provided URL and produce a clean, accurate transcript.
+
+Follow these rules STRICTLY:
+1.  You MUST transcribe the audio content of the video found at the URL.
+2.  Do NOT transcribe the URL itself.
+3.  Remove all filler words like "um," "uh," "like," etc.
+4.  If the video contains no discernible speech or is otherwise inaccessible, you MUST return the exact string "ERROR_NO_SPEECH_DETECTED". Do not output any other text.
+5.  Your entire output must be ONLY the cleaned transcript or the error string. Do not add any commentary, headings, or explanations.`,
       history: [
         {
           role: 'user',
@@ -66,6 +69,7 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
             {
                 media: {
                     url: youtubeUrl,
+                    contentType: 'video/youtube',
                 }
             },
           ],
@@ -74,8 +78,8 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
       model: 'googleai/gemini-1.5-flash-latest'
     });
 
-    if (!transcript || transcript.includes('youtube.com')) {
-        throw new Error('Could not transcribe the video. It may not contain detectable speech, the URL may be invalid, or the model failed to process the video content.');
+    if (!transcript || transcript.includes('ERROR_NO_SPEECH_DETECTED') || transcript.length < 20) {
+        throw new Error('Could not generate a transcript from the video. The video may be inaccessible, have no detectable speech, or the URL may be invalid.');
     }
 
     // 2. Generate all notes in parallel from the transcript
