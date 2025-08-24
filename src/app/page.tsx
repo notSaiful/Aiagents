@@ -13,7 +13,7 @@ import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
 import { generatePodcast } from '@/ai/flows/generate-podcast';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
-import { extractTranscriptFromYoutube } from '@/ai/flows/youtube-to-notes';
+import { generateNotesFromYoutube } from '@/ai/flows/generate-notes-from-youtube';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
@@ -34,7 +34,7 @@ export default function Home() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isProcessingYoutube, setIsProcessingYoutube] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
@@ -166,36 +166,43 @@ export default function Home() {
       return;
     }
     
-    setIsTranscribing(true);
+    setIsProcessingYoutube(true);
     setOutput(null);
     setNotes('');
     toast({
-        title: 'Transcribing YouTube Video...',
-        description: 'This may take a few moments. Please wait.',
+        title: 'Processing YouTube Video...',
+        description: 'This may take a few moments. We are transcribing and generating all materials for you.',
     });
 
     try {
-        const { transcript } = await extractTranscriptFromYoutube({ youtubeUrl });
-        setNotes(transcript);
+        const result = await generateNotesFromYoutube({ youtubeUrl, style });
+        setNotes(result.transcript);
+        setOutput({
+          shortSummary: result.shortSummary,
+          longSummary: result.longSummary,
+          flashcards: result.flashcards,
+          mindMap: result.mindMap,
+        });
+
         toast({
-            title: 'Transcription Complete!',
-            description: 'Your notes from the video are ready to be transformed.',
+            title: 'YouTube Processing Complete!',
+            description: 'Your new study materials are ready.',
         });
     } catch (error) {
-        console.error('YouTube transcription failed:', error);
+        console.error('YouTube processing failed:', error);
         toast({
-            title: 'Transcription Failed',
+            title: 'Processing Failed',
             description: 'Could not process the YouTube video. Please check the URL and try again.',
             variant: 'destructive',
         });
     } finally {
-        setIsTranscribing(false);
+        setIsProcessingYoutube(false);
         setYoutubeUrl('');
     }
   };
 
   const renderContent = () => {
-    if (loading) {
+    if (loading || isProcessingYoutube) {
       return (
         <div className="w-full space-y-4">
           <Skeleton className="h-8 w-1/3" />
@@ -240,30 +247,30 @@ export default function Home() {
     return null;
   }
 
-  const isLoading = loading || isUploading || isTranscribing;
+  const isLoading = loading || isUploading || isProcessingYoutube;
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
-      <div className="flex flex-col items-center text-center mb-6">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-chart-1 via-chart-3 to-chart-5 pt-4 font-serif">
+      <div className="mb-6 flex flex-col items-center text-center">
+        <h1 className="pt-4 font-serif text-4xl font-bold tracking-tight text-transparent bg-gradient-to-r from-chart-1 via-chart-3 to-chart-5 bg-clip-text md:text-5xl">
           NotesGPT
         </h1>
-        <p className="mt-2 text-md text-muted-foreground max-w-xl">
+        <p className="mt-2 max-w-xl text-md text-muted-foreground">
           Instantly transform your raw notes—or a YouTube video—into beautiful summaries, flashcards, and mind maps.
         </p>
       </div>
 
-      <Card className="w-full shadow-lg border-2 border-primary/40 rounded-xl">
+      <Card className="w-full rounded-xl border-2 border-primary/40 shadow-lg">
         <CardContent className="p-4">
             <Textarea
               placeholder="Paste your notes here, or upload a file or YouTube link below..."
-              className="min-h-[180px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-2"
+              className="min-h-[180px] resize-none border-0 bg-transparent p-2 text-base shadow-none focus-visible:ring-0"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               disabled={isLoading}
             />
         </CardContent>
-        <CardFooter className="p-4 pt-0 flex flex-wrap items-center justify-start gap-2">
+        <CardFooter className="flex flex-wrap items-center justify-start gap-2 p-4 pt-0">
             <input
                 type="file"
                 ref={fileInputRef}
@@ -282,12 +289,12 @@ export default function Home() {
                 <LoaderCircle className="animate-spin" />
               ) : (
                 <>
-                  <Upload className="h-4 w-4 mr-2" />
+                  <Upload className="mr-2 h-4 w-4" />
                   Upload Notes
                 </>
               )}
             </Button>
-            <form onSubmit={handleYoutubeSubmit} className="flex-grow sm:flex-grow-0 flex items-center gap-2">
+            <form onSubmit={handleYoutubeSubmit} className="flex flex-grow items-center gap-2 sm:flex-grow-0">
                 <Input 
                     type="url"
                     placeholder="or paste a YouTube URL..."
@@ -297,7 +304,7 @@ export default function Home() {
                     className="h-9 max-w-xs"
                 />
                 <Button type="submit" disabled={isLoading || !youtubeUrl} size="icon" className="h-9 w-9">
-                    {isTranscribing ? <LoaderCircle className="animate-spin" /> : <Youtube className="h-5 w-5" />}
+                    {isProcessingYoutube ? <LoaderCircle className="animate-spin" /> : <Youtube className="h-5 w-5" />}
                     <span className="sr-only">Transcribe</span>
                 </Button>
             </form>
@@ -320,7 +327,7 @@ export default function Home() {
         </div>
 
         <div className="w-full">
-            <Button onClick={handleTransform} disabled={isLoading || !notes} className="w-full font-semibold text-lg py-5 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button onClick={handleTransform} disabled={isLoading || !notes} className="w-full rounded-xl bg-accent py-5 text-lg font-semibold text-accent-foreground shadow-lg hover:bg-accent/90">
             {loading ? (
                 <LoaderCircle className="animate-spin" />
             ) : (
@@ -337,5 +344,4 @@ export default function Home() {
     </div>
   );
 }
-
     

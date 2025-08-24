@@ -8,6 +8,6 @@ import '@/ai/flows/summarize-notes.ts';
 import '@/ai/flows/extract-text-from-image.ts';
 import '@/ai/flows/share-generation.ts';
 import '@/ai/flows/generate-podcast.ts';
-import '@/ai/flows/youtube-to-notes.ts';
+import '@/ai/flows/generate-notes-from-youtube.ts';
 
     
