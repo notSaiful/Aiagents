@@ -29,80 +29,107 @@ export async function createMindMap(input: CreateMindMapInput): Promise<CreateMi
 }
 
 const minimalistStyleInstructions = `
-Instructions for Minimalist / Quick Review style:
-- Vibe: Calm, organized, efficient. ✨📌🌸
-- Create a mind map with a central idea and clear, structured nodes in a horizontal layout.
-- Use Mermaid mindmap syntax.
-- Keep it SHORT, CONCISE, and BEAUTIFUL, stripping away clutter.
-- Prioritize clarity and exam-readiness.
-- Incorporate concise, motivational phrases or short, clever slogans where they naturally fit the content.
-- The first line must be "mindmap".
-- The root node MUST be wrapped in double parentheses, like this: root((Central Idea)). This is a strict rule.
-- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
-- All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
-- Ensure all text within nodes is properly escaped for Mermaid syntax.
+You are an AI study assistant specializing in creating minimalist and efficient mind maps.
+Follow these rules strictly to ensure a valid Mermaid mind map:
 
-Example of a valid mindmap:
-mindmap
-  root(("Photosynthesis 'The Spark of Life' 🌱"))
-    CoreProcess("Core Process")
-      Inputs
-        CO2("CO₂")
-        H2O("H₂O")
-      EnergySource("Energy Source")
-        Sunlight("Sunlight ☀️")
-      Outputs
-        Glucose
-        Oxygen
+**NON-NEGOTIABLE SYNTAX RULES:**
+1.  **Start with "mindmap"**: The very first line of your output must be the word \`mindmap\`.
+2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces and formatted like this: \`  root((Main Idea))\`.
+3.  **One Node Per Line**: Each node must be on its own line. NEVER place multiple nodes on the same line.
+4.  **Strict Indentation**: Use 4 spaces for each level of indentation after the root.
+5.  **Quote Special Characters**: Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: \`id("Node text with: a colon")\`.
+6.  **No Extra Text**: Do not include any explanations, comments, or any text outside of the Mermaid syntax.
+
+**STYLE GUIDELINES (Minimalist):**
+- **Vibe**: Calm, organized, efficient. ✨📌🌸
+- **Content**: Prioritize clarity and exam-readiness. Keep it short, concise, and beautiful by stripping away clutter.
+- **Example**:
+    mindmap
+      root(("Photosynthesis 'The Spark of Life' 🌱"))
+        CoreProcess("Core Process")
+          Inputs
+            CO2("CO₂")
+            H2O("H₂O")
+        EnergySource("Energy Source")
+          Sunlight("Sunlight ☀️")
 `;
 
 const storyStyleInstructions = `
-Instructions for Story (K-Drama & Pop Culture) style:
-- Vibe: Emotional, engaging, memorable. 💖🎭📚
-- Create a mind map that follows a narrative structure in a horizontal layout.
-- Use Mermaid mindmap syntax.
-- The central idea is the "Main Plot" or "Protagonist's Goal." Frame it with a pop culture analogy (e.g., "Defeating the Demogorgon").
-- Main branches are the "Acts" or "Character Arcs." Use iconic dialogues or thematic quotes as node text to illustrate the concepts.
-- Use emojis like 💖, 🎭, 💥, 📚 to tell the story.
-- The first line must be "mindmap".
-- The root node MUST be wrapped in double parentheses, like this: root((The Hero's Journey 🎭)). This is a strict rule.
-- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
-- All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
-- Ensure all text within nodes is properly escaped for Mermaid syntax.
+You are an AI study assistant specializing in creating engaging, story-driven mind maps.
+Follow these rules strictly to ensure a valid Mermaid mind map:
+
+**NON-NEGOTIABLE SYNTAX RULES:**
+1.  **Start with "mindmap"**: The very first line of your output must be the word \`mindmap\`.
+2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces and formatted like this: \`  root((Main Idea))\`.
+3.  **One Node Per Line**: Each node must be on its own line. NEVER place multiple nodes on the same line.
+4.  **Strict Indentation**: Use 4 spaces for each level of indentation after the root.
+5.  **Quote Special Characters**: Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: \`id("Node text with: a colon")\`.
+6.  **No Extra Text**: Do not include any explanations, comments, or any text outside of the Mermaid syntax.
+
+**STYLE GUIDELINES (Story):**
+- **Vibe**: Emotional, engaging, memorable. 💖🎭📚
+- **Content**: Frame the central idea as a "Main Plot" or "Protagonist's Goal." Main branches are "Acts" or "Character Arcs." Use pop culture analogies or iconic dialogues.
+- **Example**:
+    mindmap
+      root(("The Hero's Journey 🎭"))
+        Act1("Act 1: The Ordinary World")
+          TheCall("The Call to Adventure")
+          Refusal("Refusal of the Call")
+        Act2("Act 2: The Special World")
+          Allies("Meeting Allies & Enemies")
+          TheOrdeal("The Ordeal 💥")
 `;
 
 const actionStyleInstructions = `
-Instructions for Bold / Action-Oriented (Avengers Style):
-- Vibe: Dramatic, powerful, energetic. Inspired by Avengers, Justice League, and superhero comics. ⚡🔥🛡️
-- **Heroic Analogy:** Represent key concepts as part of a battle plan.
-- **Action Words:** Use energetic verbs (e.g., conquer, defeat, unleash).
-- **Visual Punch:** Use emojis like ⚡🔥🛡️🏹.
-- Create a mind map that feels like a superhero's mission briefing in a horizontal layout. The mind map should tell a story of a mission, from the setup to the final battle.
-- Use Mermaid mindmap syntax.
-- The central idea is the "Mission Control Center" or "Primary Mission." It sets the stage for the entire operation.
-- Main branches are the "Phases" or "Allies" of the mission (e.g., "Phase 1: The Recon," "Allied Forces").
-- Connect concepts like they are mission objectives, enemy weak points, or strategic assets.
-- The first line must be "mindmap".
-- The root node MUST be wrapped in double parentheses, like this: root((Mission: Defeat Thanos 💥)). This is a strict rule.
-- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
-- All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
-- Ensure all text within nodes is properly escaped for Mermaid syntax.
+You are an AI study assistant specializing in creating action-oriented, high-energy mind maps.
+Follow these rules strictly to ensure a valid Mermaid mind map:
+
+**NON-NEGOTIABLE SYNTAX RULES:**
+1.  **Start with "mindmap"**: The very first line of your output must be the word \`mindmap\`.
+2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces and formatted like this: \`  root((Main Idea))\`.
+3.  **One Node Per Line**: Each node must be on its own line. NEVER place multiple nodes on the same line.
+4.  **Strict Indentation**: Use 4 spaces for each level of indentation after the root.
+5.  **Quote Special Characters**: Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: \`id("Mission: Defeat the Villain")\`. This is especially important for this style.
+6.  **No Extra Text**: Do not include any explanations, comments, or any text outside of the Mermaid syntax.
+
+**STYLE GUIDELINES (Action):**
+- **Vibe**: Dramatic, powerful, energetic. ⚡🔥🛡️
+- **Content**: Frame the content as a mission. The central idea is the "Mission HQ" or "Primary Objective." Main branches are "Phases" or "Allies." Use energetic verbs and heroic analogies.
+- **Example**:
+    mindmap
+      root(("Mission: Defeat Thanos 💥"))
+        Phase1("Phase 1: The Recon")
+          Intel("Gathering Intel")
+          Team("Assembling the Team")
+        Phase2("Phase 2: The Gauntlet")
+          Stones("Securing the Infinity Stones")
+          FirstBattle("The First Battle 🔥")
 `;
 
 const formalStyleInstructions = `
-Instructions for Formal / Academic style:
-- Vibe: Professional, reliable, scholarly. 🏛️📑📌
-- Create a logical, hierarchical mind map in a horizontal layout, suitable for academic or professional use.
-- Use Mermaid mindmap syntax.
-- The central idea must be the core academic concept.
-- Branches should represent main topics and sub-topics in a structured manner.
-- Include famous academic quotes, proverbs, or authoritative statements that fit the concepts.
-- Avoid informal language and excessive emojis. Use only scholarly emojis like 🏛️, 📑, 📌 sparingly.
-- The first line must be "mindmap".
-- The root node MUST be wrapped in double parentheses, like this: root((The Theory of Relativity 🏛️)). This is a strict rule.
-- Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: id("Node text with: a colon"). This is a strict rule.
-- All nodes MUST be indented under the root node to create a single, unified tree structure. There can only be one root.
-- Ensure all text within nodes is properly escaped for Mermaid syntax.
+You are an AI study assistant specializing in creating formal, academic mind maps.
+Follow these rules strictly to ensure a valid Mermaid mind map:
+
+**NON-NEGOTIABLE SYNTAX RULES:**
+1.  **Start with "mindmap"**: The very first line of your output must be the word \`mindmap\`.
+2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces and formatted like this: \`  root((Main Idea))\`.
+3.  **One Node Per Line**: Each node must be on its own line. NEVER place multiple nodes on the same line.
+4.  **Strict Indentation**: Use 4 spaces for each level of indentation after the root.
+5.  **Quote Special Characters**: Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: \`id("Chapter 1: Introduction")\`.
+6.  **No Extra Text**: Do not include any explanations, comments, or any text outside of the Mermaid syntax.
+
+**STYLE GUIDELINES (Formal):**
+- **Vibe**: Professional, reliable, scholarly. 🏛️📑📌
+- **Content**: Create a logical, hierarchical mind map. The central idea is the core academic concept. Branches represent main topics and sub-topics.
+- **Example**:
+    mindmap
+      root(("The Theory of Relativity 🏛️"))
+        Special("Special Relativity")
+          Postulate1("First Postulate")
+          Postulate2("Second Postulate")
+        General("General Relativity")
+          Equivalence("Equivalence Principle")
+          FieldEquations("Einstein's Field Equations")
 `;
 
 const createMindMapFlow = ai.defineFlow(
@@ -123,21 +150,19 @@ const createMindMapFlow = ai.defineFlow(
       styleInstructions = formalStyleInstructions;
     }
 
-    const prompt = ai.definePrompt({
+    const mindMapPrompt = ai.definePrompt({
       name: 'createMindMapPrompt',
       output: {schema: CreateMindMapOutputSchema},
-      prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Create a mind map from the notes in a ${input.style} style.
+      prompt: `${styleInstructions}
 
-${styleInstructions}
-
-The output must be a valid Mermaid mindmap string. Do not include any other text or explanations.
 First, correct any spelling and grammar mistakes from the notes, then generate the mind map based on the corrected text.
 
-Notes: ${input.notes}
+Notes:
+${input.notes}
 `,
     });
 
-    const {output} = await prompt({});
+    const {output} = await mindMapPrompt({});
     return output!;
   }
 );
