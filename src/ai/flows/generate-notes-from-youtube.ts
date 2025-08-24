@@ -53,10 +53,6 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
     outputSchema: GenerateNotesFromYoutubeOutputSchema,
   },
   async ({ youtubeUrl, style }) => {
-    if (!ytdl.validateURL(youtubeUrl)) {
-      throw new Error('Invalid YouTube URL provided.');
-    }
-
     // 1. Download Audio
     const audioStream = ytdl(youtubeUrl, {
       filter: 'audioonly',
