@@ -13,24 +13,11 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import ytdl from 'ytdl-core';
 import { media } from 'genkit';
-import type { Flashcard } from '@/types';
 
-// Import schemas and style instructions from other flows to reuse them
-import { 
-  SummarizeNotesInputSchema,
-  SummarizeNotesOutputSchema,
-  summarizeNotes,
-} from './summarize-notes';
-import {
-  GenerateFlashcardsInputSchema,
-  GenerateFlashcardsOutputSchema,
-  generateFlashcards,
-} from './generate-flashcards';
-import {
-  CreateMindMapInputSchema,
-  CreateMindMapOutputSchema,
-  createMindMap,
-} from './create-mind-map';
+// Import the functions from other flows to reuse them
+import { summarizeNotes } from './summarize-notes';
+import { generateFlashcards } from './generate-flashcards';
+import { createMindMap } from './create-mind-map';
 
 
 const GenerateNotesFromYoutubeInputSchema = z.object({
