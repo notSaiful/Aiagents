@@ -244,11 +244,11 @@ export default function Home() {
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
-      <div className="flex flex-col items-center text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-chart-1 via-chart-3 to-chart-5 pt-8 font-serif">
+      <div className="flex flex-col items-center text-center mb-6">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-chart-1 via-chart-3 to-chart-5 pt-4 font-serif">
           NotesGPT
         </h1>
-        <p className="mt-3 text-lg text-muted-foreground max-w-xl">
+        <p className="mt-2 text-md text-muted-foreground max-w-xl">
           Instantly transform your raw notes—or a YouTube video—into beautiful summaries, flashcards, and mind maps.
         </p>
       </div>
@@ -257,13 +257,13 @@ export default function Home() {
         <CardContent className="p-4">
             <Textarea
               placeholder="Paste your notes here, or upload a file or YouTube link below..."
-              className="min-h-[200px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-2"
+              className="min-h-[180px] text-base border-0 focus-visible:ring-0 shadow-none bg-transparent resize-none p-2"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               disabled={isLoading}
             />
         </CardContent>
-        <CardFooter className="p-4 pt-0 flex flex-wrap items-center justify-start gap-4">
+        <CardFooter className="p-4 pt-0 flex flex-wrap items-center justify-start gap-2">
             <input
                 type="file"
                 ref={fileInputRef}
@@ -275,13 +275,14 @@ export default function Home() {
                 onClick={handleUploadClick}
                 disabled={isLoading}
                 variant="ghost"
-                className="h-10 rounded-full px-4 text-muted-foreground hover:text-foreground"
+                size="sm"
+                className="rounded-full px-4 text-muted-foreground hover:text-foreground"
             >
               {isUploading ? (
                 <LoaderCircle className="animate-spin" />
               ) : (
                 <>
-                  <Upload className="h-5 w-5 mr-2" />
+                  <Upload className="h-4 w-4 mr-2" />
                   Upload Notes
                 </>
               )}
@@ -293,17 +294,17 @@ export default function Home() {
                     value={youtubeUrl}
                     onChange={(e) => setYoutubeUrl(e.target.value)}
                     disabled={isLoading}
-                    className="h-10 max-w-xs"
+                    className="h-9 max-w-xs"
                 />
-                <Button type="submit" disabled={isLoading || !youtubeUrl} size="icon" className="h-10 w-10">
-                    {isTranscribing ? <LoaderCircle className="animate-spin" /> : <Youtube />}
+                <Button type="submit" disabled={isLoading || !youtubeUrl} size="icon" className="h-9 w-9">
+                    {isTranscribing ? <LoaderCircle className="animate-spin" /> : <Youtube className="h-5 w-5" />}
                     <span className="sr-only">Transcribe</span>
                 </Button>
             </form>
         </CardFooter>
       </Card>
       
-      <div className="mt-6 flex flex-col items-center gap-4">
+      <div className="mt-4 flex flex-col items-center gap-4">
         <div className="flex flex-wrap justify-center gap-2">
           {(['Minimalist', 'Story', 'Action', 'Formal'] as NoteStyle[]).map((styleName) => (
             <Button
@@ -311,6 +312,7 @@ export default function Home() {
               variant={style === styleName ? 'default' : 'outline'}
               onClick={() => setStyle(styleName)}
               className="rounded-full"
+              size="sm"
             >
               {styleName}
             </Button>
@@ -318,7 +320,7 @@ export default function Home() {
         </div>
 
         <div className="w-full">
-            <Button onClick={handleTransform} disabled={isLoading || !notes} className="w-full font-semibold text-lg py-6 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button onClick={handleTransform} disabled={isLoading || !notes} className="w-full font-semibold text-lg py-5 rounded-xl shadow-lg bg-accent text-accent-foreground hover:bg-accent/90">
             {loading ? (
                 <LoaderCircle className="animate-spin" />
             ) : (
@@ -329,9 +331,11 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="mt-12 min-h-[300px] w-full">
+      <div className="mt-10 min-h-[300px] w-full">
         {renderContent()}
       </div>
     </div>
   );
 }
+
+    
