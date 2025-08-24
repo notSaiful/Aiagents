@@ -54,10 +54,11 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
 
     // 1. Transcribe the video using Gemini 1.5 Flash's multimodal capabilities
     const { text: transcript } = await ai.generate({
-      prompt: `Please transcribe the following YouTube video. Provide a clean, accurate transcript.
+      prompt: `Please transcribe the following YouTube video. Provide a clean, accurate transcript of the video's audio content.
         Remove filler words like "um" and "uh."
         Ensure the output is well-structured and easy to read.
-        If the video has no discernible speech, return an empty string.`,
+        If the video has no discernible speech, return an empty string.
+        Do NOT transcribe the URL itself; process the video content referenced by the URL.`,
       history: [
         {
           role: 'user',
@@ -73,8 +74,8 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
       model: 'googleai/gemini-1.5-flash-latest'
     });
 
-    if (!transcript) {
-        throw new Error('Could not transcribe the video. It may not contain detectable speech or the URL may be invalid.');
+    if (!transcript || transcript.includes('youtube.com')) {
+        throw new Error('Could not transcribe the video. It may not contain detectable speech, the URL may be invalid, or the model failed to process the video content.');
     }
 
     // 2. Generate all notes in parallel from the transcript
