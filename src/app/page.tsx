@@ -89,7 +89,6 @@ export default function Home() {
             });
         } finally {
             setLoading(false);
-            setYoutubeUrl('');
         }
         return;
     }
@@ -207,7 +206,7 @@ export default function Home() {
       );
     }
     
-    if (output) {
+    if (output && (output.shortSummary || output.longSummary || output.flashcards || output.mindMap)) {
       return <OutputDisplay 
         shortSummary={output.shortSummary}
         longSummary={output.longSummary}
@@ -285,7 +284,7 @@ export default function Home() {
               )}
             </Button>
             
-            <div className="flex-grow sm:flex-grow-0 flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-grow">
                 <Youtube className="h-5 w-5 text-muted-foreground"/>
                 <Input 
                     type="url"
@@ -296,7 +295,7 @@ export default function Home() {
                         if (e.target.value) setNotes('');
                     }}
                     disabled={isLoading}
-                    className="h-9 max-w-xs"
+                    className="h-9 flex-grow"
                 />
             </div>
         </CardFooter>
