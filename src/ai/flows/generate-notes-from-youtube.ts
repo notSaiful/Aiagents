@@ -65,6 +65,10 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
     }
     const audioBuffer = Buffer.concat(chunks);
 
+    if (audioBuffer.length === 0) {
+        throw new Error('Failed to download audio from the YouTube URL. The video may be private, restricted, or unavailable.');
+    }
+
     // 2. Transcribe Audio
     const { text: transcript } = await ai.generate({
       prompt: 'Transcribe the following audio. Focus on accuracy and clarity, correcting any obvious errors and structuring the output for readability.',
@@ -82,7 +86,7 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
     });
 
     if (!transcript) {
-        throw new Error('Could not transcribe the audio.');
+        throw new Error('Could not transcribe the audio. The video might not contain detectable speech.');
     }
 
     // 3. Generate all notes in parallel from the transcript
