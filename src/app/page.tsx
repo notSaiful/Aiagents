@@ -32,10 +32,9 @@ type NoteStyle = 'Minimalist' | 'Story' | 'Action' | 'Formal';
 
 export default function Home() {
   const [notes, setNotes] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [isProcessingYoutube, setIsProcessingYoutube] = useState(false);
-  const [youtubeUrl, setYoutubeUrl] = useState('');
   const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
   const { toast } = useToast();
@@ -59,43 +58,77 @@ export default function Home() {
   };
 
   const handleTransform = async () => {
-    if (!notes.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please paste your notes before transforming.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     setLoading(true);
     setOutput(null);
 
-    try {
-      // Run all AI generation requests in parallel for faster results.
-      const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
-        summarizeNotes({ notes, style }),
-        generateFlashcards({ notes, style }),
-        createMindMap({ notes, style }),
-      ]);
-
-      // Update the state with all the new data at once.
-      setOutput({
-        shortSummary: summaryRes.shortSummary,
-        longSummary: summaryRes.longSummary,
-        flashcards: flashcardsRes.flashcards,
-        mindMap: mindMapRes.mindMap,
-      });
-    } catch (error) {
-      console.error('Transformation failed:', error);
-      toast({
-        title: 'Transformation Failed',
-        description: 'An error occurred while transforming your notes. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
+    // Scenario 1: Process YouTube URL
+    if (youtubeUrl.trim()) {
+        toast({
+            title: 'Processing YouTube Video...',
+            description: 'This may take a few moments. We are transcribing and generating all materials for you.',
+        });
+        try {
+            const result = await generateNotesFromYoutube({ youtubeUrl, style });
+            setNotes(result.transcript);
+            setOutput({
+              shortSummary: result.shortSummary,
+              longSummary: result.longSummary,
+              flashcards: result.flashcards,
+              mindMap: result.mindMap,
+            });
+            toast({
+                title: 'YouTube Processing Complete!',
+                description: 'Your new study materials are ready.',
+            });
+        } catch (error) {
+            console.error('YouTube processing failed:', error);
+            toast({
+                title: 'Processing Failed',
+                description: 'Could not process the YouTube video. Please check the URL and try again.',
+                variant: 'destructive',
+            });
+        } finally {
+            setLoading(false);
+            setYoutubeUrl('');
+        }
+        return;
     }
+
+    // Scenario 2: Process text notes
+    if (notes.trim()) {
+      try {
+        const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
+          summarizeNotes({ notes, style }),
+          generateFlashcards({ notes, style }),
+          createMindMap({ notes, style }),
+        ]);
+
+        setOutput({
+          shortSummary: summaryRes.shortSummary,
+          longSummary: summaryRes.longSummary,
+          flashcards: flashcardsRes.flashcards,
+          mindMap: mindMapRes.mindMap,
+        });
+      } catch (error) {
+        console.error('Transformation failed:', error);
+        toast({
+          title: 'Transformation Failed',
+          description: 'An error occurred while transforming your notes. Please try again.',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+    
+    // Scenario 3: Nothing to process
+    toast({
+      title: 'Error',
+      description: 'Please paste notes or provide a YouTube URL before transforming.',
+      variant: 'destructive',
+    });
+    setLoading(false);
   };
 
   const handleGeneratePodcast = async () => {
@@ -112,7 +145,6 @@ export default function Home() {
         description: 'An error occurred while creating your podcast. Please try again.',
         variant: 'destructive',
       });
-      // Re-throw to be caught by the caller in OutputDisplay
       throw error;
     }
   };
@@ -127,6 +159,7 @@ export default function Home() {
       setIsUploading(true);
       setOutput(null);
       setNotes('');
+      setYoutubeUrl('');
       toast({
         title: 'Processing Upload...',
         description: `Extracting text from ${file.name}.`,
@@ -155,54 +188,8 @@ export default function Home() {
     }
   };
   
-  const handleYoutubeSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!youtubeUrl.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please enter a YouTube URL.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    
-    setIsProcessingYoutube(true);
-    setOutput(null);
-    setNotes('');
-    toast({
-        title: 'Processing YouTube Video...',
-        description: 'This may take a few moments. We are transcribing and generating all materials for you.',
-    });
-
-    try {
-        const result = await generateNotesFromYoutube({ youtubeUrl, style });
-        setNotes(result.transcript);
-        setOutput({
-          shortSummary: result.shortSummary,
-          longSummary: result.longSummary,
-          flashcards: result.flashcards,
-          mindMap: result.mindMap,
-        });
-
-        toast({
-            title: 'YouTube Processing Complete!',
-            description: 'Your new study materials are ready.',
-        });
-    } catch (error) {
-        console.error('YouTube processing failed:', error);
-        toast({
-            title: 'Processing Failed',
-            description: 'Could not process the YouTube video. Please check the URL and try again.',
-            variant: 'destructive',
-        });
-    } finally {
-        setIsProcessingYoutube(false);
-        setYoutubeUrl('');
-    }
-  };
-
   const renderContent = () => {
-    if (loading || isProcessingYoutube) {
+    if (loading) {
       return (
         <div className="w-full space-y-4">
           <Skeleton className="h-8 w-1/3" />
@@ -247,11 +234,11 @@ export default function Home() {
     return null;
   }
 
-  const isLoading = loading || isUploading || isProcessingYoutube;
+  const isLoading = loading || isUploading;
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
-      <div className="mb-6 flex flex-col items-center text-center">
+      <div className="mb-4 flex flex-col items-center text-center">
         <h1 className="pt-4 font-serif text-4xl font-bold tracking-tight text-transparent bg-gradient-to-r from-chart-1 via-chart-3 to-chart-5 bg-clip-text md:text-5xl">
           NotesGPT
         </h1>
@@ -261,16 +248,19 @@ export default function Home() {
       </div>
 
       <Card className="w-full rounded-xl border-2 border-primary/40 shadow-lg">
-        <CardContent className="p-4">
+        <CardContent className="p-4 pb-0">
             <Textarea
-              placeholder="Paste your notes here, or upload a file or YouTube link below..."
-              className="min-h-[180px] resize-none border-0 bg-transparent p-2 text-base shadow-none focus-visible:ring-0"
+              placeholder="Paste your notes here to get started..."
+              className="min-h-[150px] resize-none border-0 bg-transparent p-2 text-base shadow-none focus-visible:ring-0"
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(e) => {
+                setNotes(e.target.value);
+                if (e.target.value) setYoutubeUrl('');
+              }}
               disabled={isLoading}
             />
         </CardContent>
-        <CardFooter className="flex flex-wrap items-center justify-start gap-2 p-4 pt-0">
+        <CardFooter className="flex flex-wrap items-center justify-start gap-2 p-4">
             <input
                 type="file"
                 ref={fileInputRef}
@@ -283,10 +273,10 @@ export default function Home() {
                 disabled={isLoading}
                 variant="ghost"
                 size="sm"
-                className="rounded-full px-4 text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground"
             >
               {isUploading ? (
-                <LoaderCircle className="animate-spin" />
+                <LoaderCircle className="h-4 w-4 animate-spin" />
               ) : (
                 <>
                   <Upload className="mr-2 h-4 w-4" />
@@ -294,24 +284,25 @@ export default function Home() {
                 </>
               )}
             </Button>
-            <form onSubmit={handleYoutubeSubmit} className="flex flex-grow items-center gap-2 sm:flex-grow-0">
+            
+            <div className="flex-grow sm:flex-grow-0 flex items-center gap-2">
+                <Youtube className="h-5 w-5 text-muted-foreground"/>
                 <Input 
                     type="url"
-                    placeholder="or paste a YouTube URL..."
+                    placeholder="or paste a YouTube URL"
                     value={youtubeUrl}
-                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                    onChange={(e) => {
+                        setYoutubeUrl(e.target.value);
+                        if (e.target.value) setNotes('');
+                    }}
                     disabled={isLoading}
                     className="h-9 max-w-xs"
                 />
-                <Button type="submit" disabled={isLoading || !youtubeUrl} size="icon" className="h-9 w-9">
-                    {isProcessingYoutube ? <LoaderCircle className="animate-spin" /> : <Youtube className="h-5 w-5" />}
-                    <span className="sr-only">Transcribe</span>
-                </Button>
-            </form>
+            </div>
         </CardFooter>
       </Card>
       
-      <div className="mt-4 flex flex-col items-center gap-4">
+      <div className="mt-4 flex flex-col items-center gap-3">
         <div className="flex flex-wrap justify-center gap-2">
           {(['Minimalist', 'Story', 'Action', 'Formal'] as NoteStyle[]).map((styleName) => (
             <Button
@@ -327,7 +318,7 @@ export default function Home() {
         </div>
 
         <div className="w-full">
-            <Button onClick={handleTransform} disabled={isLoading || !notes} className="w-full rounded-xl bg-accent py-5 text-lg font-semibold text-accent-foreground shadow-lg hover:bg-accent/90">
+            <Button onClick={handleTransform} disabled={isLoading || (!notes && !youtubeUrl)} className="w-full rounded-xl bg-accent py-5 text-lg font-semibold text-accent-foreground shadow-lg hover:bg-accent/90">
             {loading ? (
                 <LoaderCircle className="animate-spin" />
             ) : (
@@ -338,7 +329,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="mt-10 min-h-[300px] w-full">
+      <div className="mt-8 min-h-[300px] w-full">
         {renderContent()}
       </div>
     </div>
