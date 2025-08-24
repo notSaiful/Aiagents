@@ -31,7 +31,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
   const currentQuestion = questions[currentQuestionIndex];
 
   useEffect(() => {
-    if (gameOver) return;
+    if (gameOver || !currentQuestion) return;
 
     const interval = setInterval(() => {
         setTimer(prev => {
@@ -45,10 +45,10 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [currentQuestionIndex, gameOver]);
+  }, [currentQuestionIndex, gameOver, currentQuestion]);
 
   const handleAnswer = (answer: string | null) => {
-    if (selectedAnswer) return; // Prevent multiple answers
+    if (selectedAnswer || !currentQuestion) return; // Prevent multiple answers
 
     setSelectedAnswer(answer);
     let isCorrect = false;
@@ -73,11 +73,11 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
     }
     
     setTimeout(() => {
-      if (playerHealth <= 15 && isCorrect === false) {
-        setGameOver(true);
-      } else if (aiHealth <= (10 + (currentQuestion.difficulty * 5)) && isCorrect) {
-        setGameOver(true);
-      } else if (currentQuestionIndex === questions.length - 1) {
+      const isPlayerDefeated = playerHealth <= 15 && isCorrect === false;
+      const isAIDefeated = aiHealth <= (10 + (currentQuestion.difficulty * 5)) && isCorrect;
+      const isLastQuestion = currentQuestionIndex === questions.length - 1;
+
+      if (isPlayerDefeated || isAIDefeated || isLastQuestion) {
         setGameOver(true);
       } else {
         setCurrentQuestionIndex(prev => prev + 1);
@@ -136,37 +136,41 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
         </div>
         
         {/* Timer and Question Card */}
-        <Card className="relative overflow-hidden">
-            <div className="absolute top-2 right-2 font-bold text-lg bg-background/80 px-2 rounded-md">{timer}s</div>
-            <CardContent className="p-6">
-                <p className="text-sm text-muted-foreground mb-2">Question {currentQuestionIndex + 1} of {questions.length}</p>
-                <h3 className="text-xl font-semibold text-center min-h-[80px] flex items-center justify-center">
-                    {currentQuestion.question}
-                </h3>
-            </CardContent>
-        </Card>
-        
-        {/* Answer Options */}
-        <div className="grid grid-cols-2 gap-4 mt-6">
-            {currentQuestion.options.map((option, index) => (
-                <Button
-                    key={index}
-                    onClick={() => handleAnswer(option)}
-                    disabled={!!selectedAnswer}
-                    variant={
-                        selectedAnswer && option === currentQuestion.answer ? 'default' : 
-                        selectedAnswer === option && option !== currentQuestion.answer ? 'destructive' :
-                        'outline'
-                    }
-                    className={cn(
-                        "h-auto py-4 text-base whitespace-normal text-center justify-center transition-all duration-300",
-                        selectedAnswer && option === currentQuestion.answer && 'animate-pulse'
-                    )}
-                >
-                    {option}
-                </Button>
-            ))}
-        </div>
+        {currentQuestion && (
+            <>
+                <Card className="relative overflow-hidden">
+                    <div className="absolute top-2 right-2 font-bold text-lg bg-background/80 px-2 rounded-md">{timer}s</div>
+                    <CardContent className="p-6">
+                        <p className="text-sm text-muted-foreground mb-2">Question {currentQuestionIndex + 1} of {questions.length}</p>
+                        <h3 className="text-xl font-semibold text-center min-h-[80px] flex items-center justify-center">
+                            {currentQuestion.question}
+                        </h3>
+                    </CardContent>
+                </Card>
+                
+                {/* Answer Options */}
+                <div className="grid grid-cols-2 gap-4 mt-6">
+                    {currentQuestion.options.map((option, index) => (
+                        <Button
+                            key={index}
+                            onClick={() => handleAnswer(option)}
+                            disabled={!!selectedAnswer}
+                            variant={
+                                selectedAnswer && option === currentQuestion.answer ? 'default' : 
+                                selectedAnswer === option && option !== currentQuestion.answer ? 'destructive' :
+                                'outline'
+                            }
+                            className={cn(
+                                "h-auto py-4 text-base whitespace-normal text-center justify-center transition-all duration-300",
+                                selectedAnswer && option === currentQuestion.answer && 'animate-pulse'
+                            )}
+                        >
+                            {option}
+                        </Button>
+                    ))}
+                </div>
+            </>
+        )}
 
         {/* Score and Streak */}
          <div className="flex justify-between items-center mt-6 text-lg">
