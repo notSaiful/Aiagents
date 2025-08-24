@@ -4,14 +4,13 @@
 /**
  * @fileOverview A Genkit flow for transcribing a YouTube video and generating comprehensive study notes.
  *
- * - generateNotesFromYoutube - Downloads audio, transcribes it, and generates summaries, flashcards, and a mind map.
+ * - generateNotesFromYoutube - Analyzes a video, transcribes it, and generates summaries, flashcards, and a mind map.
  * - GenerateNotesFromYoutubeInput - The input type for the function.
  * - GenerateNotesFromYoutubeOutput - The return type for the function.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import ytdl from 'ytdl-core';
 import { media } from 'genkit';
 
 // Import the functions from other flows to reuse them
@@ -53,31 +52,19 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
     outputSchema: GenerateNotesFromYoutubeOutputSchema,
   },
   async ({ youtubeUrl, style }) => {
-    // 1. Download Audio
-    const audioStream = ytdl(youtubeUrl, {
-      filter: 'audioonly',
-      quality: 'lowestaudio',
-    });
-    
-    const chunks: Buffer[] = [];
-    for await (const chunk of audioStream) {
-        chunks.push(chunk);
-    }
-    const audioBuffer = Buffer.concat(chunks);
 
-    if (audioBuffer.length === 0) {
-        throw new Error('Failed to download audio from the YouTube URL. The video may be private, restricted, or unavailable.');
-    }
-
-    // 2. Transcribe Audio
+    // 1. Transcribe the video using Gemini 1.5 Pro's multimodal capabilities
     const { text: transcript } = await ai.generate({
-      prompt: 'Transcribe the following audio. Focus on accuracy and clarity, correcting any obvious errors and structuring the output for readability.',
+      prompt: `Please transcribe the following YouTube video. Provide a clean, accurate transcript.
+        Remove filler words like "um" and "uh."
+        Ensure the output is well-structured and easy to read.
+        If the video has no discernible speech, return an empty string.`,
       history: [
         {
           role: 'user',
           content: [
             media({
-              url: `data:audio/mp4;base64,${audioBuffer.toString('base64')}`,
+                url: youtubeUrl,
             }),
           ],
         },
@@ -86,10 +73,10 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
     });
 
     if (!transcript) {
-        throw new Error('Could not transcribe the audio. The video might not contain detectable speech.');
+        throw new Error('Could not transcribe the video. It may not contain detectable speech or the URL may be invalid.');
     }
 
-    // 3. Generate all notes in parallel from the transcript
+    // 2. Generate all notes in parallel from the transcript
     const notesPayload = { notes: transcript, style };
     const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
         summarizeNotes(notesPayload),
@@ -97,7 +84,7 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
         createMindMap(notesPayload),
     ]);
 
-    // 4. Consolidate and return all generated content
+    // 3. Consolidate and return all generated content
     return {
       transcript,
       shortSummary: summaryRes.shortSummary,
