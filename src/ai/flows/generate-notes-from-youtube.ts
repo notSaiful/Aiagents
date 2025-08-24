@@ -63,9 +63,11 @@ const generateNotesFromYoutubeFlow = ai.defineFlow(
         {
           role: 'user',
           content: [
-            media({
-                url: youtubeUrl,
-            }),
+            {
+                media: {
+                    url: youtubeUrl,
+                }
+            },
           ],
         },
       ],
