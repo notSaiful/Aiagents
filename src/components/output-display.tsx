@@ -17,9 +17,11 @@ import {
 } from '@/components/ui/carousel';
 import Flashcard from './flashcard';
 import MindMap from './mind-map';
-import type { Flashcard as FlashcardType, Podcast as PodcastType } from '@/types';
+import type { Flashcard as FlashcardType, Podcast as PodcastType, QuizQuestion } from '@/types';
 import { Skeleton } from './ui/skeleton';
 import { shareGeneration } from '@/ai/flows/share-generation';
+import { generateQuiz } from '@/ai/flows/generate-quiz';
+import QuizArena from './quiz-arena';
 
 interface OutputDisplayProps {
   shortSummary?: string;
@@ -29,6 +31,8 @@ interface OutputDisplayProps {
   podcast?: PodcastType;
   onGeneratePodcast?: () => Promise<void>;
   isShareable?: boolean;
+  notes: string;
+  style: string;
 }
 
 export default function OutputDisplay({
@@ -39,6 +43,8 @@ export default function OutputDisplay({
   podcast,
   onGeneratePodcast,
   isShareable = false,
+  notes,
+  style,
 }: OutputDisplayProps) {
   const { toast } = useToast();
   const [isShareDialogOpen, setShareDialogOpen] = useState(false);
@@ -46,11 +52,14 @@ export default function OutputDisplay({
   const [shareId, setShareId] = useState<string | null>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [isGeneratingPodcast, setIsGeneratingPodcast] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[] | null>(null);
+  const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
 
   const summaryRef = useRef<HTMLDivElement>(null);
   const flashcardsRef = useRef<HTMLDivElement>(null);
   const mindMapRef = useRef<HTMLDivElement>(null);
   const podcastRef = useRef<HTMLDivElement>(null);
+  const arcadeRef = useRef<HTMLDivElement>(null);
 
 
   const handleCopyLink = async () => {
@@ -103,6 +112,23 @@ export default function OutputDisplay({
       setIsGeneratingPodcast(false);
     }
   };
+
+  const handleGenerateQuiz = async () => {
+    setIsGeneratingQuiz(true);
+    try {
+        const { questions } = await generateQuiz({ notes, style });
+        setQuizQuestions(questions);
+    } catch (error) {
+        console.error('Quiz generation failed:', error);
+        toast({
+            title: 'Quiz Generation Failed',
+            description: 'Could not generate a quiz from your notes. Please try again.',
+            variant: 'destructive',
+        });
+    } finally {
+        setIsGeneratingQuiz(false);
+    }
+  };
   
   const renderLoadingSkeletons = () => (
     <div className="w-full space-y-4 p-6">
@@ -132,6 +158,9 @@ export default function OutputDisplay({
             </TabsTrigger>
             <TabsTrigger value="podcast" className="text-base rounded-full h-10">
               Podcast
+            </TabsTrigger>
+            <TabsTrigger value="arcade" className="text-base rounded-full h-10">
+                Arcade
             </TabsTrigger>
           </TabsList>
         </div>
@@ -227,8 +256,39 @@ export default function OutputDisplay({
           </Card>
         </TabsContent>
         
+        <TabsContent value="arcade">
+            <Card ref={arcadeRef} className="rounded-xl border-2 border-primary/40">
+                <CardContent className="p-6 flex flex-col justify-center min-h-[400px] items-center">
+                    {quizQuestions ? (
+                        <QuizArena questions={quizQuestions} style={style} />
+                    ) : (
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold font-serif mb-2">Quiz Arena</h2>
+                            <p className="text-muted-foreground mb-4">
+                                Test your knowledge with a game generated from your notes!
+                            </p>
+                            <Button
+                                onClick={handleGenerateQuiz}
+                                disabled={isGeneratingQuiz}
+                                className="font-semibold text-lg py-6 rounded-xl shadow-lg"
+                            >
+                                {isGeneratingQuiz ? (
+                                    <>
+                                        <LoaderCircle className="animate-spin mr-2" />
+                                        Generating Quiz...
+                                    </>
+                                ) : (
+                                    'Start Game'
+                                )}
+                            </Button>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        </TabsContent>
+
       </Tabs>
-      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && activeTab !== 'flashcards' && activeTab !== 'podcast' && (
+      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && !['flashcards', 'podcast', 'arcade'].includes(activeTab) && (
         <ShareDialog
           open={isShareDialogOpen}
           onOpenChange={setShareDialogOpen}

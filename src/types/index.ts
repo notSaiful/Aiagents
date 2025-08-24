@@ -15,3 +15,10 @@ export interface ArtData {
 export interface Podcast {
   audioUrl: string;
 }
+
+export interface QuizQuestion {
+    question: string;
+    options: string[];
+    answer: string;
+    difficulty: number;
+}

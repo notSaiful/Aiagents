@@ -177,6 +177,8 @@ export default function Home() {
         podcast={output.podcast}
         onGeneratePodcast={handleGeneratePodcast}
         isShareable={true}
+        notes={notes}
+        style={style}
       />;
     }
 
