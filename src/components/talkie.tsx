@@ -4,10 +4,16 @@
 import { useState, useRef, useEffect, FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { LoaderCircle, Send } from 'lucide-react';
+import { LoaderCircle, Send, ChevronDown } from 'lucide-react';
 import { chatWithCharacter } from '@/ai/flows/chat-with-character';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
 interface TalkieProps {
@@ -19,9 +25,25 @@ interface Message {
   content: string;
 }
 
-const CHARACTER_NAME = "Professor Aya";
+type Character = 'Professor Aya' | 'Luna';
+
+const characterData = {
+    'Professor Aya': {
+        avatarUrl: 'https://picsum.photos/seed/prof-aya/100/100',
+        avatarHint: 'woman teacher',
+        fallback: 'A',
+        greeting: "Hello, sweetie! I'm Professor Aya. What can I help you understand from your notes today?"
+    },
+    'Luna': {
+        avatarUrl: 'https://picsum.photos/seed/luna/100/100',
+        avatarHint: 'fantasy woman',
+        fallback: 'L',
+        greeting: "Greetings, little star. I'm Luna. What wonders shall we explore in your notes today?"
+    }
+}
 
 export default function Talkie({ notes }: TalkieProps) {
+  const [character, setCharacter] = useState<Character>('Professor Aya');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -32,12 +54,12 @@ export default function Talkie({ notes }: TalkieProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
-  // Set initial greeting from Professor Aya
   useEffect(() => {
     setMessages([
-        { role: 'model', content: "Hello, sweetie! I'm Professor Aya. What can I help you understand from your notes today?" }
-    ])
-  }, []);
+        { role: 'model', content: characterData[character].greeting }
+    ]);
+    setInput('');
+  }, [character]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -50,7 +72,7 @@ export default function Talkie({ notes }: TalkieProps) {
 
     try {
       const result = await chatWithCharacter({
-        character: CHARACTER_NAME,
+        character: character,
         message: input,
         notes: notes,
         chatHistory: messages,
@@ -66,16 +88,38 @@ export default function Talkie({ notes }: TalkieProps) {
         description: 'I seem to be at a loss for words. Please try again.',
         variant: 'destructive',
       });
-       // Restore user message to input if AI fails
-       setMessages(prev => prev.slice(0, -1));
+       setMessages(prev => prev.slice(0, prev.length -1));
        setInput(userMessage.content);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const currentCharacter = characterData[character];
+
   return (
     <div className="flex flex-col h-[500px]">
+        <div className="flex items-center justify-between border-b p-3">
+            <div className="flex items-center gap-3">
+                 <Avatar className="w-10 h-10">
+                    <AvatarImage src={currentCharacter.avatarUrl} data-ai-hint={currentCharacter.avatarHint} />
+                    <AvatarFallback>{currentCharacter.fallback}</AvatarFallback>
+                </Avatar>
+                <span className="font-semibold">{character}</span>
+            </div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                        Change Character
+                        <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => setCharacter('Professor Aya')}>Professor Aya</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCharacter('Luna')}>Luna</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {messages.map((message, index) => (
           <div
@@ -87,13 +131,13 @@ export default function Talkie({ notes }: TalkieProps) {
           >
             {message.role === 'model' && (
               <Avatar className="w-10 h-10">
-                <AvatarImage src="https://picsum.photos/100/100" data-ai-hint="woman teacher" />
-                <AvatarFallback>A</AvatarFallback>
+                <AvatarImage src={currentCharacter.avatarUrl} data-ai-hint={currentCharacter.avatarHint} />
+                <AvatarFallback>{currentCharacter.fallback}</AvatarFallback>
               </Avatar>
             )}
             <div
               className={cn(
-                "max-w-sm md:max-w-md rounded-xl px-4 py-3 text-base md:text-sm",
+                "max-w-sm md:max-w-md rounded-xl px-4 py-3 text-sm",
                 message.role === 'user'
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground'
@@ -111,8 +155,8 @@ export default function Talkie({ notes }: TalkieProps) {
         {isLoading && (
             <div className="flex items-start gap-3 justify-start">
                  <Avatar className="w-10 h-10">
-                    <AvatarImage src="https://picsum.photos/100/100" data-ai-hint="woman teacher" />
-                    <AvatarFallback>A</AvatarFallback>
+                    <AvatarImage src={currentCharacter.avatarUrl} data-ai-hint={currentCharacter.avatarHint} />
+                    <AvatarFallback>{currentCharacter.fallback}</AvatarFallback>
                 </Avatar>
                 <div className="max-w-sm md:max-w-md rounded-xl px-4 py-3 bg-muted text-muted-foreground">
                     <LoaderCircle className="w-5 h-5 animate-spin" />
@@ -126,7 +170,7 @@ export default function Talkie({ notes }: TalkieProps) {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={`Message ${CHARACTER_NAME}...`}
+            placeholder={`Message ${character}...`}
             className="flex-1"
             disabled={isLoading}
           />
