@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const ChatWithCharacterInputSchema = z.object({
+const ChatWithCharacterInputSchema = z.object({
   character: z.string().describe('The character to chat with.'),
   message: z.string().describe('The user\'s message to the character.'),
   notes: z.string().describe('The student\'s notes for context.'),
@@ -23,7 +23,7 @@ export const ChatWithCharacterInputSchema = z.object({
 });
 export type ChatWithCharacterInput = z.infer<typeof ChatWithCharacterInputSchema>;
 
-export const ChatWithCharacterOutputSchema = z.object({
+const ChatWithCharacterOutputSchema = z.object({
   response: z.string().describe('The character\'s response.'),
 });
 export type ChatWithCharacterOutput = z.infer<typeof ChatWithCharacterOutputSchema>;
