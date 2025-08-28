@@ -22,3 +22,8 @@ export interface QuizQuestion {
     answer: string;
     difficulty: number;
 }
+
+export interface ChatMessage {
+    role: 'user' | 'model';
+    content: string;
+}

@@ -22,6 +22,7 @@ import { Skeleton } from './ui/skeleton';
 import { shareGeneration } from '@/ai/flows/share-generation';
 import { generateQuiz } from '@/ai/flows/generate-quiz';
 import QuizArena from './quiz-arena';
+import Talkie from './talkie';
 
 interface OutputDisplayProps {
   shortSummary?: string;
@@ -60,6 +61,7 @@ export default function OutputDisplay({
   const mindMapRef = useRef<HTMLDivElement>(null);
   const podcastRef = useRef<HTMLDivElement>(null);
   const arcadeRef = useRef<HTMLDivElement>(null);
+  const talkieRef = useRef<HTMLDivElement>(null);
 
 
   const handleCopyLink = async () => {
@@ -161,6 +163,9 @@ export default function OutputDisplay({
             </TabsTrigger>
             <TabsTrigger value="arcade" className="text-base rounded-full h-10">
                 Arcade
+            </TabsTrigger>
+            <TabsTrigger value="talkie" className="text-base rounded-full h-10">
+                Talkie
             </TabsTrigger>
           </TabsList>
         </div>
@@ -287,8 +292,16 @@ export default function OutputDisplay({
             </Card>
         </TabsContent>
 
+        <TabsContent value="talkie">
+            <Card ref={talkieRef} className="rounded-xl border-2 border-primary/40">
+                <CardContent className="p-0">
+                    <Talkie notes={notes} />
+                </CardContent>
+            </Card>
+        </TabsContent>
+
       </Tabs>
-      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && !['flashcards', 'podcast', 'arcade'].includes(activeTab) && (
+      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && !['flashcards', 'podcast', 'arcade', 'talkie'].includes(activeTab) && (
         <ShareDialog
           open={isShareDialogOpen}
           onOpenChange={setShareDialogOpen}
