@@ -180,10 +180,3 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
     </div>
   );
 }
-
-// You need to add this to your globals.css for the progress bar color
-// .progress-green::-webkit-progress-value { background-color: #22c55e; }
-// .progress-green::-moz-progress-bar { background-color: #22c55e; }
-
-// No, shadcn UI progress uses a div, so we can use a utility class.
-// In Progress component: className="[&>div]:bg-green-500"
