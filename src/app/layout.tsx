@@ -23,9 +23,8 @@ export default function RootLayout({
     // React from throwing errors when browser extensions (like Grammarly) inject
     // attributes into the DOM. This is the recommended, production-safe way to
     // handle these specific, unavoidable hydration mismatches.
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full" suppressHydrationWarning={true}>
       <body 
-        suppressHydrationWarning={true}
         className={cn(
           'min-h-screen bg-background font-sans antialiased flex flex-col', 
           fontSans.variable, 
