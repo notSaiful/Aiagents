@@ -6,6 +6,7 @@ import { AuthProvider } from '@/context/auth-context';
 import Header from '@/components/layout/header';
 import { cn } from '@/lib/utils';
 import { fontSans, fontSerif, fontPlayfair } from '@/lib/fonts';
+import Footer from '@/components/layout/footer';
 
 export const metadata: Metadata = {
   title: 'NotesGPT | Transform Your Notes Instantly',
@@ -22,19 +23,22 @@ export default function RootLayout({
     // React from throwing errors when browser extensions (like Grammarly) inject
     // attributes into the DOM. This is the recommended, production-safe way to
     // handle these specific, unavoidable hydration mismatches.
-    <html lang="en">
+    <html lang="en" className="h-full">
       <body 
         suppressHydrationWarning={true}
         className={cn(
-          'min-h-screen bg-background font-sans antialiased', 
+          'min-h-screen bg-background font-sans antialiased flex flex-col', 
           fontSans.variable, 
           fontSerif.variable, 
           fontPlayfair.variable
         )}
       >
         <AuthProvider>
-          <Header />
-          <main>{children}</main>
+          <div className="flex-grow">
+            <Header />
+            <main>{children}</main>
+          </div>
+          <Footer />
           <Toaster />
         </AuthProvider>
       </body>
