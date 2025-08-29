@@ -20,7 +20,7 @@ interface Message {
   content: string;
 }
 
-type Character = 'Professor Aya' | 'Luna' | 'Kai' | 'Meme Bro';
+type Character = 'Professor Aya' | 'Charmer Luna' | 'Mr. Kai' | 'Meme Bro';
 
 const characterData = {
     'Professor Aya': {
@@ -30,14 +30,14 @@ const characterData = {
         description: 'A caring and knowledgeable mentor.',
         greeting: "Hello, sweetie! I'm Professor Aya. What can I help you understand from your notes today?"
     },
-    'Luna': {
+    'Charmer Luna': {
         avatarUrl: 'https://picsum.photos/seed/luna/100/100',
         avatarHint: 'fantasy woman',
         fallback: 'L',
         description: 'A playful and loving companion who helps you study.',
         greeting: "Hi darling... I was waiting for you. Ready to look at these notes together?"
     },
-    'Kai': {
+    'Mr. Kai': {
         avatarUrl: 'https://picsum.photos/seed/kai-mafia/100/100',
         avatarHint: 'man suit',
         fallback: 'K',
@@ -116,8 +116,8 @@ export default function Talkie({ notes }: TalkieProps) {
                 <CardDescription>Select a character to start your study session.</CardDescription>
             </CardHeader>
             <div className="flex-1 grid grid-cols-2 gap-4 p-4">
-                {Object.keys(characterData).map((charKey) => {
-                    const character = charKey as Character;
+                {(Object.keys(characterData) as Character[]).map((charKey) => {
+                    const character = charKey;
                     const data = characterData[character];
                     return (
                         <button
