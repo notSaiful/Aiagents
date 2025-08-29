@@ -25,7 +25,7 @@ interface Message {
   content: string;
 }
 
-type Character = 'Professor Aya' | 'Luna';
+type Character = 'Professor Aya' | 'Luna' | 'Kai';
 
 const characterData = {
     'Professor Aya': {
@@ -38,7 +38,13 @@ const characterData = {
         avatarUrl: 'https://picsum.photos/seed/luna/100/100',
         avatarHint: 'fantasy woman',
         fallback: 'L',
-        greeting: "Greetings, little star. I'm Luna. What wonders shall we explore in your notes today?"
+        greeting: "Hi darling... I was waiting for you. Ready to look at these notes together?"
+    },
+    'Kai': {
+        avatarUrl: 'https://picsum.photos/seed/kai-mafia/100/100',
+        avatarHint: 'man suit',
+        fallback: 'K',
+        greeting: "So you came back, huh? Good. I was starting to think I'd have to come find you. What do you need, princess?"
     }
 }
 
@@ -117,6 +123,7 @@ export default function Talkie({ notes }: TalkieProps) {
                 <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => setCharacter('Professor Aya')}>Professor Aya</DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setCharacter('Luna')}>Luna</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCharacter('Kai')}>Kai</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
