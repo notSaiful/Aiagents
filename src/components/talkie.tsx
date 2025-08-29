@@ -20,7 +20,7 @@ interface Message {
   content: string;
 }
 
-type Character = 'Professor Aya' | 'Charmer Luna' | 'Mr. Kai' | 'Meme Bro';
+type Character = 'Professor Aya' | 'Mischievous Luna' | 'Mr. Kai' | 'Meme Bro';
 
 const characterData = {
     'Professor Aya': {
@@ -30,7 +30,7 @@ const characterData = {
         description: 'A caring and knowledgeable mentor.',
         greeting: "Hello, sweetie! I'm Professor Aya. What can I help you understand from your notes today?"
     },
-    'Charmer Luna': {
+    'Mischievous Luna': {
         avatarUrl: 'https://picsum.photos/seed/luna/100/100',
         avatarHint: 'fantasy woman',
         fallback: 'L',
