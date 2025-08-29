@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LoaderCircle, Upload, Save } from 'lucide-react';
+import { Sparkles, LoaderCircle, Upload, Save, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -13,6 +13,7 @@ import { generateFlashcards } from '@/ai/flows/generate-flashcards';
 import { createMindMap } from '@/ai/flows/create-mind-map';
 import { generatePodcast } from '@/ai/flows/generate-podcast';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
+import { extractTextFromVideo } from '@/ai/flows/extract-text-from-video';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
@@ -32,12 +33,15 @@ export default function Home() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAnalyzingVideo, setIsAnalyzingVideo] = useState(false);
   const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -114,6 +118,10 @@ export default function Home() {
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
+  
+  const handleVideoUploadClick = () => {
+    videoInputRef.current?.click();
+  }
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -144,6 +152,40 @@ export default function Home() {
         setIsUploading(false);
         if(fileInputRef.current) {
           fileInputRef.current.value = '';
+        }
+      }
+    }
+  };
+
+  const handleVideoFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setIsAnalyzingVideo(true);
+      setOutput(null);
+      setNotes('');
+      toast({
+        title: 'Analyzing Video...',
+        description: `Extracting transcript from ${file.name}. This may take a few moments.`,
+      });
+      try {
+        const videoDataUri = await readFileAsDataURI(file);
+        const { extractedText } = await extractTextFromVideo({ videoDataUri });
+        setNotes(extractedText);
+        toast({
+          title: 'Transcript Extracted!',
+          description: 'Your video transcript is ready to be transformed.',
+        });
+      } catch (error) {
+        console.error('Video analysis failed:', error);
+        toast({
+          title: 'Analysis Failed',
+          description: 'Could not extract transcript from the uploaded video. Please try again.',
+          variant: 'destructive',
+        });
+      } finally {
+        setIsAnalyzingVideo(false);
+        if(videoInputRef.current) {
+          videoInputRef.current.value = '';
         }
       }
     }
@@ -197,7 +239,7 @@ export default function Home() {
     return null;
   }
 
-  const isLoading = loading || isUploading;
+  const isLoading = loading || isUploading || isAnalyzingVideo;
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
@@ -213,7 +255,7 @@ export default function Home() {
       <Card className="w-full rounded-xl border-2 border-primary/40 shadow-lg">
         <CardContent className="p-4 pb-0">
             <Textarea
-              placeholder="Paste your notes here to get started..."
+              placeholder="Paste your notes here, or upload a document, image, or video to get started..."
               className="min-h-[150px] resize-none border-0 bg-transparent p-2 text-base shadow-none focus-visible:ring-0"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -228,22 +270,47 @@ export default function Home() {
                 className="hidden"
                 accept="image/png,image/jpeg,application/pdf"
             />
-            <Button
-                onClick={handleUploadClick}
-                disabled={isLoading}
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground"
-            >
-              {isUploading ? (
-                <LoaderCircle className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <Upload className="mr-2 h-4 w-4" />
-                  Upload Notes
-                </>
-              )}
-            </Button>
+            <input
+                type="file"
+                ref={videoInputRef}
+                onChange={handleVideoFileChange}
+                className="hidden"
+                accept="video/*"
+            />
+            <div className="flex gap-2">
+              <Button
+                  onClick={handleUploadClick}
+                  disabled={isLoading}
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
+              >
+                {isUploading ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload Notes
+                  </>
+                )}
+              </Button>
+               <Button
+                  onClick={handleVideoUploadClick}
+                  disabled={isLoading}
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
+              >
+                {isAnalyzingVideo ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Video className="mr-2 h-4 w-4" />
+                    Upload Video
+                  </>
+                )}
+              </Button>
+            </div>
         </CardFooter>
       </Card>
       

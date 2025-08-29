@@ -10,6 +10,7 @@ import '@/ai/flows/share-generation.ts';
 import '@/ai/flows/generate-podcast.ts';
 import '@/ai/flows/generate-quiz.ts';
 import '@/ai/flows/chat-with-character.ts';
+import '@/ai/flows/extract-text-from-video.ts';
 
 
     
