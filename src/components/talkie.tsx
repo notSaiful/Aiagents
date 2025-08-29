@@ -25,7 +25,7 @@ interface Message {
   content: string;
 }
 
-type Character = 'Professor Aya' | 'Luna' | 'Kai';
+type Character = 'Professor Aya' | 'Luna' | 'Kai' | 'Meme Bro';
 
 const characterData = {
     'Professor Aya': {
@@ -45,6 +45,12 @@ const characterData = {
         avatarHint: 'man suit',
         fallback: 'K',
         greeting: "So you came back, huh? Good. I was starting to think I'd have to come find you. What do you need, princess?"
+    },
+    'Meme Bro': {
+        avatarUrl: 'https://picsum.photos/seed/meme-bro/100/100',
+        avatarHint: 'young man gamer',
+        fallback: 'M',
+        greeting: "Yo, what's the sitch? Got notes? Let's turn this study sesh into a meme-fiesta. No cap. 🔥"
     }
 }
 
@@ -124,6 +130,7 @@ export default function Talkie({ notes }: TalkieProps) {
                     <DropdownMenuItem onClick={() => setCharacter('Professor Aya')}>Professor Aya</DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setCharacter('Luna')}>Luna</DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setCharacter('Kai')}>Kai</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCharacter('Meme Bro')}>Meme Bro</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
