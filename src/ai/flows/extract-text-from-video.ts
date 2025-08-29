@@ -10,6 +10,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const ExtractTextFromVideoInputSchema = z.object({
@@ -41,6 +42,7 @@ Do not include timestamps or speaker labels unless they are part of the spoken c
 
 Video: {{media url=videoDataUri}}
 `,
+  model: 'googleai/gemini-1.5-pro',
 });
 
 const extractTextFromVideoFlow = ai.defineFlow(
