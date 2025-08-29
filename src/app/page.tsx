@@ -262,7 +262,7 @@ export default function Home() {
               disabled={isLoading}
             />
         </CardContent>
-        <CardFooter className="flex flex-wrap items-center justify-between gap-2 p-4">
+        <CardFooter className="flex flex-wrap items-center justify-start gap-2 p-4">
             <input
                 type="file"
                 ref={fileInputRef}
