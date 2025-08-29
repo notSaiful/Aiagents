@@ -27,21 +27,21 @@ const characterData = {
         avatarUrl: 'https://picsum.photos/seed/prof-aya/100/100',
         avatarHint: 'woman teacher',
         fallback: 'A',
-        description: 'A caring and knowledgeable professor with mommy vibes.',
+        description: 'A caring and knowledgeable mentor.',
         greeting: "Hello, sweetie! I'm Professor Aya. What can I help you understand from your notes today?"
     },
     'Luna': {
         avatarUrl: 'https://picsum.photos/seed/luna/100/100',
         avatarHint: 'fantasy woman',
         fallback: 'L',
-        description: 'A playful and loving girlfriend who wants to help you study.',
+        description: 'A playful and loving companion who helps you study.',
         greeting: "Hi darling... I was waiting for you. Ready to look at these notes together?"
     },
     'Kai': {
         avatarUrl: 'https://picsum.photos/seed/kai-mafia/100/100',
         avatarHint: 'man suit',
         fallback: 'K',
-        description: 'A confident and protective mafia boss with a soft spot for you.',
+        description: 'A confident and protective tutor with a soft spot for you.',
         greeting: "So you came back, huh? Good. I was starting to think I'd have to come find you. What do you need, princess?"
     },
     'Meme Bro': {
