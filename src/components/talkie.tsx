@@ -31,8 +31,8 @@ const characterData = {
         greeting: "Hello, sweetie! I'm Professor Aya. What can I help you understand from your notes today?"
     },
     'Mischievous Luna': {
-        avatarUrl: 'https://picsum.photos/seed/luna/100/100',
-        avatarHint: 'fantasy woman',
+        avatarUrl: 'https://firebasestorage.googleapis.com/v0/b/gemini-notes-kwn2b.appspot.com/o/luna.webp?alt=media&token=48f1c84f-e253-44f2-b7e8-2c67b93edb01',
+        avatarHint: 'anime girl studying',
         fallback: 'L',
         description: 'A playful and loving companion who helps you study.',
         greeting: "Hi darling... I was waiting for you. Ready to look at these notes together?"
