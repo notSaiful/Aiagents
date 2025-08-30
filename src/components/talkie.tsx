@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect, FormEvent } from 'react';
@@ -227,3 +228,5 @@ export default function Talkie({ notes }: TalkieProps) {
     </div>
   );
 }
+
+    
