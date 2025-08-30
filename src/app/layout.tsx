@@ -7,6 +7,7 @@ import Header from '@/components/layout/header';
 import { cn } from '@/lib/utils';
 import { fontSans, fontSerif, fontPlayfair } from '@/lib/fonts';
 import Footer from '@/components/layout/footer';
+import PageTransition from '@/components/page-transition';
 
 export const metadata: Metadata = {
   title: 'NotesGPT | Transform Your Notes Instantly',
@@ -36,7 +37,7 @@ export default function RootLayout({
         <AuthProvider>
           <div className="flex-grow">
             <Header />
-            <main>{children}</main>
+            <main><PageTransition>{children}</PageTransition></main>
           </div>
           <Footer />
           <Toaster />
