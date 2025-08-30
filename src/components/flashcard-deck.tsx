@@ -127,19 +127,16 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
         <div className="flex-grow [perspective:1000px]">
             <AnimatePresence mode="wait">
                 <motion.div
-                    key={currentIndex}
+                    key={`${currentIndex}-${isFlipped}`}
                     variants={cardVariants}
                     initial="initial"
                     animate="animate"
                     exit="exit"
                     transition={{ duration: 0.3 }}
-                    className={cn(
-                        'relative w-full h-full [transform-style:preserve-3d] transition-transform duration-500',
-                        isFlipped && '[transform:rotateY(180deg)]'
-                    )}
+                    className="w-full h-full"
                 >
-                    {/* Front */}
-                    <Card className="absolute inset-0 flex flex-col justify-between p-6 [backface-visibility:hidden]">
+                  {!isFlipped ? (
+                    <Card className="w-full h-full flex flex-col justify-between p-6">
                          <Badge variant="secondary" className="absolute top-4 right-4">
                            <span className={cn("w-2 h-2 rounded-full mr-2", difficultyColors[currentCard.difficulty])}></span>
                            {currentCard.difficulty}
@@ -149,9 +146,8 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
                         </CardContent>
                         <Button onClick={() => setIsFlipped(true)} className="w-full">Reveal Answer</Button>
                     </Card>
-                    
-                    {/* Back */}
-                    <Card className="absolute inset-0 flex flex-col justify-between p-6 [transform:rotateY(180deg)] [backface-visibility:hidden] bg-primary text-primary-foreground">
+                  ) : (
+                    <Card className="w-full h-full flex flex-col justify-between p-6 bg-primary text-primary-foreground">
                         <CardContent className="flex-grow flex items-center justify-center text-center p-0">
                            <p className="text-lg">{currentCard.answer}</p>
                         </CardContent>
@@ -164,6 +160,7 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
                             </Button>
                         </div>
                     </Card>
+                  )}
                 </motion.div>
             </AnimatePresence>
         </div>
