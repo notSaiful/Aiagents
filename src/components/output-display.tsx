@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef } from 'react';
@@ -180,13 +179,13 @@ export default function OutputDisplay({
                 </TabsList>
                 <TabsContent
                   value="short"
-                  className="pt-4 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground prose-li:marker:text-primary-foreground/80"
+                  className="prose dark:prose-invert pt-4 max-w-none prose-sm prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground"
                 >
                   <div dangerouslySetInnerHTML={{ __html: shortSummary ?? '' }} />
                 </TabsContent>
                 <TabsContent
                   value="long"
-                  className="pt-4 prose prose-sm max-w-none prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground prose-li:marker:text-primary-foreground/80"
+                  className="prose dark:prose-invert pt-4 max-w-none prose-sm prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground"
                 >
                   <div dangerouslySetInnerHTML={{ __html: longSummary ?? '' }} />
                 </TabsContent>
