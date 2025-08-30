@@ -77,9 +77,7 @@ const generatePodcastFlow = ai.defineFlow(
       styleInstructions = formalStyleInstructions;
     }
 
-    const scriptPrompt = ai.definePrompt({
-        name: 'generatePodcastScriptPrompt',
-        prompt: `You are an expert podcast scriptwriter. Create a conversational script based on the provided notes and style.
+    const scriptPrompt = `You are an expert podcast scriptwriter. Create a conversational script based on the provided notes and style.
 
         **Style Instructions (${style})**:
         ${styleInstructions}
@@ -92,10 +90,9 @@ const generatePodcastFlow = ai.defineFlow(
         
         **Notes**:
         ${notes}
-        `,
-    });
-
-    const { text } = await ai.generate({ prompt: (await scriptPrompt()).prompt });
+        `;
+    
+    const { text } = await ai.generate({ prompt: scriptPrompt });
 
     const { media } = await ai.generate({
         model: googleAI.model('gemini-2.5-flash-preview-tts'),
