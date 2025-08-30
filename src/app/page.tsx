@@ -7,9 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { summarizeNotes } from '@/ai/flows/summarize-notes';
-import { generateFlashcards } from '@/ai/flows/generate-flashcards';
-import { createMindMap } from '@/ai/flows/create-mind-map';
+import { transformNotes } from '@/ai/flows/transform-notes';
 import { generatePodcast } from '@/ai/flows/generate-podcast';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
 import { extractTextFromVideo } from '@/ai/flows/extract-text-from-video';
@@ -18,6 +16,7 @@ import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
 import type { Flashcard, Podcast } from '@/types';
+import { Progress } from '@/components/ui/progress';
 
 interface AIOutput {
   shortSummary: string;
@@ -36,6 +35,7 @@ export default function Home() {
   const [isAnalyzingVideo, setIsAnalyzingVideo] = useState(false);
   const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -49,11 +49,17 @@ export default function Home() {
     }
   }, [user, authLoading, router]);
 
-  const readFileAsDataURI = (file: File): Promise<string> => {
+  const readFileAsDataURI = (file: File, onProgress: (progress: number) => void): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = reject;
+      reader.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          onProgress(progress);
+        }
+      };
       reader.readAsDataURL(file);
     });
   };
@@ -73,35 +79,21 @@ export default function Home() {
     }
 
     try {
-      // These actions are wrapped in individual promises to allow for parallel execution
-      // and separate point rewarding.
-      const summaryPromise = summarizeNotes({ notes, style }).then(res => {
-        if (user) updateUserStats({ userId: user.uid, action: 'generateSummary' });
-        return res;
-      });
-
-      const flashcardsPromise = generateFlashcards({ notes, style }).then(res => {
-        if (user) updateUserStats({ userId: user.uid, action: 'generateFlashcards' });
-        return res;
-      });
-
-      const mindMapPromise = createMindMap({ notes, style }).then(res => {
-        if (user) updateUserStats({ userId: user.uid, action: 'createMindmap' });
-        return res;
-      });
-
-      const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
-        summaryPromise,
-        flashcardsPromise,
-        mindMapPromise,
-      ]);
-
+      const result = await transformNotes({ notes, style });
+      
       setOutput({
-        shortSummary: summaryRes.shortSummary,
-        longSummary: summaryRes.longSummary,
-        flashcards: flashcardsRes.flashcards,
-        mindMap: mindMapRes.mindMap,
+        shortSummary: result.shortSummary,
+        longSummary: result.longSummary,
+        flashcards: result.flashcards,
+        mindMap: result.mindMap,
       });
+
+      if (user) {
+        // Fire-and-forget stat updates
+        updateUserStats({ userId: user.uid, action: 'generateSummary' });
+        updateUserStats({ userId: user.uid, action: 'generateFlashcards' });
+        updateUserStats({ userId: user.uid, action: 'createMindmap' });
+      }
 
       toast({
           title: 'Transformation Complete!',
@@ -153,6 +145,7 @@ export default function Home() {
     const file = event.target.files?.[0];
     if (file) {
       setIsUploading(true);
+      setUploadProgress(0);
       setOutput(null);
       setNotes('');
       toast({
@@ -160,7 +153,8 @@ export default function Home() {
         description: `Extracting text from ${file.name}.`,
       });
       try {
-        const photoDataUri = await readFileAsDataURI(file);
+        const photoDataUri = await readFileAsDataURI(file, setUploadProgress);
+        setUploadProgress(100); // Mark reading as complete
         const { extractedText } = await extractTextFromImage({ photoDataUri });
         setNotes(extractedText);
         toast({
@@ -176,6 +170,7 @@ export default function Home() {
         });
       } finally {
         setIsUploading(false);
+        setUploadProgress(null);
         if(fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -187,6 +182,7 @@ export default function Home() {
     const file = event.target.files?.[0];
     if (file) {
       setIsAnalyzingVideo(true);
+      setUploadProgress(0);
       setOutput(null);
       setNotes('');
       toast({
@@ -194,7 +190,8 @@ export default function Home() {
         description: `Extracting transcript from ${file.name}. This may take a few moments.`,
       });
       try {
-        const videoDataUri = await readFileAsDataURI(file);
+        const videoDataUri = await readFileAsDataURI(file, setUploadProgress);
+        setUploadProgress(100); // Mark reading as complete
         const { extractedText } = await extractTextFromVideo({ videoDataUri });
         setNotes(extractedText);
         toast({
@@ -210,6 +207,7 @@ export default function Home() {
         });
       } finally {
         setIsAnalyzingVideo(false);
+        setUploadProgress(null);
         if(videoInputRef.current) {
           videoInputRef.current.value = '';
         }
@@ -266,6 +264,8 @@ export default function Home() {
   }
 
   const isLoading = loading || isUploading || isAnalyzingVideo;
+  const showProgress = uploadProgress !== null;
+  const progressText = isUploading ? "Uploading..." : isAnalyzingVideo ? "Analyzing..." : "";
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
@@ -288,55 +288,66 @@ export default function Home() {
               disabled={isLoading}
             />
         </CardContent>
-        <CardFooter className="flex flex-wrap items-center justify-start gap-2 p-4">
-            <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/png,image/jpeg,application/pdf"
-            />
-            <input
-                type="file"
-                ref={videoInputRef}
-                onChange={handleVideoFileChange}
-                className="hidden"
-                accept="video/*"
-            />
+        <CardFooter className="flex flex-col items-start gap-2 p-4">
             <div className="flex gap-2">
-              <Button
-                  onClick={handleUploadClick}
-                  disabled={isLoading}
-                  variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground hover:text-foreground"
-              >
-                {isUploading ? (
-                  <LoaderCircle className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload Notes
-                  </>
-                )}
-              </Button>
-               <Button
-                  onClick={handleVideoUploadClick}
-                  disabled={isLoading}
-                  variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground hover:text-foreground"
-              >
-                {isAnalyzingVideo ? (
-                  <LoaderCircle className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    <Video className="mr-2 h-4 w-4" />
-                    Upload Video
-                  </>
-                )}
-              </Button>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/png,image/jpeg,application/pdf"
+                />
+                <input
+                    type="file"
+                    ref={videoInputRef}
+                    onChange={handleVideoFileChange}
+                    className="hidden"
+                    accept="video/*"
+                />
+                <Button
+                    onClick={handleUploadClick}
+                    disabled={isLoading}
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-foreground"
+                >
+                  {isUploading ? (
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Upload className="mr-2 h-4 w-4" />
+                      Upload Image
+                    </>
+                  )}
+                </Button>
+                 <Button
+                    onClick={handleVideoUploadClick}
+                    disabled={isLoading}
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-foreground"
+                >
+                  {isAnalyzingVideo ? (
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Video className="mr-2 h-4 w-4" />
+                      Upload Video
+                    </>
+                  )}
+                </Button>
             </div>
+             {showProgress && (
+              <div className="w-full pt-2">
+                <Progress value={uploadProgress} className="h-2 animate-progress bg-gradient-to-r from-primary via-accent to-primary bg-[200%_auto]" />
+                {uploadProgress < 100 && (
+                  <p className="text-sm text-muted-foreground mt-1">{progressText} {uploadProgress}%</p>
+                )}
+                 {uploadProgress === 100 && (
+                  <p className="text-sm text-muted-foreground mt-1">Processing...</p>
+                )}
+              </div>
+            )}
         </CardFooter>
       </Card>
       
