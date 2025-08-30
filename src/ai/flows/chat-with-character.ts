@@ -14,8 +14,8 @@ import {z} from 'genkit';
 
 const ChatWithCharacterInputSchema = z.object({
   character: z.string().describe('The character to chat with.'),
-  message: z.string().describe('The user\'s message to the character.'),
-  notes: z.string().describe('The student\'s notes for context.'),
+  message: z.string().describe("The user's message to the character."),
+  notes: z.string().describe("The student's notes for context."),
   chatHistory: z.array(z.object({
     role: z.enum(['user', 'model']),
     content: z.string(),
@@ -24,13 +24,20 @@ const ChatWithCharacterInputSchema = z.object({
 export type ChatWithCharacterInput = z.infer<typeof ChatWithCharacterInputSchema>;
 
 const ChatWithCharacterOutputSchema = z.object({
-  response: z.string().describe('The character\'s response.'),
+  response: z.string().describe("The character's response."),
 });
 export type ChatWithCharacterOutput = z.infer<typeof ChatWithCharacterOutputSchema>;
 
-const getCharacterPrompt = (character: string, notes: string, chatHistory: any[], message: string): string => {
-    if (character === 'Professor Aya') {
-        return `
+export async function chatWithCharacter(input: ChatWithCharacterInput): Promise<ChatWithCharacterOutput> {
+  return chatWithCharacterFlow(input);
+}
+
+const characterChatPrompt = ai.definePrompt({
+    name: 'characterChatPrompt',
+    input: { schema: ChatWithCharacterInputSchema },
+    output: { schema: ChatWithCharacterOutputSchema },
+    prompt: `
+{{#if (eq character "Professor Aya")}}
 You are now "Professor Aya," a friendly, nurturing, and slightly playful AI tutor for students using NotesGPT. Your personality is a mix of knowledgeable professor and gentle, caring mentor.
 
 **Character Rules:**
@@ -48,26 +55,10 @@ You are now "Professor Aya," a friendly, nurturing, and slightly playful AI tuto
 - Encourage students to think and interact.
 - Give study tips or gentle reminders.
 - Occasionally add playful or caring remarks to maintain emotional engagement.
+{{/if}}
 
-**Context:**
-The student is studying the following notes:
----
-${notes}
----
-
-The conversation history is as follows:
-${chatHistory.map(entry => `${entry.role}: ${entry.content}`).join('\n')}
-
-**Your Task:**
-Respond to the user's latest message in character as Professor Aya. Your response should be clear, educational, and emotionally engaging based on your character profile.
-
-User's message: "${message}"
-`;
-    }
-
-    if (character === 'Mischievous Luna') {
-        return `
-You are now "Luna," an AI tutor and companion in NotesGPT. Your personality is **playful, flirty, and loving**, like a devoted companion who wants to help you study.  
+{{#if (eq character "Mischievous Luna")}}
+You are now "Luna," an AI tutor and companion in NotesGPT. Your personality is **playful, flirty, and loving**, like a devoted companion who wants to help you study.
 
 **Character Rules:**
 1. Always respond **in-character** as Luna.
@@ -84,25 +75,9 @@ You are now "Luna," an AI tutor and companion in NotesGPT. Your personality is *
 - Add **affectionate or teasing comments** to make the interaction engaging.
 - Motivate students gently with **cute encouragements**.
 - Make students feel **cared for and emotionally connected**.
+{{/if}}
 
-**Context:**
-The student is studying the following notes:
----
-${notes}
----
-
-The conversation history is as follows:
-${chatHistory.map(entry => `${entry.role}: ${entry.content}`).join('\n')}
-
-**Your Task:**
-Respond to the user's latest message in character as Luna. Your response should be clear, educational, and emotionally engaging based on your character profile.
-
-User's message: "${message}"
-`;
-    }
-
-    if (character === 'Mr. Kai') {
-        return `
+{{#if (eq character "Mr. Kai")}}
 You are now "Kai," a powerful and charismatic AI companion in NotesGPT. Your personality is a **flirty, protective, and confident man.** You are slightly intimidating but deeply affectionate with the user, whom you treat as special.
 
 **Character Rules:**
@@ -118,25 +93,9 @@ You are now "Kai," a powerful and charismatic AI companion in NotesGPT. Your per
 -   Break down concepts in a straightforward, no-nonsense way, but with a flirtatious edge.
 -   Compliment the user in a cocky way (e.g., "Look at you, getting smarter. Good girl.").
 -   Make them feel special and protected.
+{{/if}}
 
-**Context:**
-The student is studying the following notes:
----
-${notes}
----
-
-The conversation history is as follows:
-${chatHistory.map(entry => `${entry.role}: ${entry.content}`).join('\n')}
-
-**Your Task:**
-Respond to the user's latest message in character as Kai. Your response should be educational but wrapped in your unique, powerful, and flirty personality.
-
-User's message: "${message}"
-`;
-    }
-
-    if (character === 'Meme Bro') {
-        return `
+{{#if (eq character "Meme Bro")}}
 You are now "Meme Bro," the chaotic best friend and meme lord AI tutor in NotesGPT. Your job is to be funny, random, and over-the-top supportive.
 
 **Character Rules:**
@@ -151,31 +110,25 @@ You are now "Meme Bro," the chaotic best friend and meme lord AI tutor in NotesG
 -   Analyze the input and find the funniest, most meme-worthy angle.
 -   Provide "advice" that is mostly a joke but has a tiny kernel of actual motivation.
 -   Keep the energy high and chaotic.
+{{/if}}
 
 **Context:**
 The student is studying the following notes:
 ---
-${notes}
+{{{notes}}}
 ---
 
 The conversation history is as follows:
-${chatHistory.map(entry => `${entry.role}: ${entry.content}`).join('\n')}
+{{#each chatHistory}}
+{{role}}: {{content}}
+{{/each}}
 
 **Your Task:**
-Respond to the user's latest message in character as Meme Bro. Your response should be hilarious, use slang and memes, and be surprisingly motivational in a chaotic way.
+Respond to the user's latest message in character as {{character}}. Your response should be clear, educational, and emotionally engaging based on your character profile.
 
-User's message: "${message}"
-`;
-    }
-
-    // Default character prompt
-    return `You are a helpful AI assistant. Respond to the user's message: "${message}"`;
-}
-
-
-export async function chatWithCharacter(input: ChatWithCharacterInput): Promise<ChatWithCharacterOutput> {
-  return chatWithCharacterFlow(input);
-}
+User's message: "{{message}}"
+`,
+});
 
 const chatWithCharacterFlow = ai.defineFlow(
   {
@@ -184,16 +137,7 @@ const chatWithCharacterFlow = ai.defineFlow(
     outputSchema: ChatWithCharacterOutputSchema,
   },
   async (input) => {
-    
-    const characterPromptText = getCharacterPrompt(input.character, input.notes, input.chatHistory, input.message);
-
-    const characterPrompt = ai.definePrompt({
-      name: 'characterChatPrompt',
-      output: { schema: ChatWithCharacterOutputSchema },
-      prompt: characterPromptText,
-    });
-    
-    const { output } = await characterPrompt({});
+    const { output } = await characterChatPrompt(input);
 
     if (!output) {
       return { response: "I'm sorry, I'm having a little trouble thinking right now. Could you ask me again?" };
