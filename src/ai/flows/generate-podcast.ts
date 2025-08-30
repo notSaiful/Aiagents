@@ -58,7 +58,81 @@ const formalStyleInstructions = `
 `;
 
 
-async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 2): Promise<string> {
+const generatePodcastFlow = ai.defineFlow(
+  {
+    name: 'generatePodcastFlow',
+    inputSchema: GeneratePodcastInputSchema,
+    outputSchema: GeneratePodcastOutputSchema,
+  },
+  async ({ notes, style }) => {
+
+    let styleInstructions = '';
+    if (style === 'Minimalist') {
+      styleInstructions = minimalistStyleInstructions;
+    } else if (style === 'Story') {
+      styleInstructions = storyStyleInstructions;
+    } else if (style === 'Action') {
+      styleInstructions = actionStyleInstructions;
+    } else if (style === 'Formal') {
+      styleInstructions = formalStyleInstructions;
+    }
+
+    const scriptPrompt = ai.definePrompt({
+        name: 'generatePodcastScriptPrompt',
+        prompt: `You are an expert podcast scriptwriter. Create a conversational script based on the provided notes and style.
+
+        **Style Instructions (${style})**:
+        ${styleInstructions}
+        
+        **Rules**:
+        1.  The script must be a dialogue between "Speaker1" and "Speaker2".
+        2.  Each line must start with the speaker's name (e.g., \`Speaker1: ...\`).
+        3.  The script should be engaging and accurately reflect the content of the notes.
+        4.  First, correct any spelling and grammar mistakes from the notes, then generate the script based on the corrected text.
+        
+        **Notes**:
+        ${notes}
+        `,
+    });
+
+    const { text } = await ai.generate({ prompt: (await scriptPrompt()).prompt });
+
+    const { media } = await ai.generate({
+        model: googleAI.model('gemini-2.5-flash-preview-tts'),
+        config: {
+            responseModalities: ['AUDIO'],
+            speechConfig: {
+                multiSpeakerVoiceConfig: {
+                    speakerVoiceConfigs: [
+                        { speaker: 'Speaker1', voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Algenib' } } },
+                        { speaker: 'Speaker2', voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Achernar' } } },
+                    ],
+                },
+            },
+        },
+        prompt: text,
+    });
+    
+    if (!media?.url) {
+        throw new Error('Failed to generate podcast audio.');
+    }
+
+    const audioBuffer = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
+    const wavData = await toWav(audioBuffer);
+    
+    return {
+        podcastWavDataUri: `data:audio/wav;base64,${wavData}`,
+    };
+  }
+);
+
+
+async function toWav(
+  pcmData: Buffer,
+  channels = 1,
+  rate = 24000,
+  sampleWidth = 2
+): Promise<string> {
   return new Promise((resolve, reject) => {
     const writer = new wav.Writer({
       channels,
@@ -79,87 +153,3 @@ async function toWav(pcmData: Buffer, channels = 1, rate = 24000, sampleWidth = 
     writer.end();
   });
 }
-
-const generatePodcastFlow = ai.defineFlow(
-  {
-    name: 'generatePodcastFlow',
-    inputSchema: GeneratePodcastInputSchema,
-    outputSchema: GeneratePodcastOutputSchema,
-  },
-  async (input) => {
-    let styleInstructions = '';
-    if (input.style === 'Minimalist') {
-      styleInstructions = minimalistStyleInstructions;
-    } else if (input.style === 'Story') {
-      styleInstructions = storyStyleInstructions;
-    } else if (input.style === 'Action') {
-      styleInstructions = actionStyleInstructions;
-    } else if (input.style === 'Formal') {
-      styleInstructions = formalStyleInstructions;
-    }
-
-    const dialoguePrompt = ai.definePrompt({
-      name: 'generatePodcastScriptPrompt',
-      output: { schema: z.object({ script: z.string() }) },
-      prompt: `You are a scriptwriter for a podcast. Your task is to convert the following notes into a conversational dialogue script between two characters: Speaker1 and Speaker2.
-The script should be engaging, realistic, and strictly adhere to the specified style. It should include realistic conversational elements like pauses or tone shifts.
-The output MUST be a script where each line is prefixed with "Speaker1:" or "Speaker2:".
-
-**Style Instructions**:
-${styleInstructions}
-
-**Notes to convert**:
-${input.notes}
-`,
-    });
-    
-    let script = '';
-    try {
-      const { output } = await dialoguePrompt({});
-      if (!output?.script) {
-          throw new Error('AI failed to return a script.');
-      }
-      script = output.script;
-    } catch (error) {
-        console.error('Error generating script:', error);
-        throw new Error('Failed to generate a script. The AI may have refused the request due to safety filters.');
-    }
-    
-    const { media } = await ai.generate({
-      model: googleAI.model('gemini-2.5-flash-preview-tts'),
-      config: {
-        responseModalities: ['AUDIO'],
-        speechConfig: {
-          multiSpeakerVoiceConfig: {
-            speakerVoiceConfigs: [
-              {
-                speaker: 'Speaker1',
-                voiceConfig: {
-                  prebuiltVoiceConfig: { voiceName: 'Algenib' },
-                },
-              },
-              {
-                speaker: 'Speaker2',
-                voiceConfig: {
-                  prebuiltVoiceConfig: { voiceName: 'Achernar' },
-                },
-              },
-            ],
-          },
-        },
-      },
-      prompt: script,
-    });
-    
-    if (!media) {
-        throw new Error('No audio could be generated for the script. This may be due to an API error or an empty script.');
-    }
-
-    const audioBuffer = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
-    const wavBase64 = await toWav(audioBuffer);
-
-    return {
-      podcastWavDataUri: `data:audio/wav;base64,${wavBase64}`,
-    };
-  }
-);
