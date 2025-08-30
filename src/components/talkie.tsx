@@ -38,7 +38,7 @@ const characterData = {
         greeting: "Hi darling... I was waiting for you. Ready to look at these notes together?"
     },
     'Mr. Kai': {
-        avatarUrl: 'https://picsum.photos/seed/kai-mafia/100/100',
+        avatarUrl: 'https://firebasestorage.googleapis.com/v0/b/gemini-notes-kwn2b.appspot.com/o/kai.webp?alt=media&token=1c6b1b4b-4c07-4e92-9a3b-55424a1b0213',
         avatarHint: 'man suit',
         fallback: 'K',
         description: 'A confident and protective tutor with a soft spot for you.',
