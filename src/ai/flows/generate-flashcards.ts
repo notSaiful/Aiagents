@@ -97,7 +97,7 @@ const generateFlashcardsFlow = ai.defineFlow(
       output: {schema: GenerateFlashcardsOutputSchema},
       prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Generate flashcards from the notes in a ${input.style} style.
 
-For each flashcard, you must assign a difficulty level: 'Easy', 'Medium', or 'Hard'.
+**NON-NEGOTIABLE RULE**: For EACH flashcard, you MUST assign a difficulty level. The value for the 'difficulty' field MUST be one of the following exact strings: 'Easy', 'Medium', or 'Hard'.
 
 ${styleInstructions}
 
