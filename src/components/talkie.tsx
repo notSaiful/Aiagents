@@ -24,7 +24,8 @@ type Character = 'Professor Aya' | 'Mischievous Luna' | 'Mr. Kai' | 'Meme Bro';
 
 const characterData = {
     'Professor Aya': {
-        avatarUrl: 'https://firebasestorage.googleapis.com/v0/b/gemini-notes-kwn2b.appspot.com/o/aya.webp?alt=media&token=cce55b55-d14c-41c1-8a7e-97364d9e9d6c',
+        // Replace this URL with the direct public link to your desired image.
+        avatarUrl: 'https://storage.googleapis.com/aai-web-samples/progan-v2/25.png',
         avatarHint: 'woman teacher',
         fallback: 'A',
         description: 'A caring and knowledgeable mentor.',
