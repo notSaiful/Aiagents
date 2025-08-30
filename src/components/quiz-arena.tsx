@@ -8,6 +8,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { QuizQuestion } from '@/types';
 import { Shield, Sword, Heart, Trophy, RefreshCw } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { updateUserStats } from '@/ai/flows/update-user-stats';
+import { useToast } from '@/hooks/use-toast';
+
 
 interface QuizArenaProps {
   questions: QuizQuestion[];
@@ -18,6 +22,8 @@ const INITIAL_HEALTH = 100;
 const TIMER_SECONDS = 15;
 
 export default function QuizArena({ questions, style }: QuizArenaProps) {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [playerHealth, setPlayerHealth] = useState(INITIAL_HEALTH);
   const [aiHealth, setAiHealth] = useState(INITIAL_HEALTH);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -61,10 +67,18 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
         isCorrect = answer === currentQuestion.answer;
         if (isCorrect) {
             const damage = 10 + (currentQuestion.difficulty * 5); // Difficulty-based damage
+            const pointsGained = 15;
             setAiHealth(prev => Math.max(0, prev - damage));
             setScore(prev => prev + 10 * currentQuestion.difficulty);
             setStreak(prev => prev + 1);
             setFeedback('correct');
+            if (user) {
+                updateUserStats({ userId: user.uid, action: 'quizCorrectAnswer' });
+                toast({
+                    title: 'Correct!',
+                    description: `You earned ${pointsGained} points.`,
+                });
+            }
         } else {
             setPlayerHealth(prev => Math.max(0, prev - 15));
             setStreak(0);
@@ -78,6 +92,9 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
       const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
       if (isPlayerDefeated || isAIDefeated || isLastQuestion) {
+        if(user && (isAIDefeated || isPlayerDefeated)) {
+            updateUserStats({ userId: user.uid, action: 'quizCompleted' });
+        }
         setGameOver(true);
       } else {
         setCurrentQuestionIndex(prev => prev + 1);

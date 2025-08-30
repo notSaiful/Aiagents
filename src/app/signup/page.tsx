@@ -52,6 +52,18 @@ export default function SignupPage() {
           settings: {
             preferredStyle: 'Minimalist',
           },
+          // Initialize gamification fields
+          points: 0,
+          streak: 0,
+          lastActivityDate: null,
+          achievements: [],
+          stats: {
+            summariesGenerated: 0,
+            flashcardsCompleted: 0,
+            mindmapsCreated: 0,
+            podcastsListened: 0,
+            gamesCompleted: 0,
+          }
         })
       ]);
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LoaderCircle, Upload, Save, Video } from 'lucide-react';
+import { Sparkles, LoaderCircle, Upload, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -13,6 +13,7 @@ import { createMindMap } from '@/ai/flows/create-mind-map';
 import { generatePodcast } from '@/ai/flows/generate-podcast';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
 import { extractTextFromVideo } from '@/ai/flows/extract-text-from-video';
+import { updateUserStats } from '@/ai/flows/update-user-stats';
 import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
@@ -72,10 +73,27 @@ export default function Home() {
     }
 
     try {
+      // These actions are wrapped in individual promises to allow for parallel execution
+      // and separate point rewarding.
+      const summaryPromise = summarizeNotes({ notes, style }).then(res => {
+        if (user) updateUserStats({ userId: user.uid, action: 'generateSummary' });
+        return res;
+      });
+
+      const flashcardsPromise = generateFlashcards({ notes, style }).then(res => {
+        if (user) updateUserStats({ userId: user.uid, action: 'generateFlashcards' });
+        return res;
+      });
+
+      const mindMapPromise = createMindMap({ notes, style }).then(res => {
+        if (user) updateUserStats({ userId: user.uid, action: 'createMindmap' });
+        return res;
+      });
+
       const [summaryRes, flashcardsRes, mindMapRes] = await Promise.all([
-        summarizeNotes({ notes, style }),
-        generateFlashcards({ notes, style }),
-        createMindMap({ notes, style }),
+        summaryPromise,
+        flashcardsPromise,
+        mindMapPromise,
       ]);
 
       setOutput({
@@ -83,6 +101,11 @@ export default function Home() {
         longSummary: summaryRes.longSummary,
         flashcards: flashcardsRes.flashcards,
         mindMap: mindMapRes.mindMap,
+      });
+
+      toast({
+          title: 'Transformation Complete!',
+          description: 'Your notes have been transformed. You also earned some points!',
       });
     } catch (error) {
       console.error('Transformation failed:', error);
@@ -99,6 +122,10 @@ export default function Home() {
   const handleGeneratePodcast = async () => {
     try {
       const podcastRes = await generatePodcast({ notes, style });
+      if (user) {
+          updateUserStats({ userId: user.uid, action: 'generatePodcast' });
+          toast({ title: 'Podcast Generated!', description: 'You earned 5 points.' });
+      }
       setOutput(prevOutput => ({
         ...prevOutput,
         podcast: { audioUrl: podcastRes.podcastWavDataUri },

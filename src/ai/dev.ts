@@ -11,6 +11,6 @@ import '@/ai/flows/generate-podcast.ts';
 import '@/ai/flows/generate-quiz.ts';
 import '@/ai/flows/chat-with-character.ts';
 import '@/ai/flows/extract-text-from-video.ts';
-
-
-    
+import '@/ai/flows/update-user-stats.ts';
+import '@/ai/flows/get-leaderboard.ts';
+import '@/ai/flows/get-user-profile.ts';
