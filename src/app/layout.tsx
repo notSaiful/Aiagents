@@ -31,6 +31,7 @@ export default function RootLayout({
           fontSerif.variable, 
           fontPlayfair.variable
         )}
+        suppressHydrationWarning={true}
       >
         <AuthProvider>
           <div className="flex-grow">

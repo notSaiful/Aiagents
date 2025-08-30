@@ -15,6 +15,7 @@ import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { motion } from 'framer-motion';
 import { LoaderCircle, Chrome } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -166,7 +167,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-      <div className="w-full max-w-sm">
+      <motion.div 
+        className="w-full max-w-sm"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight">
             {mode === 'login' ? 'Welcome Back' : 'Create an Account'}
@@ -253,7 +259,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             </NextLink>
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

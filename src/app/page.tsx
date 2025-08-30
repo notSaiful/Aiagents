@@ -252,7 +252,7 @@ export default function Home() {
         </p>
       </div>
 
-      <Card className="w-full rounded-xl border-2 border-primary/40 shadow-lg">
+      <Card className="w-full rounded-2xl border-2 border-primary/40 shadow-lg transition-all hover:shadow-xl">
         <CardContent className="p-4 pb-0">
             <Textarea
               placeholder="Paste your notes here, or upload a document, image, or video to get started..."
