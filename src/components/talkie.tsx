@@ -28,28 +28,28 @@ const characterData = {
         avatarHint: 'woman teacher',
         fallback: 'A',
         description: 'A caring and knowledgeable mentor.',
-        greeting: "Hello, sweetie! I'm Professor Aya. What can I help you understand from your notes today?"
+        greeting: "Hello. I'm Professor Aya. How can I assist with your studies today?"
     },
     'Mischievous Luna': {
         avatarUrl: 'https://firebasestorage.googleapis.com/v0/b/gemini-notes-kwn2b.appspot.com/o/luna.webp?alt=media&token=48f1c84f-e253-44f2-b7e8-2c67b93edb01',
         avatarHint: 'anime girl studying',
         fallback: 'L',
         description: 'A playful and loving companion who helps you study.',
-        greeting: "Hi darling... I was waiting for you. Ready to look at these notes together?"
+        greeting: "Hi there! I'm Luna. Ready to make learning fun together?"
     },
     'Mr. Kai': {
         avatarUrl: 'https://firebasestorage.googleapis.com/v0/b/gemini-notes-kwn2b.appspot.com/o/kai.webp?alt=media&token=1c6b1b4b-4c07-4e92-9a3b-55424a1b0213',
         avatarHint: 'man suit',
         fallback: 'K',
         description: 'A confident and protective tutor with a soft spot for you.',
-        greeting: "So you came back, huh? Good. I was starting to think I'd have to come find you. What do you need, princess?"
+        greeting: "You're here. Good. I'm Kai. Let's get straight to the point, what do you need?"
     },
     'Meme Bro': {
         avatarUrl: 'https://storage.googleapis.com/aai-web-samples/progan-v2/24.png',
         avatarHint: 'young man gamer',
         fallback: 'M',
         description: 'Your chaotic best friend who turns studying into a meme.',
-        greeting: "Yo, what's the sitch? Got notes? Let's turn this study sesh into a meme-fiesta. No cap. 🔥"
+        greeting: "Wassup, fam! It's your boy, Meme Bro. Let's cook up some knowledge. 🔥"
     }
 }
 
@@ -228,5 +228,3 @@ export default function Talkie({ notes }: TalkieProps) {
     </div>
   );
 }
-
-    
