@@ -18,13 +18,16 @@ const GenerateFlashcardsInputSchema = z.object({
 });
 export type GenerateFlashcardsInput = z.infer<typeof GenerateFlashcardsInputSchema>;
 
+const FlashcardSchema = z.object({
+  question: z.string().describe('The question for the flashcard.'),
+  answer: z.string().describe('The answer to the question.'),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']).describe("The difficulty of the question: 'Easy', 'Medium', or 'Hard'."),
+});
+export type Flashcard = z.infer<typeof FlashcardSchema>;
+
+
 const GenerateFlashcardsOutputSchema = z.object({
-  flashcards: z.array(
-    z.object({
-      question: z.string().describe('The question for the flashcard.'),
-      answer: z.string().describe('The answer to the question.'),
-    })
-  ).describe('The generated flashcards in Q&A format.'),
+  flashcards: z.array(FlashcardSchema).describe('The generated flashcards in Q&A format with difficulty.'),
 });
 export type GenerateFlashcardsOutput = z.infer<typeof GenerateFlashcardsOutputSchema>;
 
@@ -93,6 +96,8 @@ const generateFlashcardsFlow = ai.defineFlow(
       name: 'generateFlashcardsPrompt',
       output: {schema: GenerateFlashcardsOutputSchema},
       prompt: `You are an AI study assistant that transforms raw class notes into aesthetic, structured study material. Generate flashcards from the notes in a ${input.style} style.
+
+For each flashcard, you must assign a difficulty level: 'Easy', 'Medium', or 'Hard'.
 
 ${styleInstructions}
 

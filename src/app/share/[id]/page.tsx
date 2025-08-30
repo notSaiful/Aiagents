@@ -19,7 +19,20 @@ async function getSharedData(id: string): Promise<SharedData | null> {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      return docSnap.data() as SharedData;
+      const data = docSnap.data();
+      // Ensure flashcards have a difficulty, providing a default if missing from older shares
+      const flashcards = (data.flashcards || []).map((fc: any) => ({
+          question: fc.question,
+          answer: fc.answer,
+          difficulty: fc.difficulty || 'Medium',
+      }));
+
+      return {
+          shortSummary: data.shortSummary,
+          longSummary: data.longSummary,
+          flashcards: flashcards,
+          mindMap: data.mindMap,
+      }
     } else {
       return null;
     }
@@ -52,6 +65,8 @@ export default async function SharePage({ params }: { params: { id: string } }) 
         flashcards={data.flashcards}
         mindMap={data.mindMap}
         isShareable={false}
+        notes=""
+        style="Minimalist"
       />
     </div>
   );

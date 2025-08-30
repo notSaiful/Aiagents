@@ -2,6 +2,7 @@
 export interface Flashcard {
   question: string;
   answer: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
 }
 
 export interface MindMapData {

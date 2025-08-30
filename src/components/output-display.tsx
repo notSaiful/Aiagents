@@ -1,20 +1,13 @@
+
 'use client';
 
 import { useState, useRef } from 'react';
-import { Share2, LoaderCircle } from 'lucide-react';
+import { Share2, LoaderCircle, BookOpen } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import ShareDialog from './share-dialog';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
-import Flashcard from './flashcard';
 import MindMap from './mind-map';
 import type { Flashcard as FlashcardType, Podcast as PodcastType, QuizQuestion } from '@/types';
 import { Skeleton } from './ui/skeleton';
@@ -22,6 +15,7 @@ import { shareGeneration } from '@/ai/flows/share-generation';
 import { generateQuiz } from '@/ai/flows/generate-quiz';
 import QuizArena from './quiz-arena';
 import Talkie from './talkie';
+import FlashcardDeck from './flashcard-deck';
 
 interface OutputDisplayProps {
   shortSummary?: string;
@@ -54,13 +48,14 @@ export default function OutputDisplay({
   const [isGeneratingPodcast, setIsGeneratingPodcast] = useState(false);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[] | null>(null);
   const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
+  const [isStudying, setIsStudying] = useState(false);
 
   const summaryRef = useRef<HTMLDivElement>(null);
-  const flashcardsRef = useRef<HTMLDivElement>(null);
   const mindMapRef = useRef<HTMLDivElement>(null);
   const podcastRef = useRef<HTMLDivElement>(null);
   const arcadeRef = useRef<HTMLDivElement>(null);
   const talkieRef = useRef<HTMLDivElement>(null);
+  const flashcardsRef = useRef<HTMLDivElement>(null);
 
 
   const handleCopyLink = async () => {
@@ -195,23 +190,25 @@ export default function OutputDisplay({
         </TabsContent>
 
         <TabsContent value="flashcards">
-            <Card ref={flashcardsRef} className="rounded-xl border-2 border-primary/40 flex items-center justify-center min-h-[250px] py-4">
+            <Card ref={flashcardsRef} className="rounded-xl border-2 border-primary/40 flex items-center justify-center min-h-[400px] py-4">
              {!flashcards ? (
                 renderLoadingSkeletons()
+              ) : isStudying ? (
+                <FlashcardDeck cards={flashcards} onFinish={() => setIsStudying(false)} />
               ) : (
-                <Carousel className="w-full max-w-md mx-auto" opts={{ loop: true }}>
-                  <CarouselContent>
-                    {Array.isArray(flashcards) && flashcards.map((flashcard, index) => (
-                      <CarouselItem key={index}>
-                        <div className="p-1 h-[200px]">
-                          <Flashcard flashcard={flashcard} />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious />
-                  <CarouselNext />
-                </Carousel>
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold font-serif mb-2">Flashcards Ready!</h2>
+                    <p className="text-muted-foreground mb-4">
+                        {flashcards.length} cards were generated from your notes.
+                    </p>
+                    <Button
+                        onClick={() => setIsStudying(true)}
+                        className="font-semibold text-lg py-6 rounded-xl shadow-lg"
+                    >
+                        <BookOpen className="mr-2" />
+                        Study Flashcards
+                    </Button>
+                </div>
               )}
             </Card>
         </TabsContent>

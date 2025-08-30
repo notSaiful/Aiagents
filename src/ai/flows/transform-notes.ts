@@ -12,12 +12,19 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-// Input Schema
 const TransformNotesInputSchema = z.object({
   notes: z.string().describe('The notes to transform.'),
   style: z.string().describe('The style of output to generate (Minimalist, Story, Action, Formal).'),
 });
 export type TransformNotesInput = z.infer<typeof TransformNotesInputSchema>;
+
+const FlashcardSchema = z.object({
+  question: z.string().describe('The question for the flashcard.'),
+  answer: z.string().describe('The answer to the question.'),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']).describe("The difficulty of the question."),
+});
+export type Flashcard = z.infer<typeof FlashcardSchema>;
+
 
 // Output Schema
 const TransformNotesOutputSchema = z.object({
@@ -31,12 +38,7 @@ const TransformNotesOutputSchema = z.object({
     .describe(
       'A very detailed and comprehensive summary in clean HTML format, encompassing all points from the notes.'
     ),
-  flashcards: z.array(
-    z.object({
-      question: z.string().describe('The question for the flashcard.'),
-      answer: z.string().describe('The answer to the question.'),
-    })
-  ).describe('An array of 8-10 generated flashcards in Q&A format.'),
+  flashcards: z.array(FlashcardSchema).describe('An array of 8-10 generated flashcards in Q&A format.'),
   mindMap: z.string().describe('A mind map in Mermaid syntax that represents the notes.'),
 });
 export type TransformNotesOutput = z.infer<typeof TransformNotesOutputSchema>;
@@ -44,7 +46,7 @@ export type TransformNotesOutput = z.infer<typeof TransformNotesOutputSchema>;
 // Style Instructions
 const getStyleInstructions = (style: string) => {
     const commonHtmlRule = "Format all summaries using clean HTML (p, ul, li, strong, h3, h4).";
-    const commonFlashcardRule = "Generate 8-10 flashcards.";
+    const commonFlashcardRule = "Generate 8-10 flashcards, each with a difficulty ('Easy', 'Medium', 'Hard').";
     const commonMindMapRule = `Generate a mind map following these NON-NEGOTIABLE rules:
 1. Start with "mindmap".
 2. Have exactly ONE root node indented by 2 spaces.
