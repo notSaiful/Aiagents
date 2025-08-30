@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { fontSans, fontSerif, fontPlayfair } from '@/lib/fonts';
 import Footer from '@/components/layout/footer';
 import PageTransition from '@/components/page-transition';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
   title: 'NotesGPT | Transform Your Notes Instantly',
@@ -34,14 +35,21 @@ export default function RootLayout({
         )}
         suppressHydrationWarning={true}
       >
-        <AuthProvider>
-          <div className="flex-grow">
-            <Header />
-            <main><PageTransition>{children}</PageTransition></main>
-          </div>
-          <Footer />
-          <Toaster />
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <div className="flex-grow">
+              <Header />
+              <main><PageTransition>{children}</PageTransition></main>
+            </div>
+            <Footer />
+            <Toaster />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

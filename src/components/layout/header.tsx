@@ -3,6 +3,7 @@
 
 import { usePathname } from 'next/navigation';
 import AuthButton from '@/components/auth-button';
+import { ThemeToggle } from '../theme-toggle';
 
 export default function Header() {
   const pathname = usePathname();
@@ -14,7 +15,8 @@ export default function Header() {
   
   return (
      <header className="absolute top-0 z-50 w-full">
-        <div className="container flex h-16 max-w-screen-2xl items-center justify-end">
+        <div className="container flex h-16 max-w-screen-2xl items-center justify-end gap-4">
+          <ThemeToggle />
           <AuthButton />
         </div>
       </header>
