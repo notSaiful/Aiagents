@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { LoaderCircle, Send, ChevronLeft } from 'lucide-react';
 import { chatWithCharacter } from '@/ai/flows/chat-with-character';
 import { useToast } from '@/hooks/use-toast';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
