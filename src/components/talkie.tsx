@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect, FormEvent } from 'react';
@@ -126,10 +125,6 @@ export default function Talkie({ notes }: TalkieProps) {
                             onClick={() => setSelectedCharacter(character)}
                             className="flex flex-col items-center justify-center p-4 border rounded-xl hover:bg-muted transition-colors text-center"
                         >
-                            <Avatar className="w-16 h-16 mb-2">
-                                <AvatarImage src={data.avatarUrl} data-ai-hint={data.avatarHint} />
-                                <AvatarFallback>{data.fallback}</AvatarFallback>
-                            </Avatar>
                             <p className="font-semibold">{character}</p>
                             <p className="text-xs text-muted-foreground mt-1">{data.description}</p>
                         </button>
@@ -151,10 +146,6 @@ export default function Talkie({ notes }: TalkieProps) {
             </Button>
             <div className="flex items-center gap-3">
                  <span className="font-semibold">{selectedCharacter}</span>
-                 <Avatar className="w-10 h-10">
-                    <AvatarImage src={currentCharacterData.avatarUrl} data-ai-hint={currentCharacterData.avatarHint} />
-                    <AvatarFallback>{currentCharacterData.fallback}</AvatarFallback>
-                </Avatar>
             </div>
         </div>
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -167,34 +158,34 @@ export default function Talkie({ notes }: TalkieProps) {
             )}
           >
             {message.role === 'model' && (
-              <Avatar className="w-10 h-10">
-                <AvatarImage src={currentCharacterData.avatarUrl} data-ai-hint={currentCharacterData.avatarHint} />
-                <AvatarFallback>{currentCharacterData.fallback}</AvatarFallback>
-              </Avatar>
+               <div
+                className={cn(
+                  "max-w-sm md:max-w-md rounded-xl px-4 py-3 text-sm",
+                  'bg-muted text-muted-foreground'
+                )}
+              >
+                <p>{message.content}</p>
+              </div>
             )}
-            <div
-              className={cn(
-                "max-w-sm md:max-w-md rounded-xl px-4 py-3 text-sm",
-                message.role === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground'
-              )}
-            >
-              <p>{message.content}</p>
-            </div>
-             {message.role === 'user' && (
-              <Avatar className="w-10 h-10">
-                <AvatarFallback>You</AvatarFallback>
-              </Avatar>
+            {message.role === 'user' && (
+              <>
+                <div
+                  className={cn(
+                    "max-w-sm md:max-w-md rounded-xl px-4 py-3 text-sm",
+                    'bg-primary text-primary-foreground'
+                  )}
+                >
+                  <p>{message.content}</p>
+                </div>
+                 <Avatar className="w-10 h-10">
+                  <AvatarFallback>You</AvatarFallback>
+                </Avatar>
+              </>
             )}
           </div>
         ))}
         {isLoading && (
             <div className="flex items-start gap-3 justify-start">
-                 <Avatar className="w-10 h-10">
-                    <AvatarImage src={currentCharacterData.avatarUrl} data-ai-hint={currentCharacterData.avatarHint} />
-                    <AvatarFallback>{currentCharacterData.fallback}</AvatarFallback>
-                </Avatar>
                 <div className="max-w-sm md:max-w-md rounded-xl px-4 py-3 bg-muted text-muted-foreground">
                     <LoaderCircle className="w-5 h-5 animate-spin" />
                 </div>
