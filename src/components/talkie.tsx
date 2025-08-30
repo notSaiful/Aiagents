@@ -24,7 +24,7 @@ type Character = 'Professor Aya' | 'Mischievous Luna' | 'Mr. Kai' | 'Meme Bro';
 
 const characterData = {
     'Professor Aya': {
-        // Replace this URL with the direct public link to your desired image.
+        // You can replace this placeholder URL with a permanent, public link to your own image.
         avatarUrl: 'https://storage.googleapis.com/aai-web-samples/progan-v2/25.png',
         avatarHint: 'woman teacher',
         fallback: 'A',
