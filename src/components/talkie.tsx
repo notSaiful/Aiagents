@@ -45,7 +45,7 @@ const characterData = {
         greeting: "So you came back, huh? Good. I was starting to think I'd have to come find you. What do you need, princess?"
     },
     'Meme Bro': {
-        avatarUrl: 'https://picsum.photos/seed/meme-bro/100/100',
+        avatarUrl: 'https://storage.googleapis.com/aai-web-samples/progan-v2/24.png',
         avatarHint: 'young man gamer',
         fallback: 'M',
         description: 'Your chaotic best friend who turns studying into a meme.',
