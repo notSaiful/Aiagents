@@ -157,6 +157,8 @@ const createMindMapFlow = ai.defineFlow(
 
 First, correct any spelling and grammar mistakes from the notes, then generate the mind map based on the corrected text.
 
+The output MUST be a valid JSON object containing a "mindMap" field. The entire output must be only the Mermaid syntax inside the 'mindMap' field of the JSON. Do not add any other text or formatting.
+
 Notes:
 ${input.notes}
 `,
