@@ -13,14 +13,14 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 // Input Schema
-export const TransformNotesInputSchema = z.object({
+const TransformNotesInputSchema = z.object({
   notes: z.string().describe('The notes to transform.'),
   style: z.string().describe('The style of output to generate (Minimalist, Story, Action, Formal).'),
 });
 export type TransformNotesInput = z.infer<typeof TransformNotesInputSchema>;
 
 // Output Schema
-export const TransformNotesOutputSchema = z.object({
+const TransformNotesOutputSchema = z.object({
   shortSummary: z
     .string()
     .describe(
