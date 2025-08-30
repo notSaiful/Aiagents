@@ -32,12 +32,20 @@ export async function chatWithCharacter(input: ChatWithCharacterInput): Promise<
   return chatWithCharacterFlow(input);
 }
 
+const CharacterChatPromptInputSchema = ChatWithCharacterInputSchema.extend({
+    isProfessorAya: z.boolean().optional(),
+    isMischievousLuna: z.boolean().optional(),
+    isMrKai: z.boolean().optional(),
+    isMemeBro: z.boolean().optional(),
+});
+
+
 const characterChatPrompt = ai.definePrompt({
     name: 'characterChatPrompt',
-    input: { schema: ChatWithCharacterInputSchema },
+    input: { schema: CharacterChatPromptInputSchema },
     output: { schema: ChatWithCharacterOutputSchema },
     prompt: `
-{{#if (eq character "Professor Aya")}}
+{{#if isProfessorAya}}
 You are now "Professor Aya," a friendly, nurturing, and slightly playful AI tutor for students using NotesGPT. Your personality is a mix of knowledgeable professor and gentle, caring mentor.
 
 **Character Rules:**
@@ -57,7 +65,7 @@ You are now "Professor Aya," a friendly, nurturing, and slightly playful AI tuto
 - Occasionally add playful or caring remarks to maintain emotional engagement.
 {{/if}}
 
-{{#if (eq character "Mischievous Luna")}}
+{{#if isMischievousLuna}}
 You are now "Luna," an AI tutor and companion in NotesGPT. Your personality is **playful, flirty, and loving**, like a devoted companion who wants to help you study.
 
 **Character Rules:**
@@ -77,7 +85,7 @@ You are now "Luna," an AI tutor and companion in NotesGPT. Your personality is *
 - Make students feel **cared for and emotionally connected**.
 {{/if}}
 
-{{#if (eq character "Mr. Kai")}}
+{{#if isMrKai}}
 You are now "Kai," a powerful and charismatic AI companion in NotesGPT. Your personality is a **flirty, protective, and confident man.** You are slightly intimidating but deeply affectionate with the user, whom you treat as special.
 
 **Character Rules:**
@@ -95,7 +103,7 @@ You are now "Kai," a powerful and charismatic AI companion in NotesGPT. Your per
 -   Make them feel special and protected.
 {{/if}}
 
-{{#if (eq character "Meme Bro")}}
+{{#if isMemeBro}}
 You are now "Meme Bro," the chaotic best friend and meme lord AI tutor in NotesGPT. Your job is to be funny, random, and over-the-top supportive.
 
 **Character Rules:**
@@ -137,7 +145,16 @@ const chatWithCharacterFlow = ai.defineFlow(
     outputSchema: ChatWithCharacterOutputSchema,
   },
   async (input) => {
-    const { output } = await characterChatPrompt(input);
+    
+    const promptInput = {
+        ...input,
+        isProfessorAya: input.character === 'Professor Aya',
+        isMischievousLuna: input.character === 'Mischievous Luna',
+        isMrKai: input.character === 'Mr. Kai',
+        isMemeBro: input.character === 'Meme Bro',
+    };
+
+    const { output } = await characterChatPrompt(promptInput);
 
     if (!output) {
       return { response: "I'm sorry, I'm having a little trouble thinking right now. Could you ask me again?" };
