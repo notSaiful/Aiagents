@@ -28,8 +28,10 @@ export default function Header() {
             </Button>
             <Button variant="ghost" size="sm" asChild>
                 <Link href="/profile">
+                  <>
                     <UserCircle className="mr-2 h-4 w-4" />
                     Profile
+                  </>
                 </Link>
             </Button>
           </nav>
