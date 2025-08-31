@@ -46,7 +46,7 @@ export default function ShippingDeliveryPage() {
                 </div>
                  <div>
                     <h3 className="font-semibold">My payment went through but I can't access my features. What do I do?</h3>
-                    <p className="text-muted-foreground text-sm">In the rare event of a delay, please first try logging out and logging back in. If the issue persists, contact our support team at <a href="mailto:support@notesgpt.study" className="text-primary hover:underline">support@notesgpt.study</a>, and we'll resolve it for you promptly.</p>
+                    <p className="text-muted-foreground text-sm">In the rare event of a delay, please first try logging out and logging back in. If the issue persists, contact our support team at <a href="mailto:support@notesgpt.study" className="text-foreground hover:underline">support@notesgpt.study</a>, and we'll resolve it for you promptly.</p>
                 </div>
             </div>
           </div>

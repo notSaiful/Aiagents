@@ -61,7 +61,7 @@ const policies = [
   {
     id: 'contact',
     title: '7. Contact Us',
-    content: 'For privacy concerns, please contact us at <a href="mailto:support@notesgpt.study" class="text-primary hover:underline">support@notesgpt.study</a>.',
+    content: 'For privacy concerns, please contact us at <a href="mailto:support@notesgpt.study" class="text-foreground hover:underline">support@notesgpt.study</a>.',
   },
 ];
 
