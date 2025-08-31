@@ -59,14 +59,17 @@ const getLeaderboardFlow = ai.defineFlow(
       let rank = 1;
       querySnapshot.forEach((doc) => {
         const user = doc.data() as UserStats;
+        // Ensure achievements is an array before mapping
+        const achievements = (user.achievements || []).map(a => ({ id: a.id, name: a.name, icon: a.icon }));
+
         leaderboard.push({
           rank,
           uid: user.uid,
           displayName: user.displayName,
           photoURL: user.photoURL,
-          points: user.points,
-          streak: user.streak,
-          achievements: user.achievements.map(a => ({ id: a.id, name: a.name, icon: a.icon })),
+          points: user.points || 0,
+          streak: user.streak || 0,
+          achievements: achievements,
         });
         rank++;
       });
