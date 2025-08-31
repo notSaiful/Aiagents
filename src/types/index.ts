@@ -41,6 +41,8 @@ export interface Achievement {
 export interface UserStats {
     uid: string;
     displayName: string;
+    username?: string;
+    usernameLower?: string;
     email: string;
     photoURL?: string;
     points: number;
@@ -55,3 +57,14 @@ export interface UserStats {
         gamesCompleted: number;
     }
 }
+
+export interface GenerationHistory {
+    id: string;
+    title: string;
+    featureType: 'Summary' | 'Flashcards' | 'MindMap' | 'Podcast' | 'Quiz' | 'Image' | 'Video' | 'StudySet';
+    timestamp: any; // Firestore Timestamp
+    content?: string;
+    pointsEarned: number;
+}
+
+    

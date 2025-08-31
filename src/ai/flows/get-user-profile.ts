@@ -19,6 +19,7 @@ export type GetUserProfileInput = z.infer<typeof GetUserProfileInputSchema>;
 const GetUserProfileOutputSchema = z.object({
   profile: z.object({
     displayName: z.string(),
+    username: z.string().optional(),
     email: z.string(),
     photoURL: z.string().optional(),
     points: z.number(),
@@ -72,6 +73,7 @@ const getUserProfileFlow = ai.defineFlow(
         return {
           profile: {
             displayName: user.displayName,
+            username: user.username,
             email: user.email,
             photoURL: user.photoURL,
             points: user.points || 0,
@@ -92,3 +94,5 @@ const getUserProfileFlow = ai.defineFlow(
     }
   }
 );
+
+    

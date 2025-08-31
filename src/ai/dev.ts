@@ -12,3 +12,9 @@ import '@/ai/flows/extract-text-from-video.ts';
 import '@/ai/flows/update-user-stats.ts';
 import '@/ai/flows/get-leaderboard.ts';
 import '@/ai/flows/get-user-profile.ts';
+import '@/ai/flows/save-generation.ts';
+import '@/ai/flows/get-previous-generations.ts';
+import '@/ai/flows/change-username.ts';
+import '@/ai/flows/check-username.ts';
+
+    
