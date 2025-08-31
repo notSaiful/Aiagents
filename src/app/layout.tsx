@@ -44,7 +44,7 @@ export default function RootLayout({
           <AuthProvider>
             <div className="flex-grow">
               <Header />
-              <main><PageTransition>{children}</PageTransition></main>
+              <main className="pt-16"><PageTransition>{children}</PageTransition></main>
             </div>
             <Footer />
             <Toaster />
