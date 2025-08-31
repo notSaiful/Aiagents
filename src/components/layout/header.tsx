@@ -6,7 +6,7 @@ import Link from 'next/link';
 import AuthButton from '@/components/auth-button';
 import { ThemeToggle } from '../theme-toggle';
 import { Button } from '../ui/button';
-import { Trophy, User, BookOpen, Timer, TrendingUp } from 'lucide-react';
+import { Trophy, User, Home, Timer, TrendingUp } from 'lucide-react';
 import BreakModeDialog from '../break-mode-dialog';
 import { useState } from 'react';
 
@@ -25,7 +25,7 @@ export default function Header() {
        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
-             <BookOpen className="h-6 w-6" />
+             <Home className="h-6 w-6" />
              <span className="font-bold">NotesGPT</span>
           </Link>
           <div className="flex items-center gap-2">
@@ -41,7 +41,7 @@ export default function Header() {
      <header className="absolute top-0 z-50 w-full">
         <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
-             <BookOpen className="h-6 w-6" />
+             <Home className="h-6 w-6" />
              <span className="sr-only">NotesGPT Home</span>
           </Link>
           <div className="flex items-center gap-2">
