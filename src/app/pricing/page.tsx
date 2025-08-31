@@ -8,10 +8,12 @@ import { Switch } from '@/components/ui/switch';
 import { Check, X, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import Link from 'next/link';
 
 const plans = [
   {
     name: 'Free',
+    planId: 'free',
     price: { monthly: '₹0', annually: '₹0' },
     description: 'For casual learners getting started.',
     features: [
@@ -30,6 +32,7 @@ const plans = [
   },
   {
     name: 'Starter',
+    planId: 'starter',
     price: { monthly: '₹199', annually: '₹1499' },
     description: 'For dedicated students and lifelong learners.',
     features: [
@@ -48,6 +51,7 @@ const plans = [
   },
   {
     name: 'Pro',
+    planId: 'pro',
     price: { monthly: '₹499', annually: '₹3999' },
     description: 'For power users and professionals.',
     features: [
@@ -69,6 +73,10 @@ const plans = [
 
 export default function PricingPage() {
   const [isAnnual, setIsAnnual] = useState(false);
+
+  const getPlanLink = (planId: string) => {
+    return `/payment?plan=${planId}&cycle=${isAnnual ? 'annually' : 'monthly'}`;
+  };
 
   return (
     <div className="container mx-auto max-w-6xl py-12 px-4">
@@ -142,8 +150,14 @@ export default function PricingPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button className="w-full text-lg py-6" variant={plan.variant as any} disabled={plan.name === 'Free'}>
-                {plan.buttonText}
+              <Button asChild className="w-full text-lg py-6" variant={plan.variant as any} disabled={plan.name === 'Free'}>
+                {plan.name === 'Free' ? (
+                   <span>{plan.buttonText}</span>
+                ) : (
+                  <Link href={getPlanLink(plan.planId)}>
+                    {plan.buttonText}
+                  </Link>
+                )}
               </Button>
             </CardFooter>
           </Card>
