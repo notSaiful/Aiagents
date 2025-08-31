@@ -1,4 +1,5 @@
 
+
 export interface Flashcard {
   question: string;
   answer: string;
@@ -47,6 +48,8 @@ export interface UserStats {
     photoURL?: string;
     points: number;
     streak: number;
+    currentPlan?: 'Free' | 'Starter' | 'Pro';
+    planRenewalDate?: string; // ISO date string
     achievements: Achievement[];
     lastActivityDate?: any; // Can be Firestore Timestamp
     stats: {

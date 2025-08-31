@@ -5,7 +5,7 @@ import { useEffect, useState, useTransition, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { getUserProfile, GetUserProfileOutput } from '@/ai/flows/get-user-profile';
-import { LoaderCircle, Award, Pencil, Check, X } from 'lucide-react';
+import { LoaderCircle, Award, Pencil, Check, X, Gem, Rocket, FileText } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -18,9 +18,17 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { checkUsernameAction } from '@/actions/check-username';
 import { updateUsernameAction } from '@/actions/update-username';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 
 type ProfileData = GetUserProfileOutput['profile'];
+
+const planDetails = {
+    Pro: { icon: <Gem className="w-6 h-6 text-purple-500" />, name: "Pro Plan" },
+    Starter: { icon: <Rocket className="w-6 h-6 text-orange-500" />, name: "Starter Plan" },
+    Free: { icon: <FileText className="w-6 h-6 text-gray-500" />, name: "Free Plan" },
+}
+
 
 export default function UserProfile() {
   const { user, loading: authLoading } = useAuth();
@@ -173,9 +181,11 @@ export default function UserProfile() {
   }
   
   const isSaveDisabled = isPending || usernameStatus !== 'available';
+  const currentPlan = profile.currentPlan || 'Free';
+  const planInfo = planDetails[currentPlan];
 
   return (
-    <div className="container mx-auto max-w-2xl py-12 px-4">
+    <div className="container mx-auto max-w-2xl py-12 px-4 space-y-8">
       <Card className="w-full border-2 border-primary/20 shadow-xl rounded-2xl">
         <CardHeader className="items-center text-center relative">
           <div className="absolute top-4 right-4 flex gap-2">
@@ -265,6 +275,26 @@ export default function UserProfile() {
           </div>
         </CardContent>
       </Card>
+      
+      <Card>
+        <CardContent className="p-6 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+                {planInfo.icon}
+                <div>
+                    <p className="font-bold">{planInfo.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                        {currentPlan === 'Free' ? "Upgrade to unlock more features." : `Renews on ${profile.planRenewalDate || 'N/A'}`}
+                    </p>
+                </div>
+            </div>
+            <Button asChild variant={currentPlan === 'Pro' ? "outline" : "default"}>
+                <Link href="/pricing">
+                    {currentPlan !== 'Pro' ? "Upgrade to Pro" : "Manage Plan"}
+                </Link>
+            </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
+
