@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LoaderCircle, Upload, Video, Timer } from 'lucide-react';
+import { Sparkles, LoaderCircle, Upload, Video, Timer, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -18,7 +18,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
 import type { Flashcard, Podcast } from '@/types';
 import { Progress } from '@/components/ui/progress';
-import BreakModeDialog from '@/components/break-mode-dialog';
+import { useVoiceNotes } from '@/hooks/use-voice-notes';
+import { cn } from '@/lib/utils';
+
 
 interface AIOutput {
   shortSummary: string;
@@ -43,7 +45,31 @@ export default function Home() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
-  const [isBreakModeOpen, setIsBreakModeOpen] = useState(false);
+  
+  const {
+    isListening,
+    transcript,
+    startListening,
+    stopListening,
+    error,
+    isSupported,
+  } = useVoiceNotes();
+
+  useEffect(() => {
+    if (transcript) {
+        setNotes(prev => prev ? `${prev} ${transcript}` : transcript);
+    }
+  }, [transcript]);
+  
+  useEffect(() => {
+    if (error) {
+        toast({
+            title: 'Voice Error',
+            description: error,
+            variant: 'destructive',
+        });
+    }
+  }, [error, toast]);
 
 
   useEffect(() => {
@@ -143,6 +169,15 @@ export default function Home() {
   const handleVideoUploadClick = () => {
     videoInputRef.current?.click();
   }
+  
+  const handleVoiceClick = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
+
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -339,6 +374,19 @@ export default function Home() {
                     </>
                   )}
                 </Button>
+                 <Button
+                    onClick={handleVoiceClick}
+                    disabled={isLoading || !isSupported}
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                        "text-muted-foreground hover:text-foreground",
+                        isListening && "text-destructive animate-pulse"
+                    )}
+                >
+                    <Mic className="mr-2 h-4 w-4" />
+                    {isListening ? 'Stop Listening' : 'Speak Notes'}
+                </Button>
             </div>
              {showProgress && (
               <div className="w-full pt-2">
@@ -387,3 +435,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
