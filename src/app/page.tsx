@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LoaderCircle, Upload, Video } from 'lucide-react';
+import { Sparkles, LoaderCircle, Upload, Video, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
 import type { Flashcard, Podcast } from '@/types';
 import { Progress } from '@/components/ui/progress';
+import BreakModeDialog from '@/components/break-mode-dialog';
 
 interface AIOutput {
   shortSummary: string;
@@ -42,6 +43,7 @@ export default function Home() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const [isBreakModeOpen, setIsBreakModeOpen] = useState(false);
 
 
   useEffect(() => {
@@ -353,7 +355,7 @@ export default function Home() {
       </Card>
       
       <div className="mt-4 flex flex-col items-center gap-3">
-        <div className="flex flex-wrap justify-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2">
           {(['Minimalist', 'Story', 'Action', 'Formal'] as NoteStyle[]).map((styleName) => (
             <Button
               key={styleName}
@@ -365,6 +367,17 @@ export default function Home() {
               {styleName}
             </Button>
           ))}
+            <BreakModeDialog open={isBreakModeOpen} onOpenChange={setIsBreakModeOpen}>
+                <Button
+                    variant="outline"
+                    className="rounded-full"
+                    size="sm"
+                    onClick={() => setIsBreakModeOpen(true)}
+                >
+                    <Timer className="mr-2 h-4 w-4" />
+                    5-Min Break
+                </Button>
+           </BreakModeDialog>
         </div>
 
         <div className="w-full">
