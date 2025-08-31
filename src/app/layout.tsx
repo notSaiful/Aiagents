@@ -9,6 +9,7 @@ import { fontSans, fontSerif, fontPlayfair } from '@/lib/fonts';
 import Footer from '@/components/layout/footer';
 import PageTransition from '@/components/page-transition';
 import { ThemeProvider } from '@/components/theme-provider';
+import SupportChatbot from '@/components/support-chatbot';
 
 export const metadata: Metadata = {
   title: 'NotesGPT | Transform Your Notes Instantly',
@@ -47,6 +48,7 @@ export default function RootLayout({
               <main className="pt-16"><PageTransition>{children}</PageTransition></main>
             </div>
             <Footer />
+            <SupportChatbot />
             <Toaster />
           </AuthProvider>
         </ThemeProvider>
