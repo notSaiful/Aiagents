@@ -12,7 +12,7 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Button } from './ui/button';
-import { Timer, X } from 'lucide-react';
+import { Timer, X, Volume2, VolumeX } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface BreakModeDialogProps {
@@ -26,6 +26,7 @@ const FIVE_MINUTES_IN_SECONDS = 5 * 60;
 export default function BreakModeDialog({ children, open, onOpenChange }: BreakModeDialogProps) {
   const [timeLeft, setTimeLeft] = useState(FIVE_MINUTES_IN_SECONDS);
   const [isBreakActive, setIsBreakActive] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
@@ -55,18 +56,29 @@ export default function BreakModeDialog({ children, open, onOpenChange }: BreakM
   }, [open, isBreakActive]);
 
 
-  const startBreak = () => {
-    setIsBreakActive(true);
-    setTimeLeft(FIVE_MINUTES_IN_SECONDS);
+  useEffect(() => {
+    if (!isBreakActive) return;
 
-    audioRef.current?.play().catch(error => {
+    if (isMusicPlaying) {
+      audioRef.current?.play().catch(error => {
         console.warn('Music autoplay was blocked.', error);
         toast({
-            title: "Music blocked",
-            description: "Your browser prevented audio from playing automatically.",
-            variant: "destructive"
+          title: "Music blocked",
+          description: "Your browser prevented audio from playing automatically.",
+          variant: "destructive"
         });
-    });
+        setIsMusicPlaying(false);
+      });
+    } else {
+      audioRef.current?.pause();
+    }
+  }, [isMusicPlaying, isBreakActive, toast]);
+
+
+  const startBreak = () => {
+    setIsBreakActive(true);
+    setIsMusicPlaying(true);
+    setTimeLeft(FIVE_MINUTES_IN_SECONDS);
 
     timerIntervalRef.current = setInterval(() => {
         setTimeLeft(prevTime => {
@@ -96,6 +108,10 @@ export default function BreakModeDialog({ children, open, onOpenChange }: BreakM
         });
     }
   };
+  
+  const toggleMusic = () => {
+    setIsMusicPlaying(prev => !prev);
+  }
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -127,10 +143,14 @@ export default function BreakModeDialog({ children, open, onOpenChange }: BreakM
             </p>
         </div>
 
-        <DialogFooter className="sm:justify-center">
+        <DialogFooter className="flex-row sm:justify-center justify-center gap-2">
+           <Button type="button" variant="outline" size="icon" onClick={toggleMusic}>
+                {isMusicPlaying ? <Volume2 /> : <VolumeX />}
+                <span className="sr-only">Toggle Music</span>
+          </Button>
           <Button type="button" variant="secondary" onClick={() => endBreak(false)}>
             <X className="mr-2 h-4 w-4" />
-            End Break Now
+            End Break
           </Button>
         </DialogFooter>
       </DialogContent>
