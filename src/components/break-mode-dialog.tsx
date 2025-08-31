@@ -26,14 +26,14 @@ const FIVE_MINUTES_IN_SECONDS = 5 * 60;
 export default function BreakModeDialog({ children, open, onOpenChange }: BreakModeDialogProps) {
   const [timeLeft, setTimeLeft] = useState(FIVE_MINUTES_IN_SECONDS);
   const [isBreakActive, setIsBreakActive] = useState(false);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false); // Default to false
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     // Client-side only initialization for Audio
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !audioRef.current) {
         const audio = new Audio('/sade-smooth-operator.mp3');
         audio.loop = true;
         audio.volume = 0.3;
@@ -56,28 +56,13 @@ export default function BreakModeDialog({ children, open, onOpenChange }: BreakM
   }, [open, isBreakActive]);
 
 
-  useEffect(() => {
-    if (!isBreakActive) return;
-
-    if (isMusicPlaying) {
-      audioRef.current?.play().catch(error => {
-        console.warn('Music autoplay was blocked.', error);
-        toast({
-          title: "Music blocked",
-          description: "Your browser prevented audio from playing automatically. Click the volume icon to start.",
-          variant: "destructive"
-        });
-        setIsMusicPlaying(false);
-      });
-    } else {
-      audioRef.current?.pause();
-    }
-  }, [isMusicPlaying, isBreakActive, toast]);
-
-
   const startBreak = () => {
     setIsBreakActive(true);
-    setIsMusicPlaying(false); // Start with music off
+    setIsMusicPlaying(false); // Always start with music off
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.pause();
+    }
     setTimeLeft(FIVE_MINUTES_IN_SECONDS);
 
     timerIntervalRef.current = setInterval(() => {
@@ -98,6 +83,7 @@ export default function BreakModeDialog({ children, open, onOpenChange }: BreakM
     }
 
     audioRef.current?.pause();
+    setIsMusicPlaying(false);
     setIsBreakActive(false);
     onOpenChange(false); // Close the dialog
     
@@ -110,7 +96,24 @@ export default function BreakModeDialog({ children, open, onOpenChange }: BreakM
   };
   
   const toggleMusic = () => {
-    setIsMusicPlaying(prev => !prev);
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (audio.paused) {
+        audio.play().then(() => {
+            setIsMusicPlaying(true);
+        }).catch(error => {
+            console.error("Audio playback failed:", error);
+            toast({
+                title: "Playback Error",
+                description: "Could not play audio. Please ensure your browser allows it.",
+                variant: "destructive",
+            });
+        });
+    } else {
+        audio.pause();
+        setIsMusicPlaying(false);
+    }
   }
 
   const formatTime = (seconds: number) => {
