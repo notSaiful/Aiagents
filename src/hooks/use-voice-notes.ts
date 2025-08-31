@@ -44,11 +44,11 @@ export function useVoiceNotes() {
   const isSupported = typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
 
   const stopListening = useCallback(() => {
-    if (recognitionRef.current && isListening) {
+    if (recognitionRef.current) {
       recognitionRef.current.stop();
       setIsListening(false);
     }
-  }, [isListening]);
+  }, []);
 
   useEffect(() => {
     if (!isSupported) {
@@ -60,24 +60,22 @@ export function useVoiceNotes() {
     recognitionRef.current = new (SpeechRecognition as any)();
     const recognition = recognitionRef.current;
     
+    let finalTranscript = '';
+
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
         let interimTranscript = '';
-        let finalTranscript = '';
-
         for (let i = event.resultIndex; i < event.results.length; ++i) {
-            const transcriptPart = event.results[i][0].transcript;
             if (event.results[i].isFinal) {
-                finalTranscript += transcriptPart;
+                finalTranscript += event.results[i][0].transcript;
             } else {
-                interimTranscript += transcriptPart;
+                interimTranscript += event.results[i][0].transcript;
             }
         }
-        // Update with the most current transcript (final or interim)
-        setTranscript(finalTranscript || interimTranscript);
+        setTranscript(finalTranscript + interimTranscript);
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
@@ -92,7 +90,11 @@ export function useVoiceNotes() {
     };
   
     recognition.onend = () => {
+        // Only set listening to false if it was intentionally stopped.
+        // If it stops on its own, we might want to restart it.
+        // For now, a manual stop is the clearest UX.
         setIsListening(false);
+        setTranscript(''); // Clear transcript for next session
     };
     
     return () => {
@@ -117,3 +119,5 @@ export function useVoiceNotes() {
 
   return { isListening, transcript, startListening, stopListening, error, isSupported };
 }
+
+    

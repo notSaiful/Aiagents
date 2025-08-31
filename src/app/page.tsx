@@ -45,7 +45,6 @@ export default function Home() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
-  const finalNotesRef = useRef(''); // Ref to store the final part of the transcript
   
   const {
     isListening,
@@ -57,16 +56,10 @@ export default function Home() {
   } = useVoiceNotes();
 
   useEffect(() => {
-    if (isListening) {
-      // Append the latest part of the transcript
-      setNotes(finalNotesRef.current + ' ' + transcript);
-    } else {
-      // When listening stops, update the final notes ref
-      if (notes.trim()) {
-        finalNotesRef.current = notes;
-      }
+    if (transcript) {
+        setNotes((prevNotes) => (prevNotes ? prevNotes + ' ' : '') + transcript);
     }
-  }, [transcript, isListening]);
+  }, [transcript]);
   
   useEffect(() => {
     if (error) {
@@ -181,8 +174,6 @@ export default function Home() {
     if (isListening) {
       stopListening();
     } else {
-      // Before starting, save the current text
-      finalNotesRef.current = notes;
       startListening();
     }
   };
@@ -444,3 +435,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
