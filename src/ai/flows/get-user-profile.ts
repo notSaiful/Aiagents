@@ -60,6 +60,15 @@ const getUserProfileFlow = ai.defineFlow(
 
       if (docSnap.exists()) {
         const user = docSnap.data() as UserStats;
+        
+        const defaultStats = {
+            summariesGenerated: 0,
+            flashcardsCompleted: 0,
+            mindmapsCreated: 0,
+            podcastsListened: 0,
+            gamesCompleted: 0,
+        };
+
         return {
           profile: {
             displayName: user.displayName,
@@ -68,12 +77,9 @@ const getUserProfileFlow = ai.defineFlow(
             points: user.points || 0,
             streak: user.streak || 0,
             achievements: user.achievements || [],
-            stats: user.stats || {
-                summariesGenerated: 0,
-                flashcardsCompleted: 0,
-                mindmapsCreated: 0,
-                podcastsListened: 0,
-                gamesCompleted: 0,
+            stats: {
+                ...defaultStats,
+                ...(user.stats || {}),
             }
           },
         };
