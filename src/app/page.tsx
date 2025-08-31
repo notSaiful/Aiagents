@@ -367,17 +367,6 @@ export default function Home() {
               {styleName}
             </Button>
           ))}
-            <BreakModeDialog open={isBreakModeOpen} onOpenChange={setIsBreakModeOpen}>
-                <Button
-                    variant="outline"
-                    className="rounded-full"
-                    size="sm"
-                    onClick={() => setIsBreakModeOpen(true)}
-                >
-                    <Timer className="mr-2 h-4 w-4" />
-                    5-Min Break
-                </Button>
-           </BreakModeDialog>
         </div>
 
         <div className="w-full">

@@ -6,10 +6,13 @@ import Link from 'next/link';
 import AuthButton from '@/components/auth-button';
 import { ThemeToggle } from '../theme-toggle';
 import { Button } from '../ui/button';
-import { Trophy, User, BookOpen } from 'lucide-react';
+import { Trophy, User, BookOpen, Timer } from 'lucide-react';
+import BreakModeDialog from '../break-mode-dialog';
+import { useState } from 'react';
 
 export default function Header() {
   const pathname = usePathname();
+  const [isBreakModeOpen, setIsBreakModeOpen] = useState(false);
 
   // Don't render header on login/signup pages
   if (pathname === '/login' || pathname === '/login/email' || pathname === '/signup') {
@@ -24,6 +27,17 @@ export default function Header() {
              <span className="sr-only">NotesGPT Home</span>
           </Link>
           <div className="flex items-center gap-2">
+            <BreakModeDialog open={isBreakModeOpen} onOpenChange={setIsBreakModeOpen}>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setIsBreakModeOpen(true)}
+                    className="h-10 w-10"
+                >
+                    <Timer className="h-5 w-5" />
+                    <span className="sr-only">Start Break</span>
+                </Button>
+            </BreakModeDialog>
             <ThemeToggle />
             <AuthButton />
           </div>
