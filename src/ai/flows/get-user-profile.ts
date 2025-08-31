@@ -62,7 +62,7 @@ const getUserProfileFlow = ai.defineFlow(
       const docSnap = await getDoc(userRef);
 
       if (docSnap.exists()) {
-        const user = docSnap.data() as UserStats;
+        const user = docSnap.data() as Partial<UserStats> | undefined;
         
         const defaultStats = {
             summariesGenerated: 0,
@@ -72,17 +72,19 @@ const getUserProfileFlow = ai.defineFlow(
             gamesCompleted: 0,
         };
 
+        if (!user) {
+             return { profile: null };
+        }
+
         return {
           profile: {
-            displayName: user.displayName,
+            displayName: user.displayName || '',
             username: user.username,
-            email: user.email,
+            email: user.email || '',
             photoURL: user.photoURL,
             points: user.points || 0,
             streak: user.streak || 0,
-            // @ts-ignore - plan may not exist on all user docs yet
             currentPlan: user.currentPlan || 'Free', 
-            // @ts-ignore
             planRenewalDate: user.planRenewalDate,
             achievements: user.achievements || [],
             stats: {
