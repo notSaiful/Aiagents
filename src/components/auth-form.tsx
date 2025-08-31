@@ -24,16 +24,29 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { auth, db } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
+import { lookupUserByUsernameFlow } from '@/ai/flows/lookup-user';
+import { updateUsernameAction } from '@/actions/update-username';
 
-const formSchema = z.object({
+
+const loginSchema = z.object({
+  emailOrUsername: z.string().min(1, { message: 'Please enter your email or username.' }),
+  password: z.string().min(1, { message: 'Password is required.' }),
+});
+
+const signupSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
+  username: z.string()
+    .min(3, { message: 'Username must be at least 3 characters.'})
+    .max(20, { message: 'Username must be at most 20 characters.'})
+    .regex(/^[A-Za-z0-9_]+$/, { message: 'Username can only contain letters, numbers, and underscores.'}),
   password: z
     .string()
-    .min(1, { message: 'Password is required.' })
     .min(6, { message: 'Password must be at least 6 characters.' }),
 });
 
-type FormData = z.infer<typeof formSchema>;
+type LoginFormData = z.infer<typeof loginSchema>;
+type SignupFormData = z.infer<typeof signupSchema>;
+
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
@@ -45,16 +58,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+  const form = useForm({
+    resolver: zodResolver(mode === 'login' ? loginSchema : signupSchema),
   });
 
   const handleGoogleSignIn = async () => {
@@ -63,24 +68,31 @@ export default function AuthForm({ mode }: AuthFormProps) {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
-      // Check if user already exists in Firestore
+      
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc.exists()) {
-        // New user, create a document in Firestore
+        const username = user.email?.split('@')[0] || `user_${Date.now()}`;
         await setDoc(userDocRef, {
           uid: user.uid,
           email: user.email,
-          displayName: user.displayName || user.email?.split('@')[0],
+          displayName: user.displayName || username,
+          username: username,
+          usernameLower: username.toLowerCase(),
           photoURL: user.photoURL,
           createdAt: serverTimestamp(),
-          settings: {
-            preferredStyle: 'Minimalist',
-          },
+          settings: { preferredStyle: 'Minimalist' },
+          points: 0,
+          streak: 0,
+          achievements: [],
+          stats: {},
         });
+
+        const usernameRef = doc(db, 'usernames', username.toLowerCase());
+        await setDoc(usernameRef, { uid: user.uid });
       }
+
       toast({
         title: 'Signed In!',
         description: 'Welcome back!',
@@ -98,70 +110,91 @@ export default function AuthForm({ mode }: AuthFormProps) {
     }
   };
 
-  const handleFormSubmit = async ({ email, password }: FormData) => {
+  const handleLoginSubmit = async ({ emailOrUsername, password }: LoginFormData) => {
+    setLoading(true);
+    let email = emailOrUsername;
+    
+    // Check if input is likely a username (does not contain '@')
+    if (!emailOrUsername.includes('@')) {
+      try {
+        const result = await lookupUserByUsernameFlow({ username: emailOrUsername });
+        if (result.email) {
+          email = result.email;
+        } else {
+          throw new Error("User not found.");
+        }
+      } catch (e) {
+        toast({ title: 'Sign In Failed', description: 'Invalid username or password.', variant: 'destructive' });
+        setLoading(false);
+        return;
+      }
+    }
+    
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push('/');
+    } catch (error: any) {
+        toast({ title: 'Sign In Failed', description: 'Invalid email/username or password.', variant: 'destructive' });
+    } finally {
+        setLoading(false);
+    }
+  }
+
+  const handleSignupSubmit = async ({ email, username, password }: SignupFormData) => {
     setLoading(true);
     try {
-      if (mode === 'login') {
-        await signInWithEmailAndPassword(auth, email, password);
-        router.push('/');
-      } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        const displayName = email.split('@')[0];
         
-        await Promise.all([
-          updateProfile(user, { displayName }),
-          setDoc(doc(db, 'users', user.uid), {
+        await updateProfile(user, { displayName: username });
+
+        await setDoc(doc(db, 'users', user.uid), {
             uid: user.uid,
             email: user.email,
-            displayName,
+            displayName: username,
+            photoURL: user.photoURL,
             createdAt: serverTimestamp(),
-            settings: {
-              preferredStyle: 'Minimalist',
-            },
-          })
-        ]);
+            points: 0,
+            streak: 0,
+            lastActivityDate: null,
+            achievements: [],
+            stats: {
+                summariesGenerated: 0, flashcardsCompleted: 0, mindmapsCreated: 0,
+                podcastsListened: 0, gamesCompleted: 0,
+            }
+        });
+
+        // Now, transactionally set the username
+        const { ok, message } = await updateUsernameAction(user.uid, username);
+        if (!ok) {
+            // This could happen if username is taken in a race condition
+            // For simplicity, we toast an error. In a production app, you might want to
+            // guide the user to pick a new username or handle cleanup.
+            throw new Error(message);
+        }
 
         toast({
-          title: 'Account Created!',
-          description: "Welcome! We've created your account and signed you in.",
+            title: 'Account Created!',
+            description: "Welcome! We've created your account and signed you in.",
         });
         router.push('/');
-      }
     } catch (error: any) {
-      let errorMessage = 'An unexpected error occurred. Please try again.';
-      if (error.code) {
-        switch (error.code) {
-          case 'auth/user-not-found':
-          case 'auth/wrong-password':
-          case 'auth/invalid-credential':
-            errorMessage = 'Invalid email or password. Please try again.';
-            break;
-          case 'auth/invalid-email':
-            errorMessage = 'Please enter a valid email address.';
-            break;
-          case 'auth/user-disabled':
-            errorMessage = 'This account has been disabled.';
-            break;
-          case 'auth/too-many-requests':
-            errorMessage = 'Too many requests. Please try again later.';
-            break;
-          case 'auth/email-already-in-use':
+        let errorMessage = 'An unexpected error occurred. Please try again.';
+        if (error.code === 'auth/email-already-in-use') {
             errorMessage = 'This email is already in use. Please sign in instead.';
-            break;
-          default:
-            errorMessage = error.message;
+        } else if (error.message.includes('username is taken')) {
+            errorMessage = 'That username is already taken. Please choose another.';
         }
-      }
-      toast({
-        title: mode === 'login' ? 'Sign In Failed' : 'Sign Up Failed',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+        toast({
+            title: 'Sign Up Failed',
+            description: errorMessage,
+            variant: 'destructive',
+        });
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
+
 
   const isLoading = loading || googleLoading;
 
@@ -207,37 +240,88 @@ export default function AuthForm({ mode }: AuthFormProps) {
             <div className="flex-grow border-t border-muted" />
         </div>
 
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              {...register('email')}
-              className={cn(errors.email && 'border-destructive')}
-              disabled={isLoading}
-              autoComplete="email"
-            />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              {...register('password')}
-              className={cn(errors.password && 'border-destructive')}
-              disabled={isLoading}
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-            />
-            {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
-            )}
-          </div>
+        <form onSubmit={form.handleSubmit(mode === 'login' ? handleLoginSubmit : handleSignupSubmit)} className="space-y-6">
+          {mode === 'login' ? (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="emailOrUsername">Email or Username</Label>
+                <Input
+                  id="emailOrUsername"
+                  placeholder="you@example.com or your_username"
+                  {...form.register('emailOrUsername')}
+                  className={cn(form.formState.errors.emailOrUsername && 'border-destructive')}
+                  disabled={isLoading}
+                  autoComplete="username"
+                />
+                {form.formState.errors.emailOrUsername && (
+                  <p className="text-sm text-destructive">{form.formState.errors.emailOrUsername.message}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  {...form.register('password')}
+                  className={cn(form.formState.errors.password && 'border-destructive')}
+                  disabled={isLoading}
+                  autoComplete="current-password"
+                />
+                {form.formState.errors.password && (
+                  <p className="text-sm text-destructive">{form.formState.errors.password.message}</p>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  {...form.register('email')}
+                  className={cn(form.formState.errors.email && 'border-destructive')}
+                  disabled={isLoading}
+                  autoComplete="email"
+                />
+                {form.formState.errors.email && (
+                  <p className="text-sm text-destructive">{form.formState.errors.email.message}</p>
+                )}
+              </div>
+               <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  placeholder="your_username"
+                  {...form.register('username')}
+                  className={cn(form.formState.errors.username && 'border-destructive')}
+                  disabled={isLoading}
+                  autoComplete="username"
+                />
+                {form.formState.errors.username && (
+                  <p className="text-sm text-destructive">{form.formState.errors.username.message}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  {...form.register('password')}
+                  className={cn(form.formState.errors.password && 'border-destructive')}
+                  disabled={isLoading}
+                  autoComplete="new-password"
+                />
+                {form.formState.errors.password && (
+                  <p className="text-sm text-destructive">{form.formState.errors.password.message}</p>
+                )}
+              </div>
+            </>
+          )}
+
           <Button type="submit" className="w-full" disabled={isLoading}>
             {loading ? (
               <LoaderCircle className="animate-spin" />

@@ -16,5 +16,6 @@ import '@/ai/flows/save-generation.ts';
 import '@/ai/flows/get-previous-generations.ts';
 import '@/ai/flows/change-username.ts';
 import '@/ai/flows/check-username.ts';
+import '@/ai/flows/lookup-user.ts';
 
     
