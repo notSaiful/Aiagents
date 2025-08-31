@@ -53,13 +53,17 @@ export default function Home() {
     stopListening,
     error,
     isSupported,
+    setTranscript,
   } = useVoiceNotes();
+  
+  // Ref to store notes before listening starts
+  const previousNotesRef = useRef('');
 
   useEffect(() => {
-    if (transcript) {
-        setNotes((prevNotes) => (prevNotes ? prevNotes + ' ' : '') + transcript);
+    if (isListening) {
+      setNotes(previousNotesRef.current + transcript);
     }
-  }, [transcript]);
+  }, [transcript, isListening]);
   
   useEffect(() => {
     if (error) {
@@ -174,6 +178,8 @@ export default function Home() {
     if (isListening) {
       stopListening();
     } else {
+      previousNotesRef.current = notes ? notes + ' ' : '';
+      setTranscript(''); // Reset transcript for new session
       startListening();
     }
   };
@@ -435,5 +441,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

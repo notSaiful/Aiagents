@@ -43,13 +43,6 @@ export function useVoiceNotes() {
 
   const isSupported = typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
 
-  const stopListening = useCallback(() => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    }
-  }, []);
-
   useEffect(() => {
     if (!isSupported) {
       setError('Voice recognition is not supported in this browser.');
@@ -59,16 +52,16 @@ export function useVoiceNotes() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognitionRef.current = new (SpeechRecognition as any)();
     const recognition = recognitionRef.current;
-    
-    let finalTranscript = '';
 
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
+        let finalTranscript = '';
         let interimTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
+
+        for (let i = 0; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
                 finalTranscript += event.results[i][0].transcript;
             } else {
@@ -86,38 +79,40 @@ export function useVoiceNotes() {
         } else {
             setError(`An error occurred: ${event.error}`);
         }
-        stopListening();
+        setIsListening(false);
     };
   
     recognition.onend = () => {
-        // Only set listening to false if it was intentionally stopped.
-        // If it stops on its own, we might want to restart it.
-        // For now, a manual stop is the clearest UX.
         setIsListening(false);
-        setTranscript(''); // Clear transcript for next session
     };
     
     return () => {
         recognitionRef.current?.stop();
     };
 
-  }, [isSupported, stopListening]);
+  }, [isSupported]);
   
-  const startListening = () => {
+  const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
-      setTranscript('');
-      setError(null);
       try {
         recognitionRef.current.start();
         setIsListening(true);
+        setError(null);
       } catch (err) {
         console.error("Error starting recognition:", err);
         setError("Could not start voice recognition.");
+        setIsListening(false);
       }
     }
-  };
+  }, [isListening]);
 
-  return { isListening, transcript, startListening, stopListening, error, isSupported };
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+  }, [isListening]);
+
+
+  return { isListening, transcript, startListening, stopListening, error, isSupported, setTranscript };
 }
-
-    
