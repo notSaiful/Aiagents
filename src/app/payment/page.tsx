@@ -46,7 +46,7 @@ function PaymentPageContent() {
             </li>
         </ol>
          <div className="flex justify-between text-sm font-medium mt-2">
-            <span className="text-primary">Choose Plan</span>
+            <span className="text-foreground">Choose Plan</span>
             <span className="text-muted-foreground">Payment</span>
             <span className="text-muted-foreground">Confirmation</span>
         </div>
