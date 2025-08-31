@@ -26,6 +26,7 @@ import { auth, db } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
 import { lookupUserByUsernameFlow } from '@/ai/flows/lookup-user';
 import { updateUsernameAction } from '@/actions/update-username';
+import { checkUsernameAction } from '@/actions/check-username';
 
 
 const loginSchema = z.object({
@@ -74,23 +75,24 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
       if (!userDoc.exists()) {
         const username = user.email?.split('@')[0] || `user_${Date.now()}`;
+        
+        // With Google Sign-In, we can attempt to set the username directly.
+        // We'll rely on the transactional `updateUsernameAction` to ensure uniqueness.
+        // If it fails (highly unlikely for Google-generated names), the user can change it later.
         await setDoc(userDocRef, {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || username,
-          username: username,
-          usernameLower: username.toLowerCase(),
-          photoURL: user.photoURL,
-          createdAt: serverTimestamp(),
-          settings: { preferredStyle: 'Minimalist' },
-          points: 0,
-          streak: 0,
-          achievements: [],
-          stats: {},
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName || username,
+            photoURL: user.photoURL,
+            createdAt: serverTimestamp(),
+            settings: { preferredStyle: 'Minimalist' },
+            points: 0,
+            streak: 0,
+            achievements: [],
+            stats: {},
         });
-
-        const usernameRef = doc(db, 'usernames', username.toLowerCase());
-        await setDoc(usernameRef, { uid: user.uid });
+        
+        await updateUsernameAction(user.uid, username);
       }
 
       toast({
@@ -114,7 +116,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
     setLoading(true);
     let email = emailOrUsername;
     
-    // Check if input is likely a username (does not contain '@')
     if (!emailOrUsername.includes('@')) {
       try {
         const result = await lookupUserByUsernameFlow({ username: emailOrUsername });
@@ -143,11 +144,25 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const handleSignupSubmit = async ({ email, username, password }: SignupFormData) => {
     setLoading(true);
     try {
+        // Step 1: Check if username is available before creating an auth user.
+        const usernameCheck = await checkUsernameAction(username);
+        if (!usernameCheck.available) {
+            toast({
+                title: 'Sign Up Failed',
+                description: 'That username is already taken. Please choose another.',
+                variant: 'destructive',
+            });
+            setLoading(false);
+            return;
+        }
+
+        // Step 2: Create the user in Firebase Auth.
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         
         await updateProfile(user, { displayName: username });
 
+        // Step 3: Create the user document in Firestore.
         await setDoc(doc(db, 'users', user.uid), {
             uid: user.uid,
             email: user.email,
@@ -164,12 +179,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
             }
         });
 
-        // Now, transactionally set the username
+        // Step 4: Transactionally reserve the username. This is the definitive, race-condition-safe check.
         const { ok, message } = await updateUsernameAction(user.uid, username);
         if (!ok) {
-            // This could happen if username is taken in a race condition
+            // This could happen if the username was taken between our check and this transaction.
             // For simplicity, we toast an error. In a production app, you might want to
-            // guide the user to pick a new username or handle cleanup.
+            // handle cleanup of the created Auth user.
             throw new Error(message);
         }
 
@@ -178,11 +193,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
             description: "Welcome! We've created your account and signed you in.",
         });
         router.push('/');
+
     } catch (error: any) {
         let errorMessage = 'An unexpected error occurred. Please try again.';
         if (error.code === 'auth/email-already-in-use') {
             errorMessage = 'This email is already in use. Please sign in instead.';
-        } else if (error.message.includes('username is taken')) {
+        } else if (error.message && error.message.includes('username is taken')) {
             errorMessage = 'That username is already taken. Please choose another.';
         }
         toast({
