@@ -132,10 +132,15 @@ ${input.notes}
 `,
     });
 
-    const {output} = await transformPrompt({});
-    if (!output) {
-      throw new Error("The AI failed to generate a response. Please try again.");
+    try {
+      const {output} = await transformPrompt({});
+      if (!output) {
+        throw new Error("The AI failed to generate a response. Please try again.");
+      }
+      return output;
+    } catch (error) {
+      console.error("Error in transformNotesFlow:", error);
+      throw new Error("Failed to transform notes due to an internal error. The AI may have returned an invalid format.");
     }
-    return output;
   }
 );
