@@ -34,7 +34,7 @@ export default function BreakModeDialog({ children, open, onOpenChange }: BreakM
   useEffect(() => {
     // Client-side only initialization for Audio
     if (typeof window !== 'undefined') {
-        const audio = new Audio('/background-music.mp3');
+        const audio = new Audio('/sade-smooth-operator.mp3');
         audio.loop = true;
         audio.volume = 0.3;
         audioRef.current = audio;
@@ -64,7 +64,7 @@ export default function BreakModeDialog({ children, open, onOpenChange }: BreakM
         console.warn('Music autoplay was blocked.', error);
         toast({
           title: "Music blocked",
-          description: "Your browser prevented audio from playing automatically.",
+          description: "Your browser prevented audio from playing automatically. Click the volume icon to start.",
           variant: "destructive"
         });
         setIsMusicPlaying(false);
