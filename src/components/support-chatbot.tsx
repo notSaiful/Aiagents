@@ -76,7 +76,7 @@ export default function SupportChatbot() {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-8 right-6 z-50">
          <motion.div
             initial={{ scale: 0, y: 50 }}
             animate={{ scale: 1, y: 0 }}
@@ -100,7 +100,7 @@ export default function SupportChatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ ease: "easeInOut", duration: 0.2 }}
-            className="fixed bottom-24 right-6 z-40 w-[calc(100%-3rem)] max-w-sm"
+            className="fixed bottom-28 right-6 z-40 w-[calc(100%-3rem)] max-w-sm"
           >
             <Card className="h-[500px] flex flex-col shadow-2xl rounded-2xl overflow-hidden">
                 <CardHeader className="bg-muted/50 border-b text-center">
