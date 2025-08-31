@@ -63,7 +63,7 @@ export default function BreakModeDialog({ children, open, onOpenChange }: BreakM
         console.warn('Music autoplay was blocked.', error);
         toast({
             title: "Music blocked",
-            description: "Click the music icon to start the background music.",
+            description: "Your browser prevented audio from playing automatically.",
             variant: "destructive"
         });
     });
