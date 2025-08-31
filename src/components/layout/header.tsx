@@ -7,6 +7,7 @@ import AuthButton from '@/components/auth-button';
 import { ThemeToggle } from '../theme-toggle';
 import { Button } from '../ui/button';
 import { Trophy, User, BookOpen } from 'lucide-react';
+import MusicToggle from '../music-toggle';
 
 export default function Header() {
   const pathname = usePathname();
@@ -23,7 +24,8 @@ export default function Header() {
              <BookOpen className="h-6 w-6" />
              <span className="sr-only">NotesGPT Home</span>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <MusicToggle />
             <ThemeToggle />
             <AuthButton />
           </div>
