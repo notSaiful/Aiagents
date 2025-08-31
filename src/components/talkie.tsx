@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect, FormEvent } from 'react';
@@ -19,7 +20,7 @@ interface Message {
   content: string;
 }
 
-type Character = 'Professor Aya' | 'Mischievous Luna' | 'Mr. Kai' | 'Meme Bro';
+type Character = 'Professor Aya' | 'Mischievous Luna' | 'Mr. Haque' | 'Meme Bro';
 
 const characterData = {
     'Professor Aya': {
@@ -36,12 +37,12 @@ const characterData = {
         description: 'A playful and loving companion who helps you study.',
         greeting: "Hi there! I'm Luna. Ready to make learning fun together?"
     },
-    'Mr. Kai': {
+    'Mr. Haque': {
         avatarUrl: 'https://firebasestorage.googleapis.com/v0/b/gemini-notes-kwn2b.appspot.com/o/kai.webp?alt=media&token=1c6b1b4b-4c07-4e92-9a3b-55424a1b0213',
         avatarHint: 'man suit',
-        fallback: 'K',
+        fallback: 'H',
         description: 'A confident and protective tutor with a soft spot for you.',
-        greeting: "You're here. Good. I'm Kai. Let's get straight to the point, what do you need?"
+        greeting: "You're here. Good. I'm Mr. Haque. Let's get straight to the point, what do you need?"
     },
     'Meme Bro': {
         avatarUrl: 'https://storage.googleapis.com/aai-web-samples/progan-v2/24.png',
