@@ -24,22 +24,6 @@ export default function Header() {
              <span className="sr-only">NotesGPT Home</span>
           </Link>
           <div className="flex items-center gap-4">
-            <nav className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" asChild>
-                    <Link href="/leaderboard">
-                        <Trophy className="mr-2 h-4 w-4" />
-                        Leaderboard
-                    </Link>
-                </Button>
-                <Button variant="ghost" size="sm" asChild>
-                    <Link href="/profile">
-                      <>
-                        <User className="mr-2 h-4 w-4" />
-                        Profile
-                      </>
-                    </Link>
-                </Button>
-            </nav>
             <ThemeToggle />
             <AuthButton />
           </div>
