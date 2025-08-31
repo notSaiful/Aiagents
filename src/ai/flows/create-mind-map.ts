@@ -34,7 +34,7 @@ Follow these rules strictly to ensure a valid Mermaid mind map:
 
 **NON-NEGOTIABLE SYNTAX RULES:**
 1.  **Start with "mindmap"**: The very first line of your output must be the word \`mindmap\`.
-2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces and formatted like this: \`  root((Main Idea))\`.
+2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces. The text inside MUST be wrapped in double quotes. Example: \`  root(("My Main Idea"))\`.
 3.  **One Node Per Line**: Each node must be on its own line. NEVER place multiple nodes on the same line.
 4.  **Strict Indentation**: Use 4 spaces for each level of indentation after the root.
 5.  **Quote Special Characters**: Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: \`id("Node text with: a colon")\`.
@@ -60,7 +60,7 @@ Follow these rules strictly to ensure a valid Mermaid mind map:
 
 **NON-NEGOTIABLE SYNTAX RULES:**
 1.  **Start with "mindmap"**: The very first line of your output must be the word \`mindmap\`.
-2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces and formatted like this: \`  root((Main Idea))\`.
+2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces. The text inside MUST be wrapped in double quotes. Example: \`  root(("My Main Idea"))\`.
 3.  **One Node Per Line**: Each node must be on its own line. NEVER place multiple nodes on the same line.
 4.  **Strict Indentation**: Use 4 spaces for each level of indentation after the root.
 5.  **Quote Special Characters**: Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: \`id("Node text with: a colon")\`.
@@ -86,7 +86,7 @@ Follow these rules strictly to ensure a valid Mermaid mind map:
 
 **NON-NEGOTIABLE SYNTAX RULES:**
 1.  **Start with "mindmap"**: The very first line of your output must be the word \`mindmap\`.
-2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces and formatted like this: \`  root((Main Idea))\`.
+2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces. The text inside MUST be wrapped in double quotes. Example: \`  root(("My Main Idea"))\`.
 3.  **One Node Per Line**: Each node must be on its own line. NEVER place multiple nodes on the same line.
 4.  **Strict Indentation**: Use 4 spaces for each level of indentation after the root.
 5.  **Quote Special Characters**: Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: \`id("Mission: Defeat the Villain")\`. This is especially important for this style.
@@ -112,7 +112,7 @@ Follow these rules strictly to ensure a valid Mermaid mind map:
 
 **NON-NEGOTIABLE SYNTAX RULES:**
 1.  **Start with "mindmap"**: The very first line of your output must be the word \`mindmap\`.
-2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces and formatted like this: \`  root((Main Idea))\`.
+2.  **Single Root Node**: There must be exactly ONE root node. It must be indented by 2 spaces. The text inside MUST be wrapped in double quotes. Example: \`  root(("My Main Idea"))\`.
 3.  **One Node Per Line**: Each node must be on its own line. NEVER place multiple nodes on the same line.
 4.  **Strict Indentation**: Use 4 spaces for each level of indentation after the root.
 5.  **Quote Special Characters**: Any node text containing special characters (like ':', '(', ')', '[', ']', '{', '}') or spaces MUST be enclosed in double quotes. For example: \`id("Chapter 1: Introduction")\`.
