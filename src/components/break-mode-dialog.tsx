@@ -26,7 +26,7 @@ const FIVE_MINUTES_IN_SECONDS = 5 * 60;
 export default function BreakModeDialog({ children, open, onOpenChange }: BreakModeDialogProps) {
   const [timeLeft, setTimeLeft] = useState(FIVE_MINUTES_IN_SECONDS);
   const [isBreakActive, setIsBreakActive] = useState(false);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false); // Default to false
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
@@ -77,7 +77,7 @@ export default function BreakModeDialog({ children, open, onOpenChange }: BreakM
 
   const startBreak = () => {
     setIsBreakActive(true);
-    setIsMusicPlaying(true);
+    setIsMusicPlaying(false); // Start with music off
     setTimeLeft(FIVE_MINUTES_IN_SECONDS);
 
     timerIntervalRef.current = setInterval(() => {
