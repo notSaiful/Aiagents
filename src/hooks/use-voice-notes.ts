@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 // Define the shape of the SpeechRecognition interface for TypeScript
 interface SpeechRecognition extends EventTarget {
@@ -43,6 +43,13 @@ export function useVoiceNotes() {
 
   const isSupported = typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
 
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+  }, [isListening]);
+
   useEffect(() => {
     if (!isSupported) {
       setError('Voice recognition is not supported in this browser.');
@@ -53,50 +60,46 @@ export function useVoiceNotes() {
     recognitionRef.current = new (SpeechRecognition as any)();
     const recognition = recognitionRef.current;
     
-    if (recognition) {
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
 
-        recognition.onresult = (event: SpeechRecognitionEvent) => {
-            let finalTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript;
-                }
-            }
-            if (finalTranscript) {
-              // We append a space to prepare for the next phrase
-              setTranscript(prev => `${prev ? prev + ' ' : ''}${finalTranscript}`);
-            }
-        };
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
 
-        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-            if (event.error === 'no-speech' || event.error === 'audio-capture') {
-                setError('No speech detected. Please check your microphone.');
-            } else if (event.error === 'not-allowed') {
-                setError('Microphone access denied. Please enable it in your browser settings.');
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            const transcriptPart = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                finalTranscript += transcriptPart;
             } else {
-                setError(`An error occurred: ${event.error}`);
+                interimTranscript += transcriptPart;
             }
-            setIsListening(false);
-        };
-      
-        recognition.onend = () => {
-            // Only truly stop if we didn't manually stop it to restart
-            if (isListening) {
-              // In some browsers, recognition stops after a pause.
-              // This ensures it keeps listening.
-              recognition.start();
-            }
-        };
-    }
+        }
+        // Update with the most current transcript (final or interim)
+        setTranscript(finalTranscript || interimTranscript);
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        if (event.error === 'no-speech' || event.error === 'audio-capture') {
+            setError('No speech detected. Please check your microphone.');
+        } else if (event.error === 'not-allowed') {
+            setError('Microphone access denied. Please enable it in your browser settings.');
+        } else {
+            setError(`An error occurred: ${event.error}`);
+        }
+        stopListening();
+    };
+  
+    recognition.onend = () => {
+        setIsListening(false);
+    };
     
     return () => {
         recognitionRef.current?.stop();
     };
 
-  }, [isSupported, isListening]);
+  }, [isSupported, stopListening]);
   
   const startListening = () => {
     if (recognitionRef.current && !isListening) {
@@ -112,14 +115,5 @@ export function useVoiceNotes() {
     }
   };
 
-  const stopListening = () => {
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    }
-  };
-
   return { isListening, transcript, startListening, stopListening, error, isSupported };
 }
-
-    
