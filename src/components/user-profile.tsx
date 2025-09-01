@@ -96,6 +96,7 @@ export default function UserProfile() {
 
   useEffect(() => {
     async function fetchProfile(uid: string) {
+      setLoading(true);
       try {
         const { profile: fetchedProfile } = await getUserProfile({ userId: uid });
         if (fetchedProfile) {
@@ -104,11 +105,10 @@ export default function UserProfile() {
           setUsername(currentUsername);
           setOriginalUsername(currentUsername);
         } else {
-           toast({
-            title: 'Error',
-            description: 'Could not find your profile data.',
-            variant: 'destructive',
-          });
+           // This case means the user exists in Auth but not in Firestore.
+           // This is an error state, but we don't toast here to avoid user confusion.
+           // The component will show the "Could not load profile" message.
+           setProfile(null);
         }
       } catch (error) {
         console.error('Failed to fetch profile:', error);
@@ -117,6 +117,7 @@ export default function UserProfile() {
           description: 'Could not load your profile data.',
           variant: 'destructive',
         });
+        setProfile(null);
       } finally {
         setLoading(false);
       }
@@ -126,6 +127,7 @@ export default function UserProfile() {
       if (user) {
         fetchProfile(user.uid);
       } else {
+        // If not authenticated after initial check, redirect to login
         router.push('/login');
       }
     }
@@ -170,7 +172,7 @@ export default function UserProfile() {
   }
 
 
-  if (loading || authLoading) {
+  if (authLoading || loading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
@@ -179,7 +181,6 @@ export default function UserProfile() {
   }
   
   if (!user || !profile) {
-    // This now correctly indicates an unrecoverable state after loading has finished.
     return (
         <div className="container mx-auto max-w-4xl py-12 px-4 text-center">
             <h1 className="text-2xl font-bold">Could not load profile.</h1>
@@ -299,5 +300,7 @@ export default function UserProfile() {
     </div>
   );
 }
+
+    
 
     
