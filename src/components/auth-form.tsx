@@ -147,7 +147,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const handleSignupSubmit = async ({ email, username, password }: SignupFormData) => {
     setLoading(true);
     try {
-        // Step 1: Check if username is available before creating an auth user.
         const usernameCheck = await checkUsernameAction(username);
         if (!usernameCheck.available) {
             toast({
@@ -159,23 +158,25 @@ export default function AuthForm({ mode }: AuthFormProps) {
             return;
         }
 
-        // Step 2: Create the user in Firebase Auth.
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         
         await updateProfile(user, { displayName: username });
 
-        // Step 3: Create the user document in Firestore.
         const userDocRef = doc(db, 'users', user.uid);
         await setDoc(userDocRef, {
             uid: user.uid,
             email: user.email,
             displayName: username,
+            username: username,
+            usernameLower: username.toLowerCase(),
             photoURL: user.photoURL,
             createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
             points: 0,
             streak: 0,
             lastActivityDate: null,
+            currentPlan: 'Free',
             achievements: [],
             stats: {
                 summariesGenerated: 0, flashcardsCompleted: 0, mindmapsCreated: 0,
@@ -183,12 +184,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
             }
         });
 
-        // Step 4: Transactionally reserve the username. This is the definitive, race-condition-safe check.
         const { ok, message } = await updateUsernameAction(user.uid, username);
         if (!ok) {
-            // This could happen if the username was taken between our check and this transaction.
-            // For simplicity, we toast an error. In a production app, you might want to
-            // handle cleanup of the created Auth user.
             throw new Error(message);
         }
 
@@ -202,8 +199,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
         let errorMessage = 'An unexpected error occurred. Please try again.';
         if (error.code === 'auth/email-already-in-use') {
             errorMessage = 'This email is already in use. Please sign in instead.';
-        } else if (error.message && error.message.includes('username is taken')) {
-            errorMessage = 'That username is already taken. Please choose another.';
+        } else if (error.message) {
+            errorMessage = error.message;
         }
         toast({
             title: 'Sign Up Failed',

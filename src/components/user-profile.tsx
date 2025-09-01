@@ -11,7 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -105,9 +104,6 @@ export default function UserProfile() {
           setUsername(currentUsername);
           setOriginalUsername(currentUsername);
         } else {
-           // This case means the user exists in Auth but not in Firestore.
-           // This is an error state, but we don't toast here to avoid user confusion.
-           // The component will show the "Could not load profile" message.
            setProfile(null);
         }
       } catch (error) {
@@ -127,7 +123,6 @@ export default function UserProfile() {
       if (user) {
         fetchProfile(user.uid);
       } else {
-        // If not authenticated after initial check, redirect to login
         router.push('/login');
       }
     }
@@ -135,7 +130,6 @@ export default function UserProfile() {
 
   const handleEditToggle = () => {
     if (isEditing) {
-        // Cancel editing
         setUsername(originalUsername);
         setUsernameStatus('idle');
         setUsernameMessage('');
@@ -180,7 +174,7 @@ export default function UserProfile() {
     );
   }
   
-  if (!user || !profile) {
+  if (!profile) {
     return (
         <div className="container mx-auto max-w-4xl py-12 px-4 text-center">
             <h1 className="text-2xl font-bold">Could not load profile.</h1>
@@ -300,7 +294,3 @@ export default function UserProfile() {
     </div>
   );
 }
-
-    
-
-    

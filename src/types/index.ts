@@ -30,28 +30,29 @@ export interface ChatMessage {
     content: string;
 }
 
-// Gamification Types
 export interface Achievement {
-    id: string; // e.g., "flashcard-master"
+    id: string; 
     name: string;
     description: string;
-    icon: string; // URL to icon
-    dateUnlocked: string; // ISO date string
+    icon: string; 
+    dateUnlocked: string; 
 }
 
 export interface UserStats {
     uid: string;
     displayName: string;
-    username?: string;
-    usernameLower?: string;
+    username: string;
+    usernameLower: string;
     email: string;
     photoURL?: string;
     points: number;
     streak: number;
-    currentPlan?: 'Free' | 'Starter' | 'Pro';
-    planRenewalDate?: string; // ISO date string
+    currentPlan: 'Free' | 'Starter' | 'Pro';
+    planRenewalDate?: string;
     achievements: Achievement[];
-    lastActivityDate?: any; // Can be Firestore Timestamp
+    lastActivityDate?: any;
+    createdAt: any;
+    updatedAt: any;
     stats: {
         summariesGenerated: number;
         flashcardsCompleted: number;
@@ -60,6 +61,9 @@ export interface UserStats {
         gamesCompleted: number;
     }
 }
+
+export interface UserProfileData extends Omit<UserStats, 'lastActivityDate' | 'createdAt' | 'updatedAt' | 'usernameLower'> {}
+
 
 export interface GenerationHistory {
     id: string;
