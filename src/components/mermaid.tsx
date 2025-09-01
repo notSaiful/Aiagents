@@ -3,26 +3,27 @@
 import { useEffect, useState } from "react";
 import type { MermaidConfig } from "mermaid";
 import mermaid from "mermaid";
+import { useTheme } from "next-themes";
 
-const DEFAULT_CONFIG: MermaidConfig = {
+const getMermaidConfig = (theme: string | undefined): MermaidConfig => ({
   startOnLoad: false,
-  theme: "base",
+  theme: theme === 'dark' ? 'dark' : 'base',
   themeVariables: {
-    background: 'var(--background)',
-    primaryColor: 'var(--background)',
-    primaryTextColor: 'var(--foreground)',
-    primaryBorderColor: 'var(--primary)',
-    lineColor: 'var(--foreground)',
-    secondaryColor: 'var(--primary)',
-    tertiaryColor: 'var(--primary)',
-    fontFamily: '"Inter", sans-serif',
+    background: theme === 'dark' ? '#24293A' : '#FFFFFF',
+    primaryColor: theme === 'dark' ? '#3B4261' : '#F7F7FF',
+    primaryTextColor: theme === 'dark' ? '#FFFFFF' : '#24293A',
+    primaryBorderColor: theme === 'dark' ? '#8F98C0' : '#A8A2FF',
+    lineColor: theme === 'dark' ? '#C2C8E7' : '#3B4261',
+    secondaryColor: theme === 'dark' ? '#3B4261' : '#F7F7FF',
+    tertiaryColor: theme === 'dark' ? '#2F354F' : '#FDFDFD',
+    fontFamily: '"Poppins", sans-serif',
     fontSize: '16px',
-    nodeBorder: 'var(--primary)',
-    mainBkg: 'var(--primary)',
+    nodeBorder: theme === 'dark' ? '#8F98C0' : '#A8A2FF',
+    mainBkg: theme === 'dark' ? '#3B4261' : '#A8A2FF',
     pieTitleTextSize: '18px',
-    pieTitleTextColor: 'var(--foreground)',
-    edgeLabelBackground: 'var(--background)',
-    classText: 'var(--foreground)',
+    pieTitleTextColor: theme === 'dark' ? '#FFFFFF' : '#24293A',
+    edgeLabelBackground: theme === 'dark' ? '#24293A' : '#FFFFFF',
+    classText: theme === 'dark' ? '#FFFFFF' : '#24293A',
   },
   flowchart: {
     useMaxWidth: true,
@@ -33,48 +34,22 @@ const DEFAULT_CONFIG: MermaidConfig = {
     maxDepth: 6,
     useMaxWidth: true,
   }
-};
+});
+
 
 interface MermaidProps {
   chart: string;
-  config?: MermaidConfig;
 }
 
-export default function Mermaid({
-  chart,
-  config = DEFAULT_CONFIG,
-}: MermaidProps) {
+export default function Mermaid({ chart }: MermaidProps) {
   const [svg, setSvg] = useState<string | null>(null);
+  const { theme, resolvedTheme } = useTheme();
 
   useEffect(() => {
-    const getResolvedColor = (cssVar: string) => {
-        if (typeof window === 'undefined') return '';
-        // Extracts the variable name from var(--name)
-        const varName = cssVar.match(/--[\w-]+/)?.[0];
-        if (!varName) return cssVar;
-        // Returns the HSL value string "H S% L%"
-        const hslValue = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
-        if (!hslValue) return cssVar;
-        // Returns a valid CSS color string
-        return `hsl(${hslValue})`;
-    };
+    const effectiveTheme = theme === 'system' ? resolvedTheme : theme;
+    const config = getMermaidConfig(effectiveTheme);
     
-    // Deep clone the config to avoid mutating the default object
-    const resolvedConfig = JSON.parse(JSON.stringify(config));
-    
-    if (resolvedConfig.themeVariables) {
-        for (const key in resolvedConfig.themeVariables) {
-            const value = resolvedConfig.themeVariables[key];
-            if (typeof value === 'string' && value.includes('var(--')) {
-                 const resolvedColor = getResolvedColor(value);
-                 if (resolvedColor) {
-                    resolvedConfig.themeVariables[key] = resolvedColor;
-                 }
-            }
-        }
-    }
-    
-    mermaid.initialize(resolvedConfig);
+    mermaid.initialize(config);
 
     const renderMermaid = async () => {
       try {
@@ -95,11 +70,11 @@ export default function Mermaid({
     } else {
       setSvg(null);
     }
-  }, [chart, config]);
+  }, [chart, theme, resolvedTheme]);
   
   if (!svg) {
     return <div className="p-4 text-muted-foreground w-full text-center">Loading diagram...</div>;
   }
   
-  return <div className="w-full flex justify-center" dangerouslySetInnerHTML={{ __html: svg }} />;
+  return <div className="w-full h-full flex justify-center items-center" dangerouslySetInnerHTML={{ __html: svg }} />;
 }

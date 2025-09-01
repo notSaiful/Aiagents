@@ -13,10 +13,8 @@ export default function MindMap({ data }: MindMapProps) {
   }
 
   return (
-    <div className="w-full h-[450px] p-4">
-      <InteractiveView>
+    <InteractiveView className="h-[450px]">
         <Mermaid chart={data} />
-      </InteractiveView>
-    </div>
+    </InteractiveView>
   );
 }
