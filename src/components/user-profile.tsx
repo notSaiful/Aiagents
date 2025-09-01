@@ -95,38 +95,37 @@ export default function UserProfile() {
 
 
   useEffect(() => {
-    async function fetchProfile() {
-      if (user) {
-        try {
-          const { profile: fetchedProfile } = await getUserProfile({ userId: user.uid });
+    async function fetchProfile(uid: string) {
+      try {
+        const { profile: fetchedProfile } = await getUserProfile({ userId: uid });
+        if (fetchedProfile) {
           setProfile(fetchedProfile);
-          if (fetchedProfile?.username) {
-            setUsername(fetchedProfile.username);
-            setOriginalUsername(fetchedProfile.username);
-          } else {
-             setUsername(fetchedProfile?.displayName || '');
-             setOriginalUsername(fetchedProfile?.displayName || '');
-          }
-        } catch (error) {
-          console.error('Failed to fetch profile:', error);
-          toast({
+          const currentUsername = fetchedProfile.username || fetchedProfile.displayName || '';
+          setUsername(currentUsername);
+          setOriginalUsername(currentUsername);
+        } else {
+           toast({
             title: 'Error',
-            description: 'Could not load your profile data.',
+            description: 'Could not find your profile data.',
             variant: 'destructive',
           });
-        } finally {
-          setLoading(false);
         }
-      } else {
-         router.push('/login');
+      } catch (error) {
+        console.error('Failed to fetch profile:', error);
+        toast({
+          title: 'Error',
+          description: 'Could not load your profile data.',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
       }
     }
 
     if (!authLoading) {
       if (user) {
-        fetchProfile();
+        fetchProfile(user.uid);
       } else {
-        setLoading(false);
         router.push('/login');
       }
     }
@@ -150,8 +149,10 @@ export default function UserProfile() {
       if (ok) {
         toast({ title: 'Success', description: message });
         setIsEditing(false);
-        setOriginalUsername(newUsername!);
-        setProfile(p => p ? { ...p, username: newUsername } : null);
+        if(newUsername) {
+          setOriginalUsername(newUsername);
+          setProfile(p => p ? { ...p, username: newUsername, displayName: newUsername } : null);
+        }
         setUsernameStatus('idle');
       } else {
         toast({ title: 'Error', description: message, variant: 'destructive' });
@@ -178,9 +179,14 @@ export default function UserProfile() {
   }
   
   if (!user || !profile) {
-    // This part should ideally not be reached if the effects above work correctly,
-    // but it's a good safeguard.
-    return <div className="container mx-auto py-8 px-4 text-center">Could not load profile. You may be redirected.</div>;
+    // This now correctly indicates an unrecoverable state after loading has finished.
+    return (
+        <div className="container mx-auto max-w-4xl py-12 px-4 text-center">
+            <h1 className="text-2xl font-bold">Could not load profile.</h1>
+            <p className="text-muted-foreground">Please try logging in again.</p>
+            <Button asChild className="mt-4"><Link href="/login">Go to Login</Link></Button>
+        </div>
+    );
   }
   
   const isSaveDisabled = isPending || usernameStatus !== 'available';
@@ -293,3 +299,5 @@ export default function UserProfile() {
     </div>
   );
 }
+
+    
