@@ -85,11 +85,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
             displayName: user.displayName || username,
             photoURL: user.photoURL,
             createdAt: serverTimestamp(),
-            settings: { preferredStyle: 'Minimalist' },
             points: 0,
             streak: 0,
+            lastActivityDate: null,
             achievements: [],
-            stats: {},
+            stats: {
+                summariesGenerated: 0, flashcardsCompleted: 0, mindmapsCreated: 0,
+                podcastsListened: 0, gamesCompleted: 0,
+            }
         });
         
         await updateUsernameAction(user.uid, username);
@@ -163,7 +166,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
         await updateProfile(user, { displayName: username });
 
         // Step 3: Create the user document in Firestore.
-        await setDoc(doc(db, 'users', user.uid), {
+        const userDocRef = doc(db, 'users', user.uid);
+        await setDoc(userDocRef, {
             uid: user.uid,
             email: user.email,
             displayName: username,
@@ -363,3 +367,5 @@ export default function AuthForm({ mode }: AuthFormProps) {
     </div>
   );
 }
+
+    
