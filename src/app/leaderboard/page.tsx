@@ -48,7 +48,7 @@ export default function LeaderboardPage() {
             <h1 className="text-4xl font-bold font-serif">Leaderboard</h1>
             <p className="text-muted-foreground mt-2">See who is topping the charts!</p>
         </div>
-      <Card className="border-2 border-primary/20 shadow-xl rounded-2xl">
+      <Card>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -73,7 +73,7 @@ export default function LeaderboardPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10 border-2 border-primary/50">
+                      <Avatar className="h-10 w-10">
                         <AvatarImage src={player.photoURL} />
                         <AvatarFallback>{player.displayName.charAt(0)}</AvatarFallback>
                       </Avatar>

@@ -185,8 +185,8 @@ export default function UserProfile() {
   const planInfo = planDetails[currentPlan];
 
   return (
-    <div className="container mx-auto max-w-2xl py-12 px-4 space-y-8">
-      <Card className="w-full border-2 border-primary/20 shadow-xl rounded-2xl">
+    <div className="container mx-auto max-w-4xl py-12 px-4 space-y-8">
+      <Card className="w-full">
         <CardHeader className="items-center text-center relative">
           <div className="absolute top-4 right-4 flex gap-2">
             {isEditing && (
@@ -194,12 +194,12 @@ export default function UserProfile() {
                 {isPending ? <LoaderCircle className="animate-spin" /> : <Check />}
               </Button>
             )}
-             <Button variant="ghost" size="icon" onClick={handleEditToggle}>
-                {isEditing ? <X /> : <Pencil className="w-5 h-5" />}
+             <Button variant="outline" size="icon" onClick={handleEditToggle}>
+                {isEditing ? <X className="h-4 w-4" /> : <Pencil className="w-4 h-4" />}
               </Button>
           </div>
 
-          <Avatar className="w-28 h-28 mb-4 border-4 border-primary">
+          <Avatar className="w-24 h-24 mb-4 border-4 border-primary">
             <AvatarImage src={profile.photoURL} alt={profile.displayName} />
             <AvatarFallback className="text-4xl">
               {profile.displayName.charAt(0).toUpperCase()}
@@ -211,7 +211,7 @@ export default function UserProfile() {
               <Input 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="text-2xl font-bold font-serif text-center h-12"
+                className="text-2xl font-bold text-center h-10"
                 disabled={isPending}
               />
               <p className={cn("text-sm mt-1 h-5", getStatusColor())}>
@@ -220,44 +220,37 @@ export default function UserProfile() {
             </div>
           ) : (
              <>
-              <CardTitle className="text-4xl font-bold font-serif">{profile.username || profile.displayName}</CardTitle>
-              <CardDescription className="text-base">{profile.email}</CardDescription>
+              <CardTitle className="text-3xl font-bold">{profile.username || profile.displayName}</CardTitle>
+              <CardDescription>{profile.email}</CardDescription>
              </>
           )}
 
         </CardHeader>
-        <CardContent className="px-6 pb-6">
+        <CardContent>
           
-          <div className="space-y-6">
-            <div className="space-y-2">
-                <div className="flex justify-between font-semibold">
-                    <span>Level 1</span>
-                    <span>{profile.points} / 1000 XP</span>
-                </div>
-                <Progress value={(profile.points / 1000) * 100} className="h-3" />
+          <div className="grid grid-cols-2 gap-4 text-center">
+            <div>
+                 <p className="text-2xl font-bold">{profile.points}</p>
+                 <p className="text-sm text-muted-foreground">Points</p>
             </div>
-
-            <div className="text-center">
-                 <p className="text-5xl font-bold">{profile.streak}</p>
-                 <p className="text-muted-foreground font-medium">Day Streak</p>
+             <div>
+                 <p className="text-2xl font-bold">{profile.streak} 🔥</p>
+                 <p className="text-sm text-muted-foreground">Day Streak</p>
             </div>
           </div>
           
-          <Separator className="my-8" />
+          <Separator className="my-6" />
 
           <div>
-            <h3 className="text-2xl font-semibold mb-6 text-center font-serif">Achievements</h3>
+            <h3 className="text-lg font-semibold mb-4 text-center">Achievements</h3>
             {profile.achievements.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+              <div className="flex flex-wrap justify-center gap-4">
                 <TooltipProvider>
                   {profile.achievements.map((ach) => (
                     <Tooltip key={ach.id}>
                       <TooltipTrigger asChild>
-                        <div className="flex flex-col items-center p-2 text-center transition-transform hover:scale-110">
-                          <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-                              <Award className="w-8 h-8 text-primary" />
-                          </div>
-                          <p className="text-xs mt-2 font-semibold whitespace-nowrap">{ach.name}</p>
+                        <div className="p-2 rounded-full bg-primary/20 transition-transform hover:scale-110">
+                          <Award className="w-8 h-8 text-primary" />
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -270,26 +263,26 @@ export default function UserProfile() {
                 </TooltipProvider>
               </div>
             ) : (
-              <p className="text-muted-foreground text-center">No achievements unlocked yet. Keep going!</p>
+              <p className="text-muted-foreground text-center text-sm">No achievements unlocked yet. Keep going!</p>
             )}
           </div>
         </CardContent>
       </Card>
       
       <Card>
-        <CardContent className="p-6 flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <CardContent className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
                 {planInfo.icon}
                 <div>
-                    <p className="font-bold">{planInfo.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-semibold">{planInfo.name}</p>
+                    <p className="text-xs text-muted-foreground">
                         {currentPlan === 'Free' ? "Upgrade to unlock more features." : `Renews on ${profile.planRenewalDate || 'N/A'}`}
                     </p>
                 </div>
             </div>
-            <Button asChild variant={currentPlan === 'Pro' ? "outline" : "default"}>
+            <Button asChild variant={currentPlan === 'Pro' ? "outline" : "default"} size="sm">
                 <Link href="/pricing">
-                    {currentPlan !== 'Pro' ? "Upgrade to Pro" : "Manage Plan"}
+                    {currentPlan !== 'Pro' ? "Upgrade" : "Manage"}
                 </Link>
             </Button>
         </CardContent>

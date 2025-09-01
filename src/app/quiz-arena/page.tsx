@@ -120,7 +120,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
   if (gameOver) {
     const victory = aiHealth <= 0;
     return (
-      <div className="text-center">
+      <div className="text-center p-4">
         <Trophy className={cn("w-16 h-16 mx-auto mb-4", victory ? "text-yellow-400" : "text-muted-foreground/50")} />
         <h2 className="text-3xl font-bold font-serif mb-2">{victory ? 'Victory!' : 'Defeat!'}</h2>
         <p className="text-lg text-muted-foreground">Your final score: {score}</p>
@@ -133,7 +133,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto p-4">
         {/* Health Bars */}
         <div className="flex justify-between gap-4 mb-4">
             <div className="w-full">
@@ -155,7 +155,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
         {/* Timer and Question Card */}
         {currentQuestion && (
             <>
-                <Card className="relative overflow-hidden">
+                <Card className="relative overflow-hidden shadow-lg">
                     <div className="absolute top-2 right-2 font-bold text-lg bg-background/80 px-2 rounded-md">{timer}s</div>
                     <CardContent className="p-6">
                         <p className="text-sm text-muted-foreground mb-2">Question {currentQuestionIndex + 1} of {questions.length}</p>
@@ -166,7 +166,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
                 </Card>
                 
                 {/* Answer Options */}
-                <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                     {currentQuestion.options.map((option, index) => (
                         <Button
                             key={index}
@@ -178,7 +178,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
                                 'outline'
                             }
                             className={cn(
-                                "h-auto py-4 text-base whitespace-normal text-center justify-center transition-all duration-300",
+                                "h-auto py-3 text-base whitespace-normal text-center justify-center transition-all duration-300",
                                 selectedAnswer && option === currentQuestion.answer && 'animate-pulse'
                             )}
                         >

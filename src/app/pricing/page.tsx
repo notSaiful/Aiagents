@@ -100,13 +100,13 @@ export default function PricingPage() {
         </Label>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
         {plans.map((plan) => (
           <Card
             key={plan.name}
             className={cn(
-                "flex flex-col rounded-2xl shadow-lg transition-all duration-300",
-                plan.isPopular ? 'border-2 border-primary/80 scale-105' : 'border'
+                "flex flex-col",
+                plan.isPopular ? 'border-2 border-primary' : ''
             )}
           >
             {plan.isPopular && (
@@ -150,7 +150,7 @@ export default function PricingPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button asChild className="w-full text-lg py-6" variant={plan.variant as any} disabled={plan.name === 'Free'}>
+              <Button asChild className="w-full" variant={plan.variant as any} disabled={plan.name === 'Free'}>
                 {plan.name === 'Free' ? (
                    <span>{plan.buttonText}</span>
                 ) : (
