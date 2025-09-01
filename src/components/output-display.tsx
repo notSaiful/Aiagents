@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Share2, LoaderCircle, BookOpen } from 'lucide-react';
+import { Share2, LoaderCircle, BookOpen, Presentation } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import type { Flashcard as FlashcardType, Podcast as PodcastType, QuizQuestion }
 import { Skeleton } from './ui/skeleton';
 import { shareGeneration } from '@/ai/flows/share-generation';
 import { generateQuiz } from '@/ai/flows/generate-quiz';
+import { generateSlides } from '@/ai/flows/generate-slides';
 import QuizArena from './quiz-arena';
 import Talkie from './talkie';
 import FlashcardDeck from './flashcard-deck';
@@ -49,6 +50,8 @@ export default function OutputDisplay({
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[] | null>(null);
   const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
   const [isStudying, setIsStudying] = useState(false);
+  const [isGeneratingSlides, setIsGeneratingSlides] = useState(false);
+  const [slidesUrl, setSlidesUrl] = useState<string | null>(null);
 
   const summaryRef = useRef<HTMLDivElement>(null);
   const mindMapRef = useRef<HTMLDivElement>(null);
@@ -56,7 +59,7 @@ export default function OutputDisplay({
   const arcadeRef = useRef<HTMLDivElement>(null);
   const talkieRef = useRef<HTMLDivElement>(null);
   const flashcardsRef = useRef<HTMLDivElement>(null);
-
+  const slidesRef = useRef<HTMLDivElement>(null);
 
   const handleCopyLink = async () => {
     setIsSharing(true);
@@ -125,6 +128,27 @@ export default function OutputDisplay({
         setIsGeneratingQuiz(false);
     }
   };
+
+  const handleGenerateSlides = async () => {
+    setIsGeneratingSlides(true);
+    try {
+      const result = await generateSlides({ notes });
+      setSlidesUrl(result.downloadUrl);
+      toast({
+        title: 'Presentation Ready!',
+        description: 'Your PowerPoint presentation has been generated successfully.',
+      });
+    } catch (error) {
+      console.error('Slides generation failed:', error);
+      toast({
+        title: 'Slides Generation Failed',
+        description: 'An unexpected error occurred while creating your presentation.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsGeneratingSlides(false);
+    }
+  };
   
   const renderLoadingSkeletons = () => (
     <div className="w-full space-y-4 p-6">
@@ -142,7 +166,7 @@ export default function OutputDisplay({
     <div className="relative">
       <Tabs defaultValue="summary" className="w-full" onValueChange={setActiveTab}>
         <div className="flex justify-center mb-6">
-          <TabsList className="bg-primary/80 rounded-full h-12 px-2">
+          <TabsList className="bg-primary/80 rounded-full h-12 px-2 flex-wrap">
             <TabsTrigger value="summary" className="text-base rounded-full h-10">
               Summary
             </TabsTrigger>
@@ -151,6 +175,9 @@ export default function OutputDisplay({
             </TabsTrigger>
             <TabsTrigger value="mind-map" className="text-base rounded-full h-10" disabled={!mindMap}>
               Mind Map
+            </TabsTrigger>
+            <TabsTrigger value="slides" className="text-base rounded-full h-10">
+              Slides
             </TabsTrigger>
             <TabsTrigger value="podcast" className="text-base rounded-full h-10">
               Podcast
@@ -220,6 +247,43 @@ export default function OutputDisplay({
                 renderLoadingSkeletons()
               ) : (
                 <MindMap data={mindMap} />
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="slides">
+          <Card ref={slidesRef} className="rounded-xl border-2 border-primary/40">
+            <CardContent className="p-6 flex flex-col justify-center min-h-[250px] items-center text-center">
+              <Presentation className="w-16 h-16 text-primary mb-4" />
+              <h2 className="text-2xl font-bold font-serif mb-2">Generate Slides</h2>
+              {slidesUrl ? (
+                 <>
+                  <p className="text-muted-foreground mb-4">Your presentation is ready for download.</p>
+                  <Button asChild className="font-semibold text-lg py-6 rounded-xl shadow-lg">
+                    <a href={slidesUrl} target="_blank" download>Download Presentation</a>
+                  </Button>
+                 </>
+              ) : (
+                <>
+                  <p className="text-muted-foreground mb-4">
+                    Turn your notes into a professional PowerPoint presentation.
+                  </p>
+                  <Button
+                    onClick={handleGenerateSlides}
+                    disabled={isGeneratingSlides}
+                    className="font-semibold text-lg py-6 rounded-xl shadow-lg"
+                  >
+                    {isGeneratingSlides ? (
+                      <>
+                        <LoaderCircle className="animate-spin mr-2" />
+                        Generating Slides...
+                      </>
+                    ) : (
+                      'Generate Presentation'
+                    )}
+                  </Button>
+                </>
               )}
             </CardContent>
           </Card>
@@ -297,7 +361,7 @@ export default function OutputDisplay({
         </TabsContent>
 
       </Tabs>
-      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && !['flashcards', 'podcast', 'arcade', 'talkie'].includes(activeTab) && (
+      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && !['flashcards', 'podcast', 'arcade', 'talkie', 'slides'].includes(activeTab) && (
         <ShareDialog
           open={isShareDialogOpen}
           onOpenChange={setShareDialogOpen}

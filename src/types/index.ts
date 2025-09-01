@@ -18,6 +18,10 @@ export interface Podcast {
   audioUrl: string;
 }
 
+export interface Slides {
+    downloadUrl: string;
+}
+
 export interface QuizQuestion {
     question: string;
     options: string[];

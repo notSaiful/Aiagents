@@ -18,6 +18,6 @@ import '@/ai/flows/change-username.ts';
 import '@/ai/flows/check-username.ts';
 import '@/ai/flows/lookup-user.ts';
 import '@/ai/flows/support-chat.ts';
+import '@/ai/flows/generate-slides.ts';
 
     
-
