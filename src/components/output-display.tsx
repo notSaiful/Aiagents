@@ -215,7 +215,7 @@ export default function OutputDisplay({
 
         <TabsContent value="mind-map">
           <Card ref={mindMapRef} className="rounded-xl border-2 border-primary/40">
-            <CardContent className="p-6 flex justify-center min-h-[250px] items-center">
+            <CardContent className="p-0 flex justify-center items-center">
               {!mindMap ? (
                 renderLoadingSkeletons()
               ) : (

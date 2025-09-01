@@ -1,6 +1,7 @@
 'use client';
 
 import Mermaid from './mermaid';
+import InteractiveView from './interactive-view';
 
 interface MindMapProps {
   data: string;
@@ -12,8 +13,10 @@ export default function MindMap({ data }: MindMapProps) {
   }
 
   return (
-    <div className="p-4 overflow-x-auto w-full">
-      <Mermaid chart={data} />
+    <div className="w-full h-[450px] p-4">
+      <InteractiveView>
+        <Mermaid chart={data} />
+      </InteractiveView>
     </div>
   );
 }
