@@ -1,4 +1,3 @@
-
 'use client';
 
 import { usePathname } from 'next/navigation';
@@ -6,13 +5,10 @@ import Link from 'next/link';
 import AuthButton from '@/components/auth-button';
 import { ThemeToggle } from '../theme-toggle';
 import { Button } from '../ui/button';
-import { Trophy, User, Home, Timer, TrendingUp } from 'lucide-react';
-import BreakModeDialog from '../break-mode-dialog';
-import { useState } from 'react';
+import { Home, TrendingUp } from 'lucide-react';
 
 export default function Header() {
   const pathname = usePathname();
-  const [isBreakModeOpen, setIsBreakModeOpen] = useState(false);
 
   // Don't render header on login/signup pages or pricing page for a cleaner look
   if (pathname === '/login' || pathname === '/login/email' || pathname === '/signup') {
@@ -51,17 +47,6 @@ export default function Header() {
                     Pricing
                 </Link>
             </Button>
-            <BreakModeDialog open={isBreakModeOpen} onOpenChange={setIsBreakModeOpen}>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setIsBreakModeOpen(true)}
-                    className="h-10 w-10"
-                >
-                    <Timer className="h-5 w-5" />
-                    <span className="sr-only">Start Break</span>
-                </Button>
-            </BreakModeDialog>
             <ThemeToggle />
             <AuthButton />
           </div>
