@@ -3,7 +3,7 @@
 
 import { ai } from '@/ai/genkit';
 import { app } from '@/lib/firebase';
-import { getFirestore, doc, runTransaction, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, doc, runTransaction, serverTimestamp, DocumentSnapshot } from 'firebase/firestore';
 import { z } from 'zod';
 
 const ChangeUsernameInputSchema = z.object({
@@ -36,41 +36,58 @@ export const changeUsernameFlow = ai.defineFlow(
         const { username, usernameLower } = sanitizeUsername(desiredUsername);
 
         const userRef = doc(db, "users", uid);
-        const reservationRef = doc(db, "usernames", usernameLower);
+        const newUsernameRef = doc(db, "usernames", usernameLower);
 
         return await runTransaction(db, async (tx) => {
+            // --- All READ operations must come before all WRITE operations ---
+
+            // Read 1: Get the current user's profile
             const userSnap = await tx.get(userRef);
-            if (!userSnap.exists()) throw new Error("User profile not found.");
+            if (!userSnap.exists()) {
+                throw new Error("User profile not found.");
+            }
 
-            const current = userSnap.data() as any;
-            const currentLower: string | undefined = current.usernameLower;
+            const currentUserData = userSnap.data() as any;
+            const currentUsernameLower: string | undefined = currentUserData.usernameLower;
 
-            if (currentLower === usernameLower) {
+            // If the username hasn't changed, we can exit early.
+            if (currentUsernameLower === usernameLower) {
                 return { username, usernameLower, unchanged: true };
             }
 
-            const resSnap = await tx.get(reservationRef);
-            if (resSnap.exists()) {
-                const owner = (resSnap.data() as any).uid;
-                if (owner !== uid) {
-                    throw new Error("That username is taken. Try another.");
-                }
-            } else {
-                tx.set(reservationRef, { uid, createdAt: serverTimestamp() });
+            // Read 2: Check if the desired new username is already taken
+            const newUsernameSnap = await tx.get(newUsernameRef);
+            
+            // Read 3 (optional): Get the old username document if it exists, so we can delete it later
+            let oldUsernameRef: any = null;
+            if (currentUsernameLower && currentUsernameLower !== usernameLower) {
+                oldUsernameRef = doc(db, "usernames", currentUsernameLower);
+            }
+            const oldUsernameSnap = oldUsernameRef ? await tx.get(oldUsernameRef) : null;
+            
+
+            // --- All WRITE operations must come after this point ---
+
+            // Logic check: Is the new username taken by someone else?
+            if (newUsernameSnap.exists() && (newUsernameSnap.data() as any).uid !== uid) {
+                throw new Error("That username is taken. Try another.");
+            }
+            
+            // Write 1: Reserve the new username if it's not already reserved by this user.
+            if (!newUsernameSnap.exists()) {
+                tx.set(newUsernameRef, { uid, createdAt: serverTimestamp() });
+            }
+            
+            // Write 2: Delete the old username reservation if it exists and belongs to the current user.
+            if (oldUsernameSnap && oldUsernameSnap.exists() && (oldUsernameSnap.data() as any).uid === uid) {
+                tx.delete(oldUsernameSnap.ref);
             }
 
-            if (currentLower && currentLower !== usernameLower) {
-                const oldRef = doc(db, "usernames", currentLower);
-                const oldSnap = await tx.get(oldRef);
-                if (oldSnap.exists() && (oldSnap.data() as any).uid === uid) {
-                    tx.delete(oldRef);
-                }
-            }
-
+            // Write 3: Update the user's profile with the new username.
             tx.set(userRef, {
                 username,
                 usernameLower,
-                displayName: username, // Also update displayName
+                displayName: username,
                 updatedAt: serverTimestamp(),
             }, { merge: true });
 
@@ -78,5 +95,3 @@ export const changeUsernameFlow = ai.defineFlow(
         });
     }
 );
-
-    
