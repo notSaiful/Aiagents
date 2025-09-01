@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LoaderCircle, Upload, Video, Timer, Mic } from 'lucide-react';
+import { Sparkles, LoaderCircle, Upload, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -31,12 +31,13 @@ interface AIOutput {
 }
 
 type NoteStyle = 'Minimalist' | 'Story' | 'Action' | 'Formal';
+type UploadType = 'image' | 'video' | 'file';
 
 export default function Home() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [isAnalyzingVideo, setIsAnalyzingVideo] = useState(false);
+  const [uploadType, setUploadType] = useState<UploadType>('file');
   const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -44,7 +45,6 @@ export default function Home() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoInputRef = useRef<HTMLInputElement>(null);
   
   const {
     isListening,
@@ -170,10 +170,6 @@ export default function Home() {
     fileInputRef.current?.click();
   };
   
-  const handleVideoUploadClick = () => {
-    videoInputRef.current?.click();
-  }
-  
   const handleVoiceClick = () => {
     if (isListening) {
       stopListening();
@@ -188,72 +184,49 @@ export default function Home() {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      const fileType = file.type.startsWith('video/') ? 'video' : 'image';
+      
       setIsUploading(true);
+      setUploadType(fileType);
       setUploadProgress(0);
       setOutput(null);
       setNotes('');
       toast({
-        title: 'Processing Upload...',
-        description: `Extracting text from ${file.name}.`,
+        title: `Processing ${fileType}...`,
+        description: `Extracting text from ${file.name}. This may take a moment.`,
       });
+
       try {
-        const photoDataUri = await readFileAsDataURI(file, setUploadProgress);
-        setUploadProgress(100); // Mark reading as complete
-        const { extractedText } = await extractTextFromImage({ photoDataUri });
+        const dataUri = await readFileAsDataURI(file, setUploadProgress);
+        setUploadProgress(100);
+        
+        let extractedText = '';
+        if (fileType === 'video') {
+          const result = await extractTextFromVideo({ videoDataUri: dataUri });
+          extractedText = result.extractedText;
+        } else {
+          const result = await extractTextFromImage({ photoDataUri: dataUri });
+          extractedText = result.extractedText;
+        }
+
         setNotes(extractedText);
         toast({
           title: 'Text Extracted!',
           description: 'Your notes are ready to be transformed.',
         });
       } catch (error) {
-        console.error('OCR failed:', error);
+        console.error(`${fileType} processing failed:`, error);
         toast({
           title: 'Extraction Failed',
-          description: 'Could not extract text from the uploaded file. Please try again.',
+          description: `Could not extract text from the uploaded ${fileType}. Please try again.`,
           variant: 'destructive',
         });
       } finally {
         setIsUploading(false);
         setUploadProgress(null);
+        setUploadType('file');
         if(fileInputRef.current) {
           fileInputRef.current.value = '';
-        }
-      }
-    }
-  };
-
-  const handleVideoFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setIsAnalyzingVideo(true);
-      setUploadProgress(0);
-      setOutput(null);
-      setNotes('');
-      toast({
-        title: 'Analyzing Video...',
-        description: `Extracting transcript from ${file.name}. This may take a few moments.`,
-      });
-      try {
-        const videoDataUri = await readFileAsDataURI(file, setUploadProgress);
-        setUploadProgress(100); // Mark reading as complete
-        const { extractedText } = await extractTextFromVideo({ videoDataUri });
-        setNotes(extractedText);
-        toast({
-          title: 'Transcript Extracted!',
-          description: 'Your video transcript is ready to be transformed.',
-        });
-      } catch (error) {
-        console.error('Video analysis failed:', error);
-        toast({
-          title: 'Analysis Failed',
-          description: 'Could not extract transcript from the uploaded video. Please try again.',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsAnalyzingVideo(false);
-        setUploadProgress(null);
-        if(videoInputRef.current) {
-          videoInputRef.current.value = '';
         }
       }
     }
@@ -307,9 +280,9 @@ export default function Home() {
     return null;
   }
 
-  const isLoading = loading || isUploading || isAnalyzingVideo;
+  const isLoading = loading || isUploading;
   const showProgress = uploadProgress !== null;
-  const progressText = isUploading ? "Uploading..." : isAnalyzingVideo ? "Analyzing..." : "";
+  const progressText = isUploading ? "Uploading..." : "";
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
@@ -339,14 +312,7 @@ export default function Home() {
                     ref={fileInputRef}
                     onChange={handleFileChange}
                     className="hidden"
-                    accept="image/png,image/jpeg,application/pdf"
-                />
-                <input
-                    type="file"
-                    ref={videoInputRef}
-                    onChange={handleVideoFileChange}
-                    className="hidden"
-                    accept="video/*"
+                    accept="image/png,image/jpeg,application/pdf,video/*"
                 />
                 <Button
                     onClick={handleUploadClick}
@@ -360,23 +326,7 @@ export default function Home() {
                   ) : (
                     <>
                       <Upload className="mr-2 h-4 w-4" />
-                      Upload Image
-                    </>
-                  )}
-                </Button>
-                 <Button
-                    onClick={handleVideoUploadClick}
-                    disabled={isLoading}
-                    variant="ghost"
-                    size="sm"
-                    className="text-muted-foreground hover:text-foreground"
-                >
-                  {isAnalyzingVideo ? (
-                    <LoaderCircle className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Video className="mr-2 h-4 w-4" />
-                      Upload Video
+                      Upload File
                     </>
                   )}
                 </Button>
@@ -401,7 +351,7 @@ export default function Home() {
                   <p className="text-sm text-muted-foreground mt-1">{progressText} {uploadProgress}%</p>
                 )}
                  {uploadProgress === 100 && (
-                  <p className="text-sm text-muted-foreground mt-1">Processing...</p>
+                  <p className="text-sm text-muted-foreground mt-1">{uploadType === 'video' ? 'Analyzing video...' : 'Processing...'}</p>
                 )}
               </div>
             )}
@@ -441,3 +391,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
