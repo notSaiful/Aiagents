@@ -18,6 +18,8 @@ import { app } from '@/lib/firebase';
 const GenerateSlidesInputSchema = z.object({
   notes: z.string().describe('The notes to transform into a presentation.'),
   title: z.string().optional().describe('The title for the presentation.'),
+  style: z.string().default('futuristic_ai').describe('The design style for the presentation.'),
+  maxSlides: z.number().optional().describe('The maximum number of slides to generate.'),
 });
 export type GenerateSlidesInput = z.infer<typeof GenerateSlidesInputSchema>;
 
@@ -27,6 +29,9 @@ const GenerateSlidesOutputSchema = z.object({
 export type GenerateSlidesOutput = z.infer<typeof GenerateSlidesOutputSchema>;
 
 export async function generateSlides(input: GenerateSlidesInput): Promise<GenerateSlidesOutput> {
+  if (!input.notes.trim()) {
+    throw new Error('Notes content cannot be empty.');
+  }
   return generateSlidesFlow(input);
 }
 
@@ -36,15 +41,26 @@ const generateSlidesFlow = ai.defineFlow(
     inputSchema: GenerateSlidesInputSchema,
     outputSchema: GenerateSlidesOutputSchema,
   },
-  async ({ notes, title }) => {
+  async ({ notes, title, style, maxSlides }) => {
     const apiKey = process.env.SLIDESGPT_API_KEY;
     if (!apiKey) {
-      throw new Error('SlidesGPT API key is not configured.');
+      console.error('SlidesGPT API key is not configured.');
+      throw new Error('The slide generation service is not configured. Please contact support.');
     }
 
     const apiUrl = 'https://api.slidesgpt.com/v1/generate/powerpoint';
     const presentationTitle = title || 'Presentation from Notes';
     
+    const requestBody: { [key: string]: any } = {
+        title: presentationTitle,
+        notes: notes,
+        style: style,
+    };
+
+    if (maxSlides) {
+        requestBody.maxSlides = maxSlides;
+    }
+
     // 1. Call SlidesGPT API
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -52,17 +68,16 @@ const generateSlidesFlow = ai.defineFlow(
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({
-        title: presentationTitle,
-        notes: notes,
-        style: "futuristic_ai",
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error('SlidesGPT API Error:', errorBody);
-      throw new Error(`Failed to generate slides. API responded with status ${response.status}.`);
+      console.error(`SlidesGPT API Error (Status: ${response.status}):`, errorBody);
+      if (response.status === 401 || response.status === 403) {
+          throw new Error('Slide generation failed due to an authentication issue. Please contact support.');
+      }
+      throw new Error(`Slide generation failed. Please check API key and notes format.`);
     }
 
     const presentationBuffer = await response.buffer();

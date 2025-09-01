@@ -132,7 +132,10 @@ export default function OutputDisplay({
   const handleGenerateSlides = async () => {
     setIsGeneratingSlides(true);
     try {
-      const result = await generateSlides({ notes });
+      const result = await generateSlides({ 
+          notes, 
+          style: 'futuristic_ai', // Or make this selectable
+      });
       setSlidesUrl(result.downloadUrl);
       toast({
         title: 'Presentation Ready!',
@@ -140,9 +143,10 @@ export default function OutputDisplay({
       });
     } catch (error) {
       console.error('Slides generation failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred.';
       toast({
         title: 'Slides Generation Failed',
-        description: 'An unexpected error occurred while creating your presentation.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
