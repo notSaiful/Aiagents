@@ -95,12 +95,6 @@ export default function UserProfile() {
 
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, authLoading, router]);
-
-  useEffect(() => {
     async function fetchProfile() {
       if (user) {
         try {
@@ -115,17 +109,28 @@ export default function UserProfile() {
           }
         } catch (error) {
           console.error('Failed to fetch profile:', error);
+          toast({
+            title: 'Error',
+            description: 'Could not load your profile data.',
+            variant: 'destructive',
+          });
         } finally {
           setLoading(false);
         }
+      } else {
+         router.push('/login');
       }
     }
-    if (!authLoading && user) {
-      fetchProfile();
-    } else if (!authLoading && !user) {
-      setLoading(false);
+
+    if (!authLoading) {
+      if (user) {
+        fetchProfile();
+      } else {
+        setLoading(false);
+        router.push('/login');
+      }
     }
-  }, [user, authLoading]);
+  }, [user, authLoading, router, toast]);
 
   const handleEditToggle = () => {
     if (isEditing) {
@@ -172,12 +177,10 @@ export default function UserProfile() {
     );
   }
   
-  if (!user) {
-    return null; // or a redirect message
-  }
-
-  if (!profile) {
-    return <div className="container mx-auto py-8 px-4 text-center">Could not load profile.</div>;
+  if (!user || !profile) {
+    // This part should ideally not be reached if the effects above work correctly,
+    // but it's a good safeguard.
+    return <div className="container mx-auto py-8 px-4 text-center">Could not load profile. You may be redirected.</div>;
   }
   
   const isSaveDisabled = isPending || usernameStatus !== 'available';
