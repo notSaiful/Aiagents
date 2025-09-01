@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import ShareDialog from './share-dialog';
 import MindMap from './mind-map';
-import type { Flashcard as FlashcardType, Podcast as PodcastType, QuizQuestion } from '@/types';
+import type { Flashcard as FlashcardType, Podcast as PodcastType, QuizQuestion, Slides as SlidesType } from '@/types';
 import { Skeleton } from './ui/skeleton';
 import { shareGeneration } from '@/ai/flows/share-generation';
 import { generateQuiz } from '@/ai/flows/generate-quiz';
@@ -51,7 +51,7 @@ export default function OutputDisplay({
   const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
   const [isStudying, setIsStudying] = useState(false);
   const [isGeneratingSlides, setIsGeneratingSlides] = useState(false);
-  const [slidesUrl, setSlidesUrl] = useState<string | null>(null);
+  const [slides, setSlides] = useState<SlidesType | null>(null);
 
   const summaryRef = useRef<HTMLDivElement>(null);
   const mindMapRef = useRef<HTMLDivElement>(null);
@@ -132,11 +132,8 @@ export default function OutputDisplay({
   const handleGenerateSlides = async () => {
     setIsGeneratingSlides(true);
     try {
-      const result = await generateSlides({ 
-          notes, 
-          style: 'futuristic_ai', // Or make this selectable
-      });
-      setSlidesUrl(result.downloadUrl);
+      const result = await generateSlides({ notes });
+      setSlides(result);
       toast({
         title: 'Presentation Ready!',
         description: 'Your PowerPoint presentation has been generated successfully.',
@@ -258,20 +255,24 @@ export default function OutputDisplay({
         
         <TabsContent value="slides">
           <Card ref={slidesRef} className="rounded-xl border-2 border-primary/40">
-            <CardContent className="p-6 flex flex-col justify-center min-h-[250px] items-center text-center">
-              <Presentation className="w-16 h-16 text-primary mb-4" />
-              <h2 className="text-2xl font-bold font-serif mb-2">Generate Slides</h2>
-              {slidesUrl ? (
-                 <>
-                  <p className="text-muted-foreground mb-4">Your presentation is ready for download.</p>
-                  <Button asChild className="font-semibold text-lg py-6 rounded-xl shadow-lg">
-                    <a href={slidesUrl} target="_blank" download>Download Presentation</a>
-                  </Button>
-                 </>
+            <CardContent className="p-6 flex flex-col justify-center min-h-[400px] items-center text-center">
+              {slides?.embedUrl ? (
+                <div className="w-full h-[350px] flex flex-col items-center">
+                    <iframe 
+                        src={slides.embedUrl}
+                        className="w-full h-full rounded-lg border"
+                        allowFullScreen
+                    ></iframe>
+                    <Button asChild className="font-semibold mt-4">
+                        <a href={slides.downloadUrl} target="_blank" download>Download Presentation</a>
+                    </Button>
+                </div>
               ) : (
                 <>
+                  <Presentation className="w-16 h-16 text-primary mb-4" />
+                  <h2 className="text-2xl font-bold font-serif mb-2">Generate Slides</h2>
                   <p className="text-muted-foreground mb-4">
-                    Turn your notes into a professional PowerPoint presentation.
+                    Turn your notes into a professional presentation.
                   </p>
                   <Button
                     onClick={handleGenerateSlides}
@@ -281,7 +282,7 @@ export default function OutputDisplay({
                     {isGeneratingSlides ? (
                       <>
                         <LoaderCircle className="animate-spin mr-2" />
-                        Generating Slides...
+                        Generating...
                       </>
                     ) : (
                       'Generate Presentation'

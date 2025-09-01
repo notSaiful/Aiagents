@@ -20,6 +20,7 @@ export interface Podcast {
 
 export interface Slides {
     downloadUrl: string;
+    embedUrl: string;
 }
 
 export interface QuizQuestion {
