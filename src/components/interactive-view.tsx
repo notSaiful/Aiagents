@@ -16,6 +16,7 @@ export default function InteractiveView({ children, className }: InteractiveView
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const dragStartRef = useRef({ x: 0, y: 0 });
 
   const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
@@ -67,8 +68,20 @@ export default function InteractiveView({ children, className }: InteractiveView
   };
   
   const zoom = (direction: 'in' | 'out') => {
-    const scaleAmount = direction === 'in' ? 0.1 : -0.1;
-    setScale(prev => Math.max(0.1, Math.min(3, prev + scaleAmount)));
+    const scaleAmount = direction === 'in' ? 0.2 : -0.2;
+    const newScale = Math.max(0.1, Math.min(3, scale + scaleAmount));
+    
+    if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const newX = centerX - (centerX - position.x) * (newScale / scale);
+        const newY = centerY - (centerY - position.y) * (newScale / scale);
+        
+        setScale(newScale);
+        setPosition({ x: newX, y: newY });
+    }
   };
   
   const resetView = () => {
@@ -88,11 +101,13 @@ export default function InteractiveView({ children, className }: InteractiveView
       onMouseLeave={handleMouseLeave}
     >
       <div
+        ref={contentRef}
         style={{
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
           transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+          transformOrigin: 'top left'
         }}
-        className="w-full h-full flex items-center justify-center"
+        className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
       >
         {children}
       </div>
