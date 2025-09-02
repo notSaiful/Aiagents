@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -32,6 +31,12 @@ function stripHtml(html: string): string {
 
 export async function generateSlides(input: GenerateSlidesInput): Promise<GenerateSlidesOutput> {
   const plainTextNotes = stripHtml(input.notes);
+  
+  const wordCount = plainTextNotes.trim().split(/\s+/).length;
+  if (wordCount < 20 || wordCount > 5000) {
+    throw new Error('Notes must be between 20 and 5,000 words to generate slides.');
+  }
+  
   if (!plainTextNotes.trim()) {
     throw new Error('Notes content cannot be empty.');
   }
@@ -53,8 +58,28 @@ const generateSlidesFlow = ai.defineFlow(
 
     const apiUrl = 'https://api.slidesgpt.com/v1/presentations/generate';
     
+    // Construct a detailed prompt with design guidelines
+    const designPrompt = `
+      Create a professional and visually stunning PowerPoint presentation based on the following notes.
+
+      **Design Guidelines:**
+      - **Theme:** Use a modern, minimalistic theme with high contrast for readability.
+      - **Visuals:** Add relevant, high-quality icons and simple illustrations on each slide to enhance understanding.
+      - **Color Palette:** Use a consistent and professional color palette. A good base would be shades of blue, white, and grey, with a single, clear accent color for emphasis (like a bright orange or teal).
+      - **Typography:** Titles should be bold and eye-catching. Body text should be clean and easy to read.
+      - **Content Structure:** Use bullet points with short, impactful phrases. Limit bullet points to a maximum of 5 per slide to avoid clutter.
+      - **Layout:** Ensure plenty of whitespace on each slide. The design should feel open and uncluttered.
+      - **Data Visualization:** If the notes contain data or comparisons, include one simple, clear visual chart or diagram.
+      - **Structure:** Start with a title slide, follow with content slides, and end with a strong summary slide and a final "Thank You" or "Q&A" slide.
+
+      **Notes to convert:**
+      ---
+      ${notes}
+      ---
+    `;
+
     const requestBody = {
-        prompt: notes,
+        prompt: designPrompt,
     };
 
     try {
@@ -68,9 +93,27 @@ const generateSlidesFlow = ai.defineFlow(
       });
 
       if (!response.ok) {
-        const errorBody = await response.json();
+        let errorBody;
+        try {
+          errorBody = await response.json();
+        } catch (e) {
+          errorBody = { message: 'Failed to parse error response from API.' };
+        }
+        
         console.error(`SlidesGPT API Error (Status: ${response.status}):`, errorBody);
-        throw new Error(`Slide generation failed. Please check API key and notes format. (Status: ${response.status})`);
+
+        let errorMessage = 'Slide generation failed due to an unknown error.';
+        if (response.status === 401) {
+            errorMessage = 'Unauthorized: Please check your SlidesGPT API key.';
+        } else if (response.status === 404) {
+            errorMessage = 'API endpoint not found. Please contact support.';
+        } else if (response.status >= 500) {
+            errorMessage = 'SlidesGPT server error. Please try again later.';
+        } else if (errorBody && errorBody.message) {
+            errorMessage = `API Error: ${errorBody.message}`;
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
