@@ -3,7 +3,7 @@
 
 /**
  * @fileOverview This file defines a Genkit flow for transforming notes into multiple formats at once.
- *
+ * This is now DEPRECATED and will be removed. Use individual flows instead.
  * - transformNotes - A function that handles the unified transformation process.
  * - TransformNotesInput - The input type for the transformNotes function.
  * - TransformNotesOutput - The return type for the transformNotes function.

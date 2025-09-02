@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { transformNotes } from '@/ai/flows/transform-notes';
+import { summarizeNotes } from '@/ai/flows/summarize-notes';
+import { generateFlashcards } from '@/ai/flows/generate-flashcards';
+import { createMindMap } from '@/ai/flows/create-mind-map';
 import { generatePodcast } from '@/ai/flows/generate-podcast';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
 import { extractTextFromVideo } from '@/ai/flows/extract-text-from-video';
@@ -56,7 +58,6 @@ export default function Home() {
     setTranscript,
   } = useVoiceNotes();
   
-  // Ref to store notes before listening starts
   const previousNotesRef = useRef('');
 
   useEffect(() => {
@@ -112,31 +113,63 @@ export default function Home() {
     }
 
     try {
-      const result = await transformNotes({ notes, style });
-      
-      setOutput({
-        shortSummary: result.shortSummary,
-        longSummary: result.longSummary,
-        flashcards: result.flashcards,
-        mindMap: result.mindMap,
-      });
+      const input = { notes, style };
 
-      if (user) {
-        // Fire-and-forget stat updates
-        updateUserStats({ userId: user.uid, action: 'generateSummary' });
-        updateUserStats({ userId: user.uid, action: 'generateFlashcards' });
-        updateUserStats({ userId: user.uid, action: 'createMindmap' });
+      // Call all generation flows in parallel
+      const [summaryResult, flashcardsResult, mindMapResult] = await Promise.allSettled([
+        summarizeNotes(input),
+        generateFlashcards(input),
+        createMindMap(input),
+      ]);
+
+      const newOutput: Partial<AIOutput> = {};
+      let hasError = false;
+
+      // Process summary result
+      if (summaryResult.status === 'fulfilled') {
+        newOutput.shortSummary = summaryResult.value.shortSummary;
+        newOutput.longSummary = summaryResult.value.longSummary;
+        if (user) updateUserStats({ userId: user.uid, action: 'generateSummary' });
+      } else {
+        console.error('Summary generation failed:', summaryResult.reason);
+        toast({ title: 'Summary Failed', description: 'Could not generate summary.', variant: 'destructive' });
+        hasError = true;
+      }
+      
+      // Process flashcards result
+      if (flashcardsResult.status === 'fulfilled') {
+        newOutput.flashcards = flashcardsResult.value.flashcards;
+        if (user) updateUserStats({ userId: user.uid, action: 'generateFlashcards' });
+      } else {
+        console.error('Flashcard generation failed:', flashcardsResult.reason);
+        toast({ title: 'Flashcards Failed', description: 'Could not generate flashcards.', variant: 'destructive' });
+        hasError = true;
+      }
+      
+      // Process mind map result
+      if (mindMapResult.status === 'fulfilled') {
+        newOutput.mindMap = mindMapResult.value.mindMap;
+        if (user) updateUserStats({ userId: user.uid, action: 'createMindmap' });
+      } else {
+        console.error('Mind map generation failed:', mindMapResult.reason);
+        toast({ title: 'Mind Map Failed', description: 'Could not generate mind map.', variant: 'destructive' });
+        hasError = true;
+      }
+      
+      setOutput(newOutput);
+      
+      if (!hasError) {
+        toast({
+            title: 'Transformation Complete!',
+            description: 'Your notes have been transformed. You also earned some points!',
+        });
       }
 
-      toast({
-          title: 'Transformation Complete!',
-          description: 'Your notes have been transformed. You also earned some points!',
-      });
     } catch (error) {
       console.error('Transformation failed:', error);
       toast({
         title: 'Transformation Failed',
-        description: 'An error occurred while transforming your notes. Please try again.',
+        description: 'An unexpected error occurred. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -391,5 +424,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
