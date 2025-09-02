@@ -64,7 +64,7 @@ const generateSlidesFlow = ai.defineFlow(
 
       **Design Guidelines:**
       - **Theme:** Use a modern, minimalistic theme with high contrast for readability.
-      - **Visuals:** Add relevant, high-quality icons and simple illustrations on each slide to enhance understanding.
+      - **Visuals:** Add relevant, high-quality icons and simple illustrations on each slide to enhance understanding based on the notes.
       - **Color Palette:** Use a consistent and professional color palette. A good base would be shades of blue, white, and grey, with a single, clear accent color for emphasis (like a bright orange or teal).
       - **Typography:** Titles and headings should be big and bold. Body text should be lighter and clean, ensuring it's easy to read.
       - **Content Structure:** Use bullet points with short, impactful phrases. Limit bullet points to a maximum of 5 per slide to avoid clutter.
