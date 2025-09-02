@@ -4,7 +4,7 @@
  * @fileOverview A Genkit flow for creating a PowerPoint presentation from user notes using the SlidesGPT API.
  *
  * - generateSlides - A function that handles the presentation generation process.
- * - GenerateSlidesInput - The input type for the generateSlides function.
+ * - GenerateSlidesInput - The input type for the generateSlides function ويعمل في الخلفية 
  * - GenerateSlidesOutput - The return type for the generateSlides function.
  */
 
