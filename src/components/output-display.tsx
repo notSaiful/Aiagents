@@ -1,8 +1,9 @@
 
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Share2, LoaderCircle, BookOpen, Presentation } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,9 @@ import { generateSlides } from '@/ai/flows/generate-slides';
 import QuizArena from './quiz-arena';
 import Talkie from './talkie';
 import FlashcardDeck from './flashcard-deck';
+import AnimatedCheck from './animated-check';
+import { cn } from '@/lib/utils';
+
 
 interface OutputDisplayProps {
   shortSummary?: string;
@@ -29,6 +33,20 @@ interface OutputDisplayProps {
   notes: string;
   style: string;
 }
+
+const cardVariants = {
+  initial: { scale: 1, boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.0)' },
+  pulse: { 
+    scale: [1, 1.02, 1],
+    boxShadow: [
+        '0 10px 15px -3px rgb(0 0 0 / 0.0)', 
+        '0 10px 15px -3px rgb(0 0 0 / 0.1)', 
+        '0 10px 15px -3px rgb(0 0 0 / 0.0)'
+    ],
+    transition: { duration: 0.7, ease: "easeInOut" }
+  }
+};
+
 
 export default function OutputDisplay({
   shortSummary,
@@ -52,6 +70,8 @@ export default function OutputDisplay({
   const [isStudying, setIsStudying] = useState(false);
   const [isGeneratingSlides, setIsGeneratingSlides] = useState(false);
   const [slides, setSlides] = useState<SlidesType | null>(null);
+  const [showSummaryAnimation, setShowSummaryAnimation] = useState(false);
+
 
   const summaryRef = useRef<HTMLDivElement>(null);
   const mindMapRef = useRef<HTMLDivElement>(null);
@@ -60,6 +80,15 @@ export default function OutputDisplay({
   const talkieRef = useRef<HTMLDivElement>(null);
   const flashcardsRef = useRef<HTMLDivElement>(null);
   const slidesRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (shortSummary) {
+      setShowSummaryAnimation(true);
+      const timer = setTimeout(() => setShowSummaryAnimation(false), 1200); // Animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [shortSummary]);
+
 
   const handleCopyLink = async () => {
     setIsSharing(true);
@@ -193,28 +222,31 @@ export default function OutputDisplay({
         </div>
 
         <TabsContent value="summary">
-          <Card ref={summaryRef} className="rounded-xl border-2 border-primary/40">
-            <CardContent className="p-6">
-              <Tabs defaultValue="short" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="short">Short Summary</TabsTrigger>
-                  <TabsTrigger value="long">Long Summary</TabsTrigger>
-                </TabsList>
-                <TabsContent
-                  value="short"
-                  className="prose dark:prose-invert pt-4 max-w-none prose-sm prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground"
-                >
-                  <div dangerouslySetInnerHTML={{ __html: shortSummary ?? '' }} />
-                </TabsContent>
-                <TabsContent
-                  value="long"
-                  className="prose dark:prose-invert pt-4 max-w-none prose-sm prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground"
-                >
-                  <div dangerouslySetInnerHTML={{ __html: longSummary ?? '' }} />
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
+          <motion.div variants={cardVariants} animate={showSummaryAnimation ? "pulse" : "initial"}>
+            <Card ref={summaryRef} className="rounded-xl border-2 border-primary/40">
+              <CardContent className="p-6 relative">
+                 <AnimatedCheck show={showSummaryAnimation} />
+                <Tabs defaultValue="short" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="short">Short Summary</TabsTrigger>
+                    <TabsTrigger value="long">Long Summary</TabsTrigger>
+                  </TabsList>
+                  <TabsContent
+                    value="short"
+                    className="prose dark:prose-invert pt-4 max-w-none prose-sm prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground"
+                  >
+                    <div className={cn(showSummaryAnimation && 'headline-glow-animation')} dangerouslySetInnerHTML={{ __html: shortSummary ?? '' }} />
+                  </TabsContent>
+                  <TabsContent
+                    value="long"
+                    className="prose dark:prose-invert pt-4 max-w-none prose-sm prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground"
+                  >
+                    <div className={cn(showSummaryAnimation && 'headline-glow-animation')} dangerouslySetInnerHTML={{ __html: longSummary ?? '' }} />
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </motion.div>
         </TabsContent>
 
         <TabsContent value="flashcards">
