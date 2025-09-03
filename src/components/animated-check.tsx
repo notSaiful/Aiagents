@@ -21,9 +21,6 @@ const checkVariants = {
 export default function AnimatedCheck({ show }: AnimatedCheckProps) {
   useEffect(() => {
     if (show) {
-      const audio = new Audio('/chime.mp3');
-      audio.volume = 0.3;
-      audio.play().catch(e => console.error("Failed to play sound:", e));
       if (typeof navigator.vibrate === 'function') {
         navigator.vibrate(100);
       }
