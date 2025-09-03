@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -32,6 +31,7 @@ interface OutputDisplayProps {
   isShareable?: boolean;
   notes: string;
   style: string;
+  showAnimation: boolean;
 }
 
 const cardVariants = {
@@ -58,6 +58,7 @@ export default function OutputDisplay({
   isShareable = false,
   notes,
   style,
+  showAnimation,
 }: OutputDisplayProps) {
   const { toast } = useToast();
   const [isShareDialogOpen, setShareDialogOpen] = useState(false);
@@ -70,8 +71,6 @@ export default function OutputDisplay({
   const [isStudying, setIsStudying] = useState(false);
   const [isGeneratingSlides, setIsGeneratingSlides] = useState(false);
   const [slides, setSlides] = useState<SlidesType | null>(null);
-  const [showSummaryAnimation, setShowSummaryAnimation] = useState(false);
-
 
   const summaryRef = useRef<HTMLDivElement>(null);
   const mindMapRef = useRef<HTMLDivElement>(null);
@@ -80,15 +79,6 @@ export default function OutputDisplay({
   const talkieRef = useRef<HTMLDivElement>(null);
   const flashcardsRef = useRef<HTMLDivElement>(null);
   const slidesRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (shortSummary) {
-      setShowSummaryAnimation(true);
-      const timer = setTimeout(() => setShowSummaryAnimation(false), 1200); // Animation duration
-      return () => clearTimeout(timer);
-    }
-  }, [shortSummary]);
-
 
   const handleCopyLink = async () => {
     setIsSharing(true);
@@ -222,10 +212,10 @@ export default function OutputDisplay({
         </div>
 
         <TabsContent value="summary">
-          <motion.div variants={cardVariants} animate={showSummaryAnimation ? "pulse" : "initial"}>
+          <motion.div variants={cardVariants} animate={showAnimation ? "pulse" : "initial"}>
             <Card ref={summaryRef} className="rounded-xl border-2 border-primary/40">
               <CardContent className="p-6 relative">
-                 <AnimatedCheck show={showSummaryAnimation} />
+                 <AnimatedCheck show={showAnimation} />
                 <Tabs defaultValue="short" className="w-full">
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="short">Short Summary</TabsTrigger>
@@ -235,13 +225,13 @@ export default function OutputDisplay({
                     value="short"
                     className="prose dark:prose-invert pt-4 max-w-none prose-sm prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground"
                   >
-                    <div className={cn(showSummaryAnimation && 'headline-glow-animation')} dangerouslySetInnerHTML={{ __html: shortSummary ?? '' }} />
+                    <div className={cn(showAnimation && 'headline-glow-animation')} dangerouslySetInnerHTML={{ __html: shortSummary ?? '' }} />
                   </TabsContent>
                   <TabsContent
                     value="long"
                     className="prose dark:prose-invert pt-4 max-w-none prose-sm prose-headings:font-semibold prose-a:text-accent-foreground prose-strong:text-foreground"
                   >
-                    <div className={cn(showSummaryAnimation && 'headline-glow-animation')} dangerouslySetInnerHTML={{ __html: longSummary ?? '' }} />
+                    <div className={cn(showAnimation && 'headline-glow-animation')} dangerouslySetInnerHTML={{ __html: longSummary ?? '' }} />
                   </TabsContent>
                 </Tabs>
               </CardContent>
