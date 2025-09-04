@@ -33,6 +33,8 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | 'miss' | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [timer, setTimer] = useState(TIMER_SECONDS);
+  const [popScore, setPopScore] = useState(false);
+  const [popStreak, setPopStreak] = useState(false);
   
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -69,8 +71,15 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
             const damage = 10 + (currentQuestion.difficulty * 5); // Difficulty-based damage
             const pointsGained = 15;
             setAiHealth(prev => Math.max(0, prev - damage));
+            
             setScore(prev => prev + 10 * currentQuestion.difficulty);
+            setPopScore(true);
+            setTimeout(() => setPopScore(false), 300);
+
             setStreak(prev => prev + 1);
+            setPopStreak(true);
+            setTimeout(() => setPopStreak(false), 300);
+
             setFeedback('correct');
             if (user) {
                 updateUserStats({ userId: user.uid, action: 'quizCorrectAnswer' });
@@ -120,7 +129,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
   if (gameOver) {
     const victory = aiHealth <= 0;
     return (
-      <div className="text-center">
+      <div className="text-center p-4">
         <Trophy className={cn("w-16 h-16 mx-auto mb-4", victory ? "text-yellow-400" : "text-muted-foreground/50")} />
         <h2 className="text-3xl font-bold font-serif mb-2">{victory ? 'Victory!' : 'Defeat!'}</h2>
         <p className="text-lg text-muted-foreground">Your final score: {score}</p>
@@ -133,7 +142,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto p-4">
         {/* Health Bars */}
         <div className="flex justify-between gap-4 mb-4">
             <div className="w-full">
@@ -155,7 +164,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
         {/* Timer and Question Card */}
         {currentQuestion && (
             <>
-                <Card className="relative overflow-hidden">
+                <Card className="relative overflow-hidden shadow-lg">
                     <div className="absolute top-2 right-2 font-bold text-lg bg-background/80 px-2 rounded-md">{timer}s</div>
                     <CardContent className="p-6">
                         <p className="text-sm text-muted-foreground mb-2">Question {currentQuestionIndex + 1} of {questions.length}</p>
@@ -166,33 +175,34 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
                 </Card>
                 
                 {/* Answer Options */}
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                    {currentQuestion.options.map((option, index) => (
-                        <Button
-                            key={index}
-                            onClick={() => handleAnswer(option)}
-                            disabled={!!selectedAnswer}
-                            variant={
-                                selectedAnswer && option === currentQuestion.answer ? 'default' : 
-                                selectedAnswer === option && option !== currentQuestion.answer ? 'destructive' :
-                                'outline'
-                            }
-                            className={cn(
-                                "h-auto py-4 text-base whitespace-normal text-center justify-center transition-all duration-300",
-                                selectedAnswer && option === currentQuestion.answer && 'animate-pulse'
-                            )}
-                        >
-                            {option}
-                        </Button>
-                    ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                    {currentQuestion.options.map((option, index) => {
+                        const isCorrect = option === currentQuestion.answer;
+                        const isSelected = selectedAnswer === option;
+                        return (
+                            <Button
+                                key={index}
+                                onClick={() => handleAnswer(option)}
+                                disabled={!!selectedAnswer}
+                                variant={'outline'}
+                                className={cn(
+                                    "h-auto py-3 text-base whitespace-normal text-center justify-center transition-all duration-300",
+                                    selectedAnswer && isCorrect && 'bg-green-600 border-green-600 text-white animate-correct-glow',
+                                    selectedAnswer && isSelected && !isCorrect && 'bg-destructive border-destructive text-destructive-foreground'
+                                )}
+                            >
+                                {option}
+                            </Button>
+                        )
+                    })}
                 </div>
             </>
         )}
 
         {/* Score and Streak */}
          <div className="flex justify-between items-center mt-6 text-lg">
-            <div className="font-semibold">Score: <span className="text-primary">{score}</span></div>
-            <div className="font-semibold">Streak: <span className="text-accent">{streak}x</span></div>
+            <div className={cn('font-semibold', popScore && 'animate-pop')}>Score: <span className="text-primary">{score}</span></div>
+            <div className={cn('font-semibold', popStreak && 'animate-pop')}>Streak: <span className="text-accent">{streak}x 🔥</span></div>
         </div>
     </div>
   );

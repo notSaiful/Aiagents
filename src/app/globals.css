@@ -123,4 +123,23 @@
   .shake-error {
     animation: shake-error 0.6s ease-in-out;
   }
+  
+  @keyframes correct-answer-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+    50% { box-shadow: 0 0 15px 5px rgba(74, 222, 128, 0.7); }
+  }
+
+  .animate-correct-glow {
+    animation: correct-answer-glow 0.8s ease-in-out;
+  }
+  
+  @keyframes pop-in {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+  }
+  
+  .animate-pop {
+    animation: pop-in 0.3s ease-out;
+  }
 }

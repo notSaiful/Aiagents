@@ -45,18 +45,23 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
   const [knownCards, setKnownCards] = useState<FlashcardType[]>([]);
   const [reviewLaterCards, setReviewLaterCards] = useState<FlashcardType[]>([]);
   const [isFinished, setIsFinished] = useState(false);
+  const [popMastery, setPopMastery] = useState(false);
+
 
   useEffect(() => {
     setShuffledCards(shuffleArray([...cards]));
   }, [cards]);
 
   const currentCard = useMemo(() => shuffledCards[currentIndex], [shuffledCards, currentIndex]);
+  const mastery = cards.length > 0 ? (knownCards.length / cards.length) * 100 : 0;
   
   const handleNext = (isKnown: boolean) => {
     if (!currentCard) return;
 
     if (isKnown) {
         setKnownCards(prev => [...prev, currentCard]);
+        setPopMastery(true);
+        setTimeout(() => setPopMastery(false), 300);
     } else {
         setReviewLaterCards(prev => [...prev, currentCard]);
     }
@@ -88,7 +93,6 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
   }
 
   if (isFinished) {
-    const mastery = cards.length > 0 ? (knownCards.length / cards.length) * 100 : 0;
     return (
         <motion.div variants={cardVariants} initial="initial" animate="animate" className="w-full text-center">
             <Star className="w-16 h-16 mx-auto mb-4 text-yellow-400" />
@@ -113,12 +117,12 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
   }
 
   return (
-    <div className="w-full max-w-lg mx-auto p-4 flex flex-col h-[400px]">
+    <div className="w-full max-w-lg mx-auto p-4 flex flex-col h-[450px]">
         {/* Progress Bar and Counter */}
         <div className="mb-4">
             <div className="flex justify-between items-center text-sm text-muted-foreground mb-1">
-                <span>Progress</span>
-                <span>{currentIndex + 1} / {shuffledCards.length}</span>
+                <span>Progress: {currentIndex + 1} / {shuffledCards.length}</span>
+                <span className={cn('font-bold', popMastery && 'animate-pop')}>Mastery: {mastery.toFixed(0)}%</span>
             </div>
             <Progress value={((currentIndex + 1) / shuffledCards.length) * 100} />
         </div>
@@ -155,7 +159,7 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
                             <Button onClick={() => handleNext(false)} variant="secondary" className="w-full">
                                 <X className="mr-2" /> Review Later
                             </Button>
-                            <Button onClick={() => handleNext(true)} className="w-full bg-green-500 hover:bg-green-600 text-white">
+                            <Button onClick={() => handleNext(true)} className="w-full bg-green-600 hover:bg-green-700 text-white animate-correct-glow">
                                 <Check className="mr-2" /> I Knew It!
                             </Button>
                         </div>
