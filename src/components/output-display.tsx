@@ -2,8 +2,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Share2, LoaderCircle, BookOpen, Presentation } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Share2, LoaderCircle, BookOpen, Presentation, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,17 @@ const cardVariants = {
   }
 };
 
+const sharePreviewVariants = {
+    hidden: { opacity: 0, scale: 0.8, y: 50 },
+    visible: { 
+        opacity: 1, 
+        scale: 1, 
+        y: 0,
+        transition: { type: 'spring', stiffness: 300, damping: 25, duration: 0.2 }
+    },
+    exit: { opacity: 0, scale: 0.8, y: 50, transition: { duration: 0.15 } }
+}
+
 
 export default function OutputDisplay({
   shortSummary,
@@ -63,6 +74,7 @@ export default function OutputDisplay({
 }: OutputDisplayProps) {
   const { toast } = useToast();
   const [isShareDialogOpen, setShareDialogOpen] = useState(false);
+  const [showSharePreview, setShowSharePreview] = useState(false);
   const [activeTab, setActiveTab] = useState('summary');
   const [shareId, setShareId] = useState<string | null>(null);
   const [isSharing, setIsSharing] = useState(false);
@@ -117,6 +129,7 @@ export default function OutputDisplay({
     } finally {
       setIsSharing(false);
       setShareDialogOpen(false);
+      setShowSharePreview(false);
     }
   };
 
@@ -389,7 +402,40 @@ export default function OutputDisplay({
         </TabsContent>
 
       </Tabs>
-      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && !['flashcards', 'podcast', 'arcade', 'talkie', 'slides'].includes(activeTab) && (
+      
+      <AnimatePresence>
+        {showSharePreview && (
+          <motion.div 
+            variants={sharePreviewVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="fixed bottom-8 right-8 z-50"
+          >
+            <Card className="w-80 rounded-xl shadow-2xl border-primary border-2">
+                <CardContent className="p-4">
+                    <div className="h-32 bg-muted rounded-lg flex items-center justify-center">
+                       <p className="text-sm text-muted-foreground">Social Thumbnail Preview</p>
+                    </div>
+                    <div className="mt-4">
+                        <p className="font-bold">Your Awesome Notes</p>
+                        <p className="text-sm text-muted-foreground">notesgpt.study</p>
+                    </div>
+                    <p className="text-sm font-semibold text-center mt-4">Looks great — share it!</p>
+                    <div className="flex gap-2 mt-3">
+                         <Button variant="outline" className="w-full" onClick={() => setShowSharePreview(false)}>Cancel</Button>
+                         <Button className="w-full" onClick={() => {
+                             setShareDialogOpen(true);
+                         }}>Share</Button>
+                    </div>
+                </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+
+      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && !['flashcards', 'podcast', 'arcade', 'talkie', 'slides'].includes(activeTab) && !showSharePreview && (
         <ShareDialog
           open={isShareDialogOpen}
           onOpenChange={setShareDialogOpen}
@@ -403,7 +449,7 @@ export default function OutputDisplay({
           }}
         >
           <Button
-            onClick={() => setShareDialogOpen(true)}
+            onClick={() => setShowSharePreview(true)}
             variant="default"
             size="icon"
             className="fixed bottom-8 right-8 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"

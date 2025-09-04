@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { FileDown, Image, Link as LinkIcon, LoaderCircle } from 'lucide-react';
@@ -17,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 
 interface ShareDialogProps {
-  children: React.ReactNode;
+  children?: React.ReactNode; // Make children optional
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCopyLink: () => void;
@@ -121,10 +120,10 @@ export default function ShareDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      {children && <div style={{display: 'none'}}>{children}</div>} 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Export &amp; Share</DialogTitle>
+          <DialogTitle>Export & Share</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col space-y-4">
           <Button variant="outline" onClick={() => exportContent('pdf')} disabled={isExporting || isSharing}>
