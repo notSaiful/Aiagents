@@ -325,7 +325,7 @@ export default function Home() {
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
       <div className="mb-4 flex flex-col items-center text-center">
-        <h1 className="pt-4 font-serif text-4xl font-bold tracking-tight text-transparent bg-gradient-to-r from-chart-1 via-chart-3 to-chart-5 bg-clip-text md:text-5xl">
+        <h1 className="pt-4 font-serif text-4xl font-bold tracking-tight text-transparent bg-gradient-to-r from-chart-1 via-chart-3 to-chart-5 bg-clip-text md:text-5xl animate-text-glow">
           NotesGPT
         </h1>
         <p className="mt-2 max-w-xl text-md text-muted-foreground">
