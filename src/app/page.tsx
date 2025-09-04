@@ -221,6 +221,7 @@ export default function Home() {
         description: 'An error occurred while creating your podcast. Please try again.',
         variant: 'destructive',
       });
+      // Re-throw the error so the calling component knows it failed.
       throw error;
     } finally {
         finishProgress(progressId);
