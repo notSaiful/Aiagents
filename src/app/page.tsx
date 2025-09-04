@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -18,10 +19,10 @@ import OutputDisplay from '@/components/output-display';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/auth-context';
 import type { Flashcard, Podcast } from '@/types';
-import { Progress } from '@/components/ui/progress';
 import { useVoiceNotes } from '@/hooks/use-voice-notes';
 import { cn } from '@/lib/utils';
 import AnimatedCheck from '@/components/animated-check';
+import { useProgress } from '@/context/progress-context';
 
 
 interface AIOutput {
@@ -39,10 +40,8 @@ export default function Home() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadType, setUploadType] = useState<UploadType>('file');
   const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [errorAnimation, setErrorAnimation] = useState(false);
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -50,6 +49,8 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showSummaryAnimation, setShowSummaryAnimation] = useState(false);
   
+  const { setProgress, startProgress, finishProgress } = useProgress();
+
   const {
     isListening,
     transcript,
@@ -85,17 +86,27 @@ export default function Home() {
     }
   }, [user, authLoading, router]);
 
-  const readFileAsDataURI = (file: File, onProgress: (progress: number) => void): Promise<string> => {
+  const readFileAsDataURI = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
+      const progressId = `upload-${Date.now()}`;
+      
+      reader.onload = () => {
+        finishProgress(progressId);
+        resolve(reader.result as string)
+      };
+      reader.onerror = (error) => {
+        finishProgress(progressId);
+        reject(error);
+      }
       reader.onprogress = (event) => {
         if (event.lengthComputable) {
           const progress = Math.round((event.loaded / event.total) * 100);
-          onProgress(progress);
+          setProgress(progressId, { value: progress, label: `Uploading ${file.name}... ${progress}%` });
         }
       };
+
+      startProgress(progressId, { value: 0, label: `Uploading ${file.name}...` });
       reader.readAsDataURL(file);
     });
   };
@@ -187,8 +198,13 @@ export default function Home() {
   };
 
   const handleGeneratePodcast = async () => {
+    const progressId = `podcast-${Date.now()}`;
     try {
+      startProgress(progressId, { value: 0, label: 'Generating podcast script...' });
       const podcastRes = await generatePodcast({ notes, style });
+      
+      startProgress(progressId, { value: 50, label: 'Rendering audio... This may take a moment.' });
+
       if (user) {
           updateUserStats({ userId: user.uid, action: 'generatePodcast' });
           toast({ title: 'Podcast Generated!', description: 'You earned 5 points.' });
@@ -197,6 +213,7 @@ export default function Home() {
         ...prevOutput,
         podcast: { audioUrl: podcastRes.podcastWavDataUri },
       }));
+
     } catch (error) {
       console.error('Podcast generation failed:', error);
       toast({
@@ -205,6 +222,8 @@ export default function Home() {
         variant: 'destructive',
       });
       throw error;
+    } finally {
+        finishProgress(progressId);
     }
   };
 
@@ -229,19 +248,15 @@ export default function Home() {
       const fileType = file.type.startsWith('video/') ? 'video' : 'image';
       
       setIsUploading(true);
-      setUploadType(fileType);
-      setUploadProgress(0);
       setOutput(null);
       setNotes('');
       setErrorAnimation(false);
-      toast({
-        title: `Processing ${fileType}...`,
-        description: `Extracting text from ${file.name}. This may take a moment.`,
-      });
-
+      
+      const progressId = `extract-${Date.now()}`;
       try {
-        const dataUri = await readFileAsDataURI(file, setUploadProgress);
-        setUploadProgress(100);
+        const dataUri = await readFileAsDataURI(file);
+        
+        startProgress(progressId, { value: 50, label: `Extracting text from ${file.name}...` });
         
         let extractedText = '';
         if (fileType === 'video') {
@@ -266,9 +281,8 @@ export default function Home() {
           variant: 'destructive',
         });
       } finally {
+        finishProgress(progressId);
         setIsUploading(false);
-        setUploadProgress(null);
-        setUploadType('file');
         if(fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -334,8 +348,6 @@ export default function Home() {
   }
 
   const isLoading = loading || isUploading;
-  const showProgress = uploadProgress !== null;
-  const progressText = isUploading ? "Uploading..." : "";
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
@@ -403,17 +415,6 @@ export default function Home() {
                     {isListening ? 'Stop Listening' : 'Speak Notes'}
                 </Button>
             </div>
-             {showProgress && (
-              <div className="w-full pt-2">
-                <Progress value={uploadProgress} className="h-2 animate-progress bg-gradient-to-r from-primary via-accent to-primary bg-[200%_auto]" />
-                {uploadProgress < 100 && (
-                  <p className="text-sm text-muted-foreground mt-1">{progressText} {uploadProgress}%</p>
-                )}
-                 {uploadProgress === 100 && (
-                  <p className="text-sm text-muted-foreground mt-1">{uploadType === 'video' ? 'Analyzing video...' : 'Processing...'}</p>
-                )}
-              </div>
-            )}
         </CardFooter>
       </Card>
       

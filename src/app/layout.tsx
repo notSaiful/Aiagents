@@ -10,6 +10,8 @@ import Footer from '@/components/layout/footer';
 import PageTransition from '@/components/page-transition';
 import { ThemeProvider } from '@/components/theme-provider';
 import SupportChatbot from '@/components/support-chatbot';
+import { ProgressProvider } from '@/context/progress-context';
+import ProgressRibbon from '@/components/progress-ribbon';
 
 export const metadata: Metadata = {
   title: 'NotesGPT | Transform Your Notes Instantly',
@@ -43,13 +45,16 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <div className="flex-grow">
-              <Header />
-              <main className="pt-16"><PageTransition>{children}</PageTransition></main>
-            </div>
-            <Footer />
-            <SupportChatbot />
-            <Toaster />
+            <ProgressProvider>
+              <div className="flex-grow">
+                <Header />
+                <ProgressRibbon />
+                <main className="pt-16"><PageTransition>{children}</PageTransition></main>
+              </div>
+              <Footer />
+              <SupportChatbot />
+              <Toaster />
+            </ProgressProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
