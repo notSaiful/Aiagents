@@ -43,6 +43,7 @@ export default function Home() {
   const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [errorAnimation, setErrorAnimation] = useState(false);
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -103,6 +104,7 @@ export default function Home() {
     setLoading(true);
     setOutput(null);
     setShowSummaryAnimation(false);
+    setErrorAnimation(false);
 
     if (!notes.trim()) {
       toast({
@@ -110,6 +112,7 @@ export default function Home() {
         description: 'Please paste or upload your notes before transforming.',
         variant: 'destructive',
       });
+      setErrorAnimation(true);
       setLoading(false);
       return;
     }
@@ -166,6 +169,8 @@ export default function Home() {
             title: 'Transformation Complete!',
             description: 'Your notes have been transformed. You also earned some points!',
         });
+      } else {
+          setErrorAnimation(true);
       }
 
     } catch (error) {
@@ -175,6 +180,7 @@ export default function Home() {
         description: 'An unexpected error occurred. Please try again.',
         variant: 'destructive',
       });
+      setErrorAnimation(true);
     } finally {
       setLoading(false);
     }
@@ -227,6 +233,7 @@ export default function Home() {
       setUploadProgress(0);
       setOutput(null);
       setNotes('');
+      setErrorAnimation(false);
       toast({
         title: `Processing ${fileType}...`,
         description: `Extracting text from ${file.name}. This may take a moment.`,
@@ -252,6 +259,7 @@ export default function Home() {
         });
       } catch (error) {
         console.error(`${fileType} processing failed:`, error);
+        setErrorAnimation(true);
         toast({
           title: 'Extraction Failed',
           description: `Could not extract text from the uploaded ${fileType}. Please try again.`,
@@ -267,6 +275,13 @@ export default function Home() {
       }
     }
   };
+
+  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (errorAnimation) {
+      setErrorAnimation(false);
+    }
+    setNotes(e.target.value);
+  }
 
   
   const renderContent = () => {
@@ -333,13 +348,19 @@ export default function Home() {
         </p>
       </div>
 
-      <Card className="w-full rounded-2xl border-2 border-primary/40 shadow-lg transition-all hover:shadow-xl">
+      <Card 
+        className={cn(
+            "w-full rounded-2xl border-2 border-primary/40 shadow-lg transition-all hover:shadow-xl",
+            errorAnimation && "shake-error"
+        )}
+        onAnimationEnd={() => setErrorAnimation(false)}
+    >
         <CardContent className="p-4 pb-0">
             <Textarea
               placeholder="Paste your notes here, upload a document, image, or video to get started..."
               className="min-h-[200px] resize-none border-0 bg-transparent p-2 text-base shadow-none focus-visible:ring-0"
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={handleNotesChange}
               disabled={isLoading}
             />
         </CardContent>
