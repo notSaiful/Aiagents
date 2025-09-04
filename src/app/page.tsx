@@ -23,6 +23,7 @@ import { useVoiceNotes } from '@/hooks/use-voice-notes';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { getYoutubeNotesAction } from '@/actions/get-youtube-notes-action';
+import AnimatedCheck from '@/components/animated-check';
 
 
 interface AIOutput {

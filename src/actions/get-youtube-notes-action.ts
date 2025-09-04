@@ -1,6 +1,6 @@
 'use server';
 
-import { getYoutubeNotesV2 } from "@/ai/flows/get-youtube-notes-v2";
+import { getYoutubeNotesV2 } from "@/ai/flows/get-youtube-notes";
 
 /**
  * A server action to safely call the getYoutubeNotesV2 Genkit flow.
