@@ -3,7 +3,6 @@
 
 import { RefObject } from 'react';
 import { toPng } from 'html-to-image';
-import jsPDF from 'jspdf';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { FileDown, Image, Link as LinkIcon, LoaderCircle } from 'lucide-react';
+import { Image, Link as LinkIcon, LoaderCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 
@@ -52,7 +51,7 @@ export default function ShareDialog({
     }
   };
 
-  const exportContent = async (format: 'png' | 'pdf') => {
+  const exportContent = async (format: 'png') => {
     const elementRef = getActiveRef();
     if (!elementRef?.current) {
         toast({
@@ -83,21 +82,6 @@ export default function ShareDialog({
             link.download = `notes-gpt-${activeTab}.png`;
             link.href = dataUrl;
             link.click();
-        } else if (format === 'pdf') {
-            const img = new window.Image();
-            img.src = dataUrl;
-            img.onload = () => {
-                const pdf = new jsPDF({
-                    orientation: img.width > img.height ? 'landscape' : 'portrait',
-                    unit: 'px',
-                    format: [img.width, img.height],
-                });
-                pdf.addImage(dataUrl, 'PNG', 0, 0, img.width, img.height);
-                pdf.save(`notes-gpt-${activeTab}.pdf`);
-            };
-            img.onerror = () => {
-              throw new Error('Failed to load image for PDF generation.');
-            }
         }
         toast({
             title: 'Export Successful!',
@@ -123,10 +107,6 @@ export default function ShareDialog({
           <DialogTitle>Export & Share</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col space-y-4">
-          <Button variant="outline" onClick={() => exportContent('pdf')} disabled={isExporting || isSharing}>
-            {isExporting ? <LoaderCircle className="mr-2 animate-spin" /> : <FileDown className="mr-2 h-4 w-4" />}
-            Export as PDF
-          </Button>
           <Button variant="outline" onClick={() => exportContent('png')} disabled={isExporting || isSharing}>
             {isExporting ? <LoaderCircle className="mr-2 animate-spin" /> : <Image className="mr-2 h-4 w-4" />}
             Export as Image
