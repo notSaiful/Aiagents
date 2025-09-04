@@ -31,6 +31,7 @@ const UpdateUserStatsOutputSchema = z.object({
     name: z.string(),
     description: z.string(),
   })).optional(),
+  streakMilestone: z.number().optional().describe('The streak day count if a milestone was hit (e.g., 3, 5, 7).'),
 });
 export type UpdateUserStatsOutput = z.infer<typeof UpdateUserStatsOutputSchema>;
 
@@ -83,6 +84,7 @@ const updateUserStatsFlow = ai.defineFlow(
       const user = userDoc.data() as UserStats;
       const updates: any = {};
       let pointsToAdd = POINTS_MAP[action];
+      let streakMilestone: number | undefined = undefined;
 
       // 1. Handle Streaks
       const today = new Date();
@@ -107,10 +109,19 @@ const updateUserStatsFlow = ai.defineFlow(
             currentStreak = 1;
         }
 
-        // Streak bonuses
-        if (currentStreak === 3) pointsToAdd += 10;
-        if (currentStreak === 7) pointsToAdd += 25;
-        if (currentStreak === 14) pointsToAdd += 50;
+        // Streak bonuses and milestone check
+        if (currentStreak === 3) {
+            pointsToAdd += 15;
+            streakMilestone = 3;
+        }
+        if (currentStreak === 5) {
+            pointsToAdd += 25;
+            streakMilestone = 5;
+        }
+        if (currentStreak === 7) {
+            pointsToAdd += 50;
+            streakMilestone = 7;
+        }
 
         updates.streak = currentStreak;
         updates.lastActivityDate = serverTimestamp();
@@ -131,13 +142,13 @@ const updateUserStatsFlow = ai.defineFlow(
       const updatedUserDoc = await getDoc(userRef);
       const updatedUser = updatedUserDoc.data() as UserStats;
       const newAchievements: Omit<Achievement, 'dateUnlocked'>[] = [];
-      const userAchievements = updatedUser.achievements.map(a => a.id);
+      const userAchievements = (updatedUser.achievements || []).map(a => a.id);
 
-      if (updatedUser.stats.summariesGenerated >= 50 && !userAchievements.includes('note-ninja')) newAchievements.push(ALL_ACHIEVEMENTS[0]);
-      if (updatedUser.stats.flashcardsCompleted >= 100 && !userAchievements.includes('flashcard-master')) newAchievements.push(ALL_ACHIEVEMENTS[1]);
-      if (updatedUser.stats.mindmapsCreated >= 5 && !userAchievements.includes('mindmap-guru')) newAchievements.push(ALL_ACHIEVEMENTS[2]);
-      if (updatedUser.stats.podcastsListened >= 10 && !userAchievements.includes('podcast-listener')) newAchievements.push(ALL_ACHIEVEMENTS[3]);
-      if (updatedUser.stats.gamesCompleted >= 20 && !userAchievements.includes('game-champ')) newAchievements.push(ALL_ACHIEVEMENTS[4]);
+      if ((updatedUser.stats?.summariesGenerated || 0) >= 50 && !userAchievements.includes('note-ninja')) newAchievements.push(ALL_ACHIEVEMENTS[0]);
+      if ((updatedUser.stats?.flashcardsCompleted || 0) >= 100 && !userAchievements.includes('flashcard-master')) newAchievements.push(ALL_ACHIEVEMENTS[1]);
+      if ((updatedUser.stats?.mindmapsCreated || 0) >= 5 && !userAchievements.includes('mindmap-guru')) newAchievements.push(ALL_ACHIEVEMENTS[2]);
+      if ((updatedUser.stats?.podcastsListened || 0) >= 10 && !userAchievements.includes('podcast-listener')) newAchievements.push(ALL_ACHIEVEMENTS[3]);
+      if ((updatedUser.stats?.gamesCompleted || 0) >= 20 && !userAchievements.includes('game-champ')) newAchievements.push(ALL_ACHIEVEMENTS[4]);
 
       if (newAchievements.length > 0) {
         const achievementsToAdd = newAchievements.map(ach => ({
@@ -147,10 +158,10 @@ const updateUserStatsFlow = ai.defineFlow(
         await updateDoc(userRef, {
             achievements: arrayUnion(...achievementsToAdd)
         });
-        return { success: true, newAchievements: achievementsToAdd };
+        return { success: true, newAchievements: achievementsToAdd, streakMilestone };
       }
 
-      return { success: true };
+      return { success: true, streakMilestone };
     } catch (error) {
       console.error('Error updating user stats:', error);
       return { success: false };

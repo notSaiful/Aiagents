@@ -23,6 +23,7 @@ import { useVoiceNotes } from '@/hooks/use-voice-notes';
 import { cn } from '@/lib/utils';
 import AnimatedCheck from '@/components/animated-check';
 import { useProgress } from '@/context/progress-context';
+import StreakToast from '@/components/streak-toast';
 
 
 interface AIOutput {
@@ -146,7 +147,15 @@ export default function Home() {
         newOutput.shortSummary = summaryResult.value.shortSummary;
         newOutput.longSummary = summaryResult.value.longSummary;
         setShowSummaryAnimation(true);
-        if (user) updateUserStats({ userId: user.uid, action: 'generateSummary' });
+        if (user) {
+          const { streakMilestone } = await updateUserStats({ userId: user.uid, action: 'generateSummary' });
+          if (streakMilestone) {
+            toast({
+              duration: 5000,
+              component: () => <StreakToast streakDays={streakMilestone} />,
+            });
+          }
+        }
       } else {
         console.error('Summary generation failed:', summaryResult.reason);
         toast({ title: 'Summary Failed', description: 'Could not generate summary.', variant: 'destructive' });
@@ -206,7 +215,13 @@ export default function Home() {
       setProgress(progressId, { value: 75, label: 'Rendering audio... This may take a moment.' });
 
       if (user) {
-          updateUserStats({ userId: user.uid, action: 'generatePodcast' });
+          const { streakMilestone } = await updateUserStats({ userId: user.uid, action: 'generatePodcast' });
+          if (streakMilestone) {
+            toast({
+              duration: 5000,
+              component: () => <StreakToast streakDays={streakMilestone} />,
+            });
+          }
           toast({ title: 'Podcast Generated!', description: 'You earned 5 points.' });
       }
       setOutput(prevOutput => ({

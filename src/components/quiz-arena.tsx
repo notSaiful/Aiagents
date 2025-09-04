@@ -11,6 +11,7 @@ import { Shield, Sword, Heart, Trophy, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { updateUserStats } from '@/ai/flows/update-user-stats';
 import { useToast } from '@/hooks/use-toast';
+import StreakToast from '@/components/streak-toast';
 
 
 interface QuizArenaProps {
@@ -55,7 +56,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
     return () => clearInterval(interval);
   }, [currentQuestionIndex, gameOver, currentQuestion]);
 
-  const handleAnswer = (answer: string | null) => {
+  const handleAnswer = async (answer: string | null) => {
     if (selectedAnswer || !currentQuestion) return; // Prevent multiple answers
 
     setSelectedAnswer(answer);
@@ -82,7 +83,13 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
 
             setFeedback('correct');
             if (user) {
-                updateUserStats({ userId: user.uid, action: 'quizCorrectAnswer' });
+                const { streakMilestone } = await updateUserStats({ userId: user.uid, action: 'quizCorrectAnswer' });
+                if (streakMilestone) {
+                    toast({
+                        duration: 5000,
+                        component: () => <StreakToast streakDays={streakMilestone} />,
+                    });
+                }
                 toast({
                     title: 'Correct!',
                     description: `You earned ${pointsGained} points.`,
