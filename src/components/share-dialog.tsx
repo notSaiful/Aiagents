@@ -16,7 +16,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 
 interface ShareDialogProps {
-  children?: React.ReactNode; // Make children optional
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCopyLink: () => void;
@@ -30,7 +29,6 @@ interface ShareDialogProps {
 }
 
 export default function ShareDialog({ 
-  children, 
   open, 
   onOpenChange, 
   onCopyLink,
@@ -120,7 +118,6 @@ export default function ShareDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {children && <div style={{display: 'none'}}>{children}</div>} 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Export & Share</DialogTitle>

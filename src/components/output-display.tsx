@@ -403,6 +403,19 @@ export default function OutputDisplay({
 
       </Tabs>
       
+      <ShareDialog
+          open={isShareDialogOpen}
+          onOpenChange={setShareDialogOpen}
+          onCopyLink={handleCopyLink}
+          isSharing={isSharing}
+          activeTab={activeTab}
+          refs={{
+            summary: summaryRef,
+            flashcards: flashcardsRef,
+            'mind-map': mindMapRef,
+          }}
+        />
+
       <AnimatePresence>
         {showSharePreview && (
           <motion.div 
@@ -425,6 +438,7 @@ export default function OutputDisplay({
                     <div className="flex gap-2 mt-3">
                          <Button variant="outline" className="w-full" onClick={() => setShowSharePreview(false)}>Cancel</Button>
                          <Button className="w-full" onClick={() => {
+                             setShowSharePreview(false);
                              setShareDialogOpen(true);
                          }}>Share</Button>
                     </div>
@@ -436,28 +450,15 @@ export default function OutputDisplay({
 
 
       {isShareable && (shortSummary || longSummary || flashcards || mindMap) && !['flashcards', 'podcast', 'arcade', 'talkie', 'slides'].includes(activeTab) && !showSharePreview && (
-        <ShareDialog
-          open={isShareDialogOpen}
-          onOpenChange={setShareDialogOpen}
-          onCopyLink={handleCopyLink}
-          isSharing={isSharing}
-          activeTab={activeTab}
-          refs={{
-            summary: summaryRef,
-            flashcards: flashcardsRef,
-            'mind-map': mindMapRef,
-          }}
-        >
-          <Button
+        <Button
             onClick={() => setShowSharePreview(true)}
             variant="default"
             size="icon"
             className="fixed bottom-8 right-8 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
-          >
+        >
             <Share2 className="h-6 w-6" />
             <span className="sr-only">Share</span>
-          </Button>
-        </ShareDialog>
+        </Button>
       )}
     </div>
   );
