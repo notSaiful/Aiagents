@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, LoaderCircle, Upload, Mic, Youtube } from 'lucide-react';
+import { Sparkles, LoaderCircle, Upload, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -21,8 +21,6 @@ import type { Flashcard, Podcast } from '@/types';
 import { Progress } from '@/components/ui/progress';
 import { useVoiceNotes } from '@/hooks/use-voice-notes';
 import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import { getYoutubeNotesAction } from '@/actions/get-youtube-notes-action';
 import AnimatedCheck from '@/components/animated-check';
 
 
@@ -45,7 +43,6 @@ export default function Home() {
   const [output, setOutput] = useState<Partial<AIOutput> | null>(null);
   const [style, setStyle] = useState<NoteStyle>('Minimalist');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-  const [youtubeUrl, setYoutubeUrl] = useState('');
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -271,41 +268,6 @@ export default function Home() {
     }
   };
 
-  const handleYoutubeSubmit = async () => {
-    if (!youtubeUrl.trim()) {
-      toast({ title: 'Error', description: 'Please enter a YouTube URL.', variant: 'destructive' });
-      return;
-    }
-    setLoading(true);
-    setOutput(null);
-    setNotes('');
-
-    try {
-      const result = await getYoutubeNotesAction({ url: youtubeUrl });
-
-      if (result.error || !result.notes) {
-        toast({
-          title: 'YouTube Import Failed',
-          description: result.message || 'An unknown error occurred.',
-          variant: 'destructive',
-        });
-        return;
-      }
-      
-      setNotes(result.notes);
-      toast({ title: 'Success!', description: 'Notes extracted from the YouTube video.' });
-
-    } catch (error: any) {
-      console.error('YouTube import failed:', error);
-      toast({
-        title: 'YouTube Import Error',
-        description: error.message || 'An unexpected server error occurred.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
   
   const renderContent = () => {
     if (loading) {
@@ -370,26 +332,12 @@ export default function Home() {
           Instantly transform your raw notes into beautiful summaries, flashcards, and mind maps.
         </p>
       </div>
-      
-       <div className="flex w-full items-center space-x-2 mb-4">
-          <Input 
-              type="text" 
-              placeholder="Paste a YouTube video URL..." 
-              value={youtubeUrl}
-              onChange={(e) => setYoutubeUrl(e.target.value)}
-              disabled={isLoading}
-          />
-          <Button type="button" onClick={handleYoutubeSubmit} disabled={isLoading || !youtubeUrl}>
-              <Youtube className="mr-2 h-4 w-4" />
-              Get Notes
-          </Button>
-      </div>
 
       <Card className="w-full rounded-2xl border-2 border-primary/40 shadow-lg transition-all hover:shadow-xl">
         <CardContent className="p-4 pb-0">
             <Textarea
-              placeholder="Or paste your notes here, upload a document, image, or video to get started..."
-              className="min-h-[150px] resize-none border-0 bg-transparent p-2 text-base shadow-none focus-visible:ring-0"
+              placeholder="Paste your notes here, upload a document, image, or video to get started..."
+              className="min-h-[200px] resize-none border-0 bg-transparent p-2 text-base shadow-none focus-visible:ring-0"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               disabled={isLoading}
