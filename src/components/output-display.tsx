@@ -195,6 +195,9 @@ export default function OutputDisplay({
     </div>
   );
 
+  const isShareableContentAvailable = !!(shortSummary || longSummary || flashcards || mindMap);
+  const isShareButtonVisible = isShareable && isShareableContentAvailable && !['flashcards', 'podcast', 'arcade', 'talkie', 'slides'].includes(activeTab) && !showSharePreview;
+
 
   return (
     <div className="relative">
@@ -449,7 +452,7 @@ export default function OutputDisplay({
       </AnimatePresence>
 
 
-      {isShareable && (shortSummary || longSummary || flashcards || mindMap) && !['flashcards', 'podcast', 'arcade', 'talkie', 'slides'].includes(activeTab) && !showSharePreview && (
+      {isShareButtonVisible && (
         <Button
             onClick={() => setShowSharePreview(true)}
             variant="default"
