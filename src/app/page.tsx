@@ -200,10 +200,10 @@ export default function Home() {
   const handleGeneratePodcast = async () => {
     const progressId = `podcast-${Date.now()}`;
     try {
-      startProgress(progressId, { value: 0, label: 'Generating podcast script...' });
+      startProgress(progressId, { value: 25, label: 'Generating podcast script...' });
       const podcastRes = await generatePodcast({ notes, style });
       
-      startProgress(progressId, { value: 50, label: 'Rendering audio... This may take a moment.' });
+      setProgress(progressId, { value: 75, label: 'Rendering audio... This may take a moment.' });
 
       if (user) {
           updateUserStats({ userId: user.uid, action: 'generatePodcast' });
