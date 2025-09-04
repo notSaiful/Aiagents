@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Share2, LoaderCircle, BookOpen, Presentation, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -196,7 +196,6 @@ export default function OutputDisplay({
   );
 
   const isShareableContentAvailable = !!(shortSummary || longSummary || flashcards || mindMap);
-  const isShareButtonVisible = isShareable && isShareableContentAvailable && !['flashcards', 'podcast', 'arcade', 'talkie', 'slides'].includes(activeTab) && !showSharePreview;
 
 
   return (
@@ -252,6 +251,14 @@ export default function OutputDisplay({
                   </TabsContent>
                 </Tabs>
               </CardContent>
+               {isShareable && isShareableContentAvailable && (
+                <CardFooter>
+                    <Button onClick={() => setShareDialogOpen(true)} variant="outline" className="w-full">
+                        <Share2 className="mr-2 h-4 w-4" />
+                        Share Summary
+                    </Button>
+                </CardFooter>
+               )}
             </Card>
           </motion.div>
         </TabsContent>
@@ -419,50 +426,6 @@ export default function OutputDisplay({
           }}
         />
 
-      <AnimatePresence>
-        {showSharePreview && (
-          <motion.div 
-            variants={sharePreviewVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="fixed bottom-8 right-8 z-50"
-          >
-            <Card className="w-80 rounded-xl shadow-2xl border-primary border-2">
-                <CardContent className="p-4">
-                    <div className="h-32 bg-muted rounded-lg flex items-center justify-center">
-                       <p className="text-sm text-muted-foreground">Social Thumbnail Preview</p>
-                    </div>
-                    <div className="mt-4">
-                        <p className="font-bold">Your Awesome Notes</p>
-                        <p className="text-sm text-muted-foreground">notesgpt.study</p>
-                    </div>
-                    <p className="text-sm font-semibold text-center mt-4">Looks great — share it!</p>
-                    <div className="flex gap-2 mt-3">
-                         <Button variant="outline" className="w-full" onClick={() => setShowSharePreview(false)}>Cancel</Button>
-                         <Button className="w-full" onClick={() => {
-                             setShowSharePreview(false);
-                             setShareDialogOpen(true);
-                         }}>Share</Button>
-                    </div>
-                </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-
-      {isShareButtonVisible && (
-        <Button
-            onClick={() => setShowSharePreview(true)}
-            variant="default"
-            size="icon"
-            className="fixed bottom-8 right-8 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
-        >
-            <Share2 className="h-6 w-6" />
-            <span className="sr-only">Share</span>
-        </Button>
-      )}
     </div>
   );
 }
