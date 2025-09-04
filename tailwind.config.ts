@@ -64,6 +64,10 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
+        'accent-minimalist': 'hsl(var(--accent-minimalist))',
+        'accent-story': 'hsl(var(--accent-story))',
+        'accent-action': 'hsl(var(--accent-action))',
+        'accent-formal': 'hsl(var(--accent-formal))',
       },
       borderRadius: {
         lg: 'var(--radius)',

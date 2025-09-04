@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -29,6 +30,12 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    /* Style-specific accents */
+    --accent-minimalist: 180 50% 90%; /* pale cyan */
+    --accent-story: 340 82% 86%; /* pale rose */
+    --accent-action: 25 95% 75%; /* vibrant orange */
+    --accent-formal: 220 60% 85%; /* stately blue */
   }
 
   .dark {
@@ -56,6 +63,12 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+     /* Style-specific accents */
+    --accent-minimalist: 180 30% 30%; /* deep cyan */
+    --accent-story: 330 90% 75%; /* vibrant pink */
+    --accent-action: 30 100% 60%; /* bright orange */
+    --accent-formal: 210 70% 65%; /* rich blue */
   }
 }
 
@@ -64,8 +77,13 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-500;
   }
+  .theme-minimalist { --accent: var(--accent-minimalist); }
+  .theme-story { --accent: var(--accent-story); }
+  .theme-action { --accent: var(--accent-action); }
+  .theme-formal { --accent: var(--accent-formal); }
+
   .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
     @apply font-serif;
   }
@@ -141,5 +159,58 @@
   
   .animate-pop {
     animation: pop-in 0.3s ease-out;
+  }
+
+  /* Style motif animations */
+  .style-button {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .style-button::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: hsl(var(--accent));
+    transition: all 0.3s ease-in-out;
+    transform: translateX(-50%);
+  }
+  
+  .style-button:hover::after,
+  .style-button[data-state='active']::after {
+    width: 60%;
+  }
+
+  .style-button-minimalist:hover::after,
+  .style-button-minimalist[data-state='active']::after {
+    opacity: 0.8;
+  }
+
+  .style-button-story:hover::after,
+  .style-button-story[data-state='active']::after {
+    height: 3px;
+    border-radius: 2px;
+    transform: translateX(-50%) skewX(-20deg);
+    filter: drop-shadow(0 0 3px hsl(var(--accent)));
+  }
+  
+  .style-button-action:hover::after,
+  .style-button-action[data-state='active']::after {
+     height: 3px;
+    background: linear-gradient(90deg, transparent, hsl(var(--accent)), transparent);
+    animation: whoosh 0.5s ease-out;
+  }
+
+  @keyframes whoosh {
+    0% { left: -100%; transform: translateX(0); width: 50%;}
+    100% { left: 50%; transform: translateX(-50%); width: 60%;}
+  }
+
+  .style-button-formal:hover::after,
+  .style-button-formal[data-state='active']::after {
+    height: 1.5px;
   }
 }
