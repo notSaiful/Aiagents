@@ -92,9 +92,8 @@ const characterChatPrompt = ai.definePrompt({
     input: { schema: CharacterChatPromptInputSchema },
     output: { schema: ChatWithCharacterOutputSchema },
     model: 'googleai/gemini-1.5-flash-latest',
+    system: `{{{persona}}}`,
     prompt: `
-        {{persona}}
-
         **Context:**
         The student is studying the following notes:
         ---
