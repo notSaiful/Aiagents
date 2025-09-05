@@ -12,7 +12,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
-interface TalkieProps {
+interface ChatProps {
   notes: string;
 }
 
@@ -50,7 +50,7 @@ const characterData = {
     }
 }
 
-export default function Talkie({ notes }: TalkieProps) {
+export default function Chat({ notes }: ChatProps) {
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -220,3 +220,5 @@ export default function Talkie({ notes }: TalkieProps) {
     </div>
   );
 }
+
+    

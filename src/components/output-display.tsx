@@ -16,7 +16,7 @@ import { shareGeneration } from '@/ai/flows/share-generation';
 import { generateQuiz } from '@/ai/flows/generate-quiz';
 import { generateSlides } from '@/ai/flows/generate-slides';
 import QuizArena from './quiz-arena';
-import Talkie from './talkie';
+import Chat from './chat';
 import FlashcardDeck from './flashcard-deck';
 import AnimatedCheck from './animated-check';
 import { cn } from '@/lib/utils';
@@ -95,7 +95,7 @@ export default function OutputDisplay({
   const mindMapRef = useRef<HTMLDivElement>(null);
   const podcastRef = useRef<HTMLDivElement>(null);
   const arcadeRef = useRef<HTMLDivElement>(null);
-  const talkieRef = useRef<HTMLDivElement>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
   const flashcardsRef = useRef<HTMLDivElement>(null);
   const slidesRef = useRef<HTMLDivElement>(null);
 
@@ -221,7 +221,7 @@ export default function OutputDisplay({
                 <Music className="w-4 h-4" />Podcast {isPodcastLocked && <LockIcon />}
             </TabsTrigger>
             <TabsTrigger value="arcade" className="text-sm rounded-full h-10 flex items-center gap-1.5"><Shield className="w-4 h-4" />Arcade</TabsTrigger>
-            <TabsTrigger value="talkie" className="text-sm rounded-full h-10 flex items-center gap-1.5"><MessageCircle className="w-4 h-4" />Talkie</TabsTrigger>
+            <TabsTrigger value="chat" className="text-sm rounded-full h-10 flex items-center gap-1.5"><MessageCircle className="w-4 h-4" />Chat</TabsTrigger>
           </TabsList>
         </div>
 
@@ -413,10 +413,10 @@ export default function OutputDisplay({
             </Card>
         </TabsContent>
 
-        <TabsContent value="talkie">
-            <Card ref={talkieRef} className="rounded-xl border-2 border-primary/40">
+        <TabsContent value="chat">
+            <Card ref={chatRef} className="rounded-xl border-2 border-primary/40">
                 <CardContent className="p-0">
-                    <Talkie notes={notes} />
+                    <Chat notes={notes} />
                 </CardContent>
             </Card>
         </TabsContent>
@@ -440,3 +440,5 @@ export default function OutputDisplay({
     </div>
   );
 }
+
+    
