@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils';
 import { lookupUserByUsernameFlow } from '@/ai/flows/lookup-user';
 import { updateUsernameAction } from '@/actions/update-username';
 import { checkUsernameAction } from '@/actions/check-username';
+import Link from 'next/link';
 
 
 const loginSchema = z.object({
@@ -353,11 +354,15 @@ export default function AuthForm({ mode }: AuthFormProps) {
             )}
           </Button>
         </form>
-        <div className="mt-4">
-            <Button variant="link" className="w-full text-muted-foreground" onClick={() => router.push('/')}>
-              Continue without login
-            </Button>
+        
+        <div className="mt-4 text-center">
+            <Link href="/" passHref>
+                <Button variant="link" className="text-muted-foreground">
+                    Continue without login
+                </Button>
+            </Link>
         </div>
+
         <div className="mt-2 text-center text-sm">
           <p className="text-muted-foreground">
             {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
@@ -373,3 +378,5 @@ export default function AuthForm({ mode }: AuthFormProps) {
     </div>
   );
 }
+
+    
