@@ -31,7 +31,7 @@ const characterData = {
         greeting: "Hello. I'm Professor Aya. How can I assist with your studies today?"
     },
     'Mischievous Luna': {
-        avatarUrl: 'https://picsum.photos/seed/gamergirl/64/64',
+        avatarUrl: 'https://picsum.photos/seed/anime%20girl/64/64',
         avatarHint: 'anime girl',
         fallback: 'L',
         description: 'A playful and loving companion who helps you study.',
@@ -45,7 +45,7 @@ const characterData = {
         greeting: "You're here. Good. I'm Mr. Haque. Let's get straight to the point, what do you need?"
     },
     'Meme Bro': {
-        avatarUrl: 'https://picsum.photos/seed/memeguy/64/64',
+        avatarUrl: 'https://picsum.photos/seed/funny%20guy/64/64',
         avatarHint: 'funny guy',
         fallback: 'M',
         description: 'Your chaotic best friend who turns studying into a meme.',
