@@ -7,16 +7,16 @@ import { useCharacterStore, Emotion } from '@/store/character-store';
 import { useAuth } from '@/context/auth-context';
 
 const emotionMap: Record<Emotion, { src: string; alt: string }> = {
-    idle: { src: '/assets/character/idle.png', alt: 'Mascot is idle' },
-    joy: { src: '/assets/character/joy.png', alt: 'Mascot is happy' },
-    cheer: { src: '/assets/character/cheer.png', alt: 'Mascot is cheering' },
-    pride: { src: '/assets/character/pride.png', alt: 'Mascot is proud' },
-    surprised: { src: '/assets/character/surprised.png', alt: 'Mascot is surprised' },
-    confused: { src: '/assets/character/confused.png', alt: 'Mascot is confused' },
-    sad: { src: '/assets/character/sad.png', alt: 'Mascot is sad' },
-    determined: { src: '/assets/character/determined.png', alt: 'Mascot is determined' },
-    sleepy: { src: '/assets/character/sleepy.png', alt: 'Mascot is sleepy' },
-    encouraging: { src: '/assets/character/encouraging.png', alt: 'Mascot is encouraging' },
+    idle: { src: 'https://picsum.photos/seed/idle/128/128', alt: 'Mascot is idle' },
+    joy: { src: 'https://picsum.photos/seed/joy/128/128', alt: 'Mascot is happy' },
+    cheer: { src: 'https://picsum.photos/seed/cheer/128/128', alt: 'Mascot is cheering' },
+    pride: { src: 'https://picsum.photos/seed/pride/128/128', alt: 'Mascot is proud' },
+    surprised: { src: 'https://picsum.photos/seed/surprised/128/128', alt: 'Mascot is surprised' },
+    confused: { src: 'https://picsum.photos/seed/confused/128/128', alt: 'Mascot is confused' },
+    sad: { src: 'https://picsum.photos/seed/sad/128/128', alt: 'Mascot is sad' },
+    determined: { src: 'https://picsum.photos/seed/determined/128/128', alt: 'Mascot is determined' },
+    sleepy: { src: 'https://picsum.photos/seed/sleepy/128/128', alt: 'Mascot is sleepy' },
+    encouraging: { src: 'https://picsum.photos/seed/encouraging/128/128', alt: 'Mascot is encouraging' },
 };
 
 const characterVariants = {
@@ -63,6 +63,7 @@ export default function CharacterFeedback() {
                         height={128}
                         priority
                         unoptimized
+                        className="rounded-full"
                     />
                 </motion.div>
             </AnimatePresence>
