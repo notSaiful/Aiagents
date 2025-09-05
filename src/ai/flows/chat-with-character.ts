@@ -6,7 +6,7 @@
  *
  * - chatWithCharacter - A function that handles the chat interaction.
  * - ChatWithCharacterInput - The input type for the chatWithCharacter function.
- * - ChatWithCharacterOutput - The return type for the chatWithcharacter function.
+ * - ChatWithCharacterOutput - The return type for the chatwithcharacter function.
  */
 
 import {ai} from '@/ai/genkit';
