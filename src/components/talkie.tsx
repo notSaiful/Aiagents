@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect, FormEvent } from 'react';
@@ -24,25 +25,25 @@ type Character = 'Professor Aya' | 'Mischievous Luna' | 'Mr. Haque' | 'Meme Bro'
 
 const characterData = {
     'Professor Aya': {
-        avatarUrl: '/aya.png',
+        avatarUrl: '/publics/aya.png',
         fallback: 'A',
         description: 'A caring and knowledgeable mentor.',
         greeting: "Hello. I'm Professor Aya. How can I assist with your studies today?"
     },
     'Mischievous Luna': {
-        avatarUrl: '/luna.png',
+        avatarUrl: '/publics/luna.png',
         fallback: 'L',
         description: 'A playful and loving companion who helps you study.',
         greeting: "Hi there! I'm Luna. Ready to make learning fun together?"
     },
     'Mr. Haque': {
-        avatarUrl: '/Mr. haque.png',
+        avatarUrl: '/publics/Mr. haque.png',
         fallback: 'H',
         description: 'A confident and protective tutor with a soft spot for you.',
         greeting: "You're here. Good. I'm Mr. Haque. Let's get straight to the point, what do you need?"
     },
     'Meme Bro': {
-        avatarUrl: '/meme-bro.png',
+        avatarUrl: '/publics/meme-bro.png',
         fallback: 'M',
         description: 'Your chaotic best friend who turns studying into a meme.',
         greeting: "Wassup, fam! It's your boy, Meme Bro. Let's cook up some knowledge. 🔥"
