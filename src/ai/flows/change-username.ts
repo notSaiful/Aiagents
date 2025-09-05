@@ -5,6 +5,7 @@ import { ai } from '@/ai/genkit';
 import { app } from '@/lib/firebase';
 import { getFirestore, doc, runTransaction, serverTimestamp, DocumentSnapshot } from 'firebase/firestore';
 import { z } from 'zod';
+import { adminAuth } from '@/lib/firebase-admin';
 
 const ChangeUsernameInputSchema = z.object({
     uid: z.string(),

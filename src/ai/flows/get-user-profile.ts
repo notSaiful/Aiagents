@@ -11,8 +11,7 @@ import { ai } from '@/ai/genkit';
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { app } from '@/lib/firebase';
 import type { UserProfileData, Achievement, UserStats } from '@/types';
-import { getAuth } from 'firebase/auth'; // Required for auth context on server
-import { auth } from '@/lib/firebase'; // Client-side auth
+import { adminAuth } from '@/lib/firebase-admin';
 
 const GetUserProfileInputSchema = z.object({
   userId: z.string(),
@@ -66,12 +65,17 @@ const getUserProfileFlow = ai.defineFlow(
       if (!docSnap.exists()) {
         console.warn(`User profile not found for UID: ${userId}. Creating a new one.`);
         
-        // Let's try to get user info from Auth to create a starter profile
-        const userAuth = getAuth().currentUser;
+        // This is the secure way to get user data on the server.
+        // It uses the Admin SDK, which has the necessary privileges.
+        if (!adminAuth) {
+            throw new Error("Admin SDK not initialized. Cannot create user profile.");
+        }
+        
+        const userRecord = await adminAuth.getUser(userId);
 
-        const displayName = userAuth?.displayName || userAuth?.email?.split('@')[0] || 'New User';
-        const email = userAuth?.email || '';
-        const photoURL = userAuth?.photoURL;
+        const displayName = userRecord.displayName || userRecord.email?.split('@')[0] || 'New User';
+        const email = userRecord.email || '';
+        const photoURL = userRecord.photoURL;
         
         const newUserProfile: Omit<UserStats, 'updatedAt'> = {
             uid: userId,
