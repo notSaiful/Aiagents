@@ -80,6 +80,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
 
+      // Only create profile if it doesn't exist. This is now a centralized creation point.
       if (!userDoc.exists()) {
         const username = user.email?.split('@')[0] || `user_${Date.now()}`;
         
@@ -87,8 +88,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName || username,
+            username: username,
+            usernameLower: username.toLowerCase(),
             photoURL: user.photoURL,
             createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
             points: 0,
             streak: 0,
             lastActivityDate: null,
@@ -99,6 +103,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             }
         });
         
+        // Also reserve the username
         await updateUsernameAction(user.uid, username);
       }
 
@@ -123,12 +128,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
     setLoading(true);
     let email = emailOrUsername;
     
+    // If the input doesn't look like an email, assume it's a username and fetch the email
     if (!emailOrUsername.includes('@')) {
       try {
         const result = await lookupUserByUsernameFlow({ username: emailOrUsername });
         if (result.email) {
           email = result.email;
         } else {
+          // If username lookup fails, the user doesn't exist.
           throw new Error("User not found.");
         }
       } catch (e) {
@@ -142,6 +149,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
       await signInWithEmailAndPassword(auth, email, password);
       handleSuccess();
     } catch (error: any) {
+        // Generic error for security so we don't reveal if an email/username is registered.
         toast({ title: 'Sign In Failed', description: 'Invalid email/username or password.', variant: 'destructive' });
     } finally {
         setLoading(false);
@@ -151,6 +159,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const handleSignupSubmit = async ({ email, username, password }: SignupFormData) => {
     setLoading(true);
     try {
+        // Step 1: Check if username is available before creating an auth user
         const usernameCheck = await checkUsernameAction(username);
         if (!usernameCheck.available) {
             toast({
@@ -162,11 +171,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
             return;
         }
 
+        // Step 2: Create the user in Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         
+        // Step 3: Update the auth profile displayName
         await updateProfile(user, { displayName: username });
 
+        // Step 4: Create the user profile document in Firestore (centralized logic)
         const userDocRef = doc(db, 'users', user.uid);
         await setDoc(userDocRef, {
             uid: user.uid,
@@ -187,8 +199,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
             }
         });
 
+        // Step 5: Reserve the username
         const { ok, message } = await updateUsernameAction(user.uid, username);
         if (!ok) {
+            // This is an important fallback. If this fails, the user is created but username isn't reserved.
+            // In a production app, you might want to handle this more gracefully (e.g., delete the user and ask them to retry).
             throw new Error(message);
         }
 
@@ -366,7 +381,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
           <p className="text-muted-foreground">
             {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
             <NextLink
-              href={(mode === 'login' ? '/signup' : '/login') + linkQuery}
+              href={(mode === 'login' ? '/signup' : '/login/email') + linkQuery}
               className="font-medium text-primary-foreground hover:underline"
             >
               {mode === 'login' ? 'Sign up' : 'Sign in'}

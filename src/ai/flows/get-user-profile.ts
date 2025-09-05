@@ -3,15 +3,14 @@
 
 /**
  * @fileOverview Retrieves a user's profile data for the profile page.
- * If a profile doesn't exist for the user, it creates a default one.
+ * It does NOT create a profile if one doesn't exist. Creation is handled at sign-up.
  */
 
 import { z } from 'genkit';
 import { ai } from '@/ai/genkit';
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { app } from '@/lib/firebase';
-import type { UserProfileData, Achievement, UserStats } from '@/types';
-import { adminAuth } from '@/lib/firebase-admin';
+import type { UserProfileData, UserStats } from '@/types';
 
 const GetUserProfileInputSchema = z.object({
   userId: z.string(),
@@ -60,50 +59,11 @@ const getUserProfileFlow = ai.defineFlow(
     const userRef = doc(db, 'users', userId);
 
     try {
-      let docSnap = await getDoc(userRef);
+      const docSnap = await getDoc(userRef);
 
       if (!docSnap.exists()) {
-        console.warn(`User profile not found for UID: ${userId}. Creating a new one.`);
-        
-        // This is the secure way to get user data on the server.
-        // It uses the Admin SDK, which has the necessary privileges.
-        if (!adminAuth) {
-            throw new Error("Admin SDK not initialized. Cannot create user profile.");
-        }
-        
-        const userRecord = await adminAuth.getUser(userId);
-
-        const displayName = userRecord.displayName || userRecord.email?.split('@')[0] || 'New User';
-        const email = userRecord.email || '';
-        const photoURL = userRecord.photoURL;
-        
-        const newUserProfile: Omit<UserStats, 'updatedAt'> = {
-            uid: userId,
-            displayName: displayName,
-            username: displayName.replace(/\s+/g, '_').toLowerCase(),
-            usernameLower: displayName.replace(/\s+/g, '_').toLowerCase(),
-            email: email,
-            photoURL: photoURL || '',
-            points: 0,
-            streak: 0,
-            achievements: [],
-            stats: {
-                summariesGenerated: 0,
-                flashcardsCompleted: 0,
-                mindmapsCreated: 0,
-                podcastsListened: 0,
-                gamesCompleted: 0,
-            },
-            createdAt: serverTimestamp(),
-        };
-
-        await setDoc(userRef, newUserProfile);
-        
-        // Re-fetch the document to get the server-timestamped version
-        docSnap = await getDoc(userRef);
-        if (!docSnap.exists()) {
-            throw new Error('Failed to create and fetch new user profile.');
-        }
+        console.warn(`User profile not found for UID: ${userId}. Profile should be created on sign-up.`);
+        return { profile: null };
       }
       
       const user = docSnap.data() as UserStats;
