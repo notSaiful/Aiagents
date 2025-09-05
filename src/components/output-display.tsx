@@ -203,7 +203,7 @@ export default function OutputDisplay({
 
   const isShareableContentAvailable = !!(shortSummary || longSummary || flashcards || mindMap);
   const isPodcastLocked = userPlan === 'Free';
-  const areSlidesLocked = userPlan === 'Free';
+  const areSlidesLocked = userPlan !== 'Pro' && userPlan !== 'Starter' && userPlan !== 'Free'; // Unlocked for all for now.
 
   return (
     <div className="relative">
@@ -214,7 +214,7 @@ export default function OutputDisplay({
             <TabsTrigger value="flashcards" className="text-sm rounded-full h-10" disabled={!flashcards}>Flashcards</TabsTrigger>
             <TabsTrigger value="mind-map" className="text-sm rounded-full h-10" disabled={!mindMap}>Mind Map</TabsTrigger>
             <TabsTrigger value="slides" className="text-sm rounded-full h-10 flex items-center gap-1.5">
-                <Presentation className="w-4 h-4" />Slides {areSlidesLocked && <LockIcon />}
+                <Presentation className="w-4 h-4" />Slides
             </TabsTrigger>
             <TabsTrigger value="podcast" className="text-sm rounded-full h-10 flex items-center gap-1.5">
                 <Music className="w-4 h-4" />Podcast {isPodcastLocked && <LockIcon />}
