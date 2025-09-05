@@ -293,4 +293,13 @@
   .edge-path {
     animation: edge-draw 0.8s ease-in-out forwards;
   }
+
+  /* Victory Animation */
+  @keyframes creature-wiggle {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+  .creature-wiggle {
+    animation: creature-wiggle 0.5s ease-in-out infinite;
+  }
 }

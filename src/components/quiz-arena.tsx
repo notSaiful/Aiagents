@@ -12,6 +12,7 @@ import { useAuth } from '@/context/auth-context';
 import { updateUserStats } from '@/ai/flows/update-user-stats';
 import { useToast } from '@/hooks/use-toast';
 import StreakToast from '@/components/streak-toast';
+import VictoryAnimation from './victory-animation';
 
 
 interface QuizArenaProps {
@@ -103,7 +104,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
     }
     
     setTimeout(() => {
-      const isPlayerDefeated = playerHealth <= 15 && isCorrect === false;
+      const isPlayerDefeated = playerHealth <= 15 && !isCorrect;
       const isAIDefeated = aiHealth <= (10 + (currentQuestion.difficulty * 5)) && isCorrect;
       const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
@@ -136,14 +137,20 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
   if (gameOver) {
     const victory = aiHealth <= 0;
     return (
-      <div className="text-center p-4">
-        <Trophy className={cn("w-16 h-16 mx-auto mb-4", victory ? "text-yellow-400" : "text-muted-foreground/50")} />
-        <h2 className="text-3xl font-bold font-serif mb-2">{victory ? 'Victory!' : 'Defeat!'}</h2>
-        <p className="text-lg text-muted-foreground">Your final score: {score}</p>
-        <Button onClick={handleRestart} className="mt-6">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Play Again
-        </Button>
+      <div className="text-center p-4 relative min-h-[350px] flex flex-col justify-center items-center">
+        {victory ? (
+            <VictoryAnimation score={score} onRestart={handleRestart} />
+        ) : (
+            <>
+                <Trophy className="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" />
+                <h2 className="text-3xl font-bold font-serif mb-2">Defeat!</h2>
+                <p className="text-lg text-muted-foreground">Your final score: {score}</p>
+                <Button onClick={handleRestart} className="mt-6">
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Play Again
+                </Button>
+            </>
+        )}
       </div>
     );
   }
