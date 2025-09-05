@@ -20,17 +20,19 @@ const emotionMap: Record<Emotion, { src: string; alt: string }> = {
 };
 
 const characterVariants = {
-  hidden: { opacity: 0, y: 50, scale: 0.8 },
+  hidden: { opacity: 0, y: 50, scale: 0.8, rotate: -15 },
   visible: { 
     opacity: 1, 
     y: 0, 
     scale: 1,
+    rotate: 0,
     transition: { type: 'spring', stiffness: 200, damping: 20 }
   },
   exit: { 
     opacity: 0, 
-    y: 50, 
+    y: -50, 
     scale: 0.8,
+    rotate: 15,
     transition: { duration: 0.2 }
   }
 };
@@ -55,6 +57,7 @@ export default function CharacterFeedback() {
                     initial="hidden"
                     animate="visible"
                     exit="exit"
+                    className="w-full h-full"
                 >
                     <Image
                         src={src}
@@ -63,7 +66,7 @@ export default function CharacterFeedback() {
                         height={128}
                         priority
                         unoptimized
-                        className="rounded-full"
+                        className="rounded-full shadow-lg"
                     />
                 </motion.div>
             </AnimatePresence>
