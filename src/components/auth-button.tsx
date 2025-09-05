@@ -2,9 +2,10 @@
 'use client';
 
 import { signOut } from 'firebase/auth';
-import { LogOut, User as UserIcon, Trophy } from 'lucide-react';
+import { LogOut, User as UserIcon, Trophy, LogIn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
@@ -39,7 +40,7 @@ export default function AuthButton() {
   };
 
   if (!isClient || loading) {
-    return <Skeleton className="h-8 w-8 rounded-full" />;
+    return <Skeleton className="h-9 w-24 rounded-md" />;
   }
 
   if (user) {
@@ -87,6 +88,12 @@ export default function AuthButton() {
     );
   }
 
-  // If not logged in, render nothing.
-  return null;
+  return (
+    <Button asChild>
+        <Link href="/signup">
+            <LogIn className="mr-2 h-4 w-4" />
+            Login / Sign Up
+        </Link>
+    </Button>
+  );
 }
