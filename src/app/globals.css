@@ -262,6 +262,16 @@
   }
   
   /* Mindmap Animation */
+  .node {
+    animation: node-fade-in 0.5s ease-out forwards;
+    transform-origin: center;
+    opacity: 0;
+  }
+
+  .edge-path {
+    animation: edge-draw 0.8s ease-in-out forwards;
+  }
+
   @keyframes node-fade-in {
     from {
       opacity: 0;
@@ -282,16 +292,6 @@
       stroke-dasharray: 1000;
       stroke-dashoffset: 0;
     }
-  }
-
-  .node {
-    animation: node-fade-in 0.5s ease-out forwards;
-    transform-origin: center;
-    opacity: 0;
-  }
-
-  .edge-path {
-    animation: edge-draw 0.8s ease-in-out forwards;
   }
 
   /* Victory Animation */
