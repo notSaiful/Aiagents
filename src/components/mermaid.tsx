@@ -58,7 +58,47 @@ export default function Mermaid({ chart }: MermaidProps) {
           id,
           chart
         );
-        setSvg(newSvg);
+        
+        // Inject animation styles into the SVG
+        const style = `
+          @keyframes node-fade-in {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+          }
+          @keyframes edge-draw {
+            from { stroke-dasharray: 1000; stroke-dashoffset: 1000; }
+            to { stroke-dasharray: 1000; stroke-dashoffset: 0; }
+          }
+          .node { 
+            animation: node-fade-in 0.5s ease-out forwards;
+            transform-origin: center; 
+            opacity: 0;
+          }
+          .edge-path {
+             animation: edge-draw 0.8s ease-in-out forwards;
+          }
+        `;
+        
+        const svgWithStyle = newSvg.replace('<svg', `<svg><style>${style}</style>`);
+        
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgWithStyle, "image/svg+xml");
+        const nodes = svgDoc.querySelectorAll('.node');
+        const edges = svgDoc.querySelectorAll('.edge-path');
+        
+        nodes.forEach((node, index) => {
+          const el = node as HTMLElement;
+          el.style.animationDelay = `${index * 40}ms`;
+        });
+        edges.forEach((edge, index) => {
+          const el = edge as HTMLElement;
+          el.style.animationDelay = `${index * 40}ms`;
+        });
+        
+        const finalSvg = new XMLSerializer().serializeToString(svgDoc);
+
+        setSvg(finalSvg);
+
       } catch (error) {
         console.error("Error rendering Mermaid diagram:", error);
         setSvg('<div class="p-4 text-destructive">Error rendering diagram. Please check the Mermaid syntax.</div>');
