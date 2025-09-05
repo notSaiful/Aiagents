@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Share2, LoaderCircle, BookOpen, Presentation, X, Music, Shield, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -16,7 +16,7 @@ import { shareGeneration } from '@/ai/flows/share-generation';
 import { generateQuiz } from '@/ai/flows/generate-quiz';
 import { generateSlides } from '@/ai/flows/generate-slides';
 import QuizArena from './quiz-arena';
-import Chat from './chat';
+import Chat, { Message, Character, characterData } from './chat';
 import FlashcardDeck from './flashcard-deck';
 import AnimatedCheck from './animated-check';
 import { cn } from '@/lib/utils';
@@ -36,6 +36,8 @@ interface OutputDisplayProps {
   style: string;
   showAnimation: boolean;
 }
+
+type ChatHistory = Record<Character, Message[]>;
 
 const cardVariants = {
   initial: { scale: 1, boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.0)' },
@@ -76,7 +78,6 @@ export default function OutputDisplay({
 }: OutputDisplayProps) {
   const { toast } = useToast();
   const [isShareDialogOpen, setShareDialogOpen] = useState(false);
-  const [showSharePreview, setShowSharePreview] = useState(false);
   const [activeTab, setActiveTab] = useState('summary');
   const [shareId, setShareId] = useState<string | null>(null);
   const [isSharing, setIsSharing] = useState(false);
@@ -86,7 +87,15 @@ export default function OutputDisplay({
   const [isStudying, setIsStudying] = useState(false);
   const [isGeneratingSlides, setIsGeneratingSlides] = useState(false);
   const [slides, setSlides] = useState<SlidesType | null>(null);
-  
+
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+  const [chatHistory, setChatHistory] = useState<ChatHistory>({
+    'Professor Aya': [],
+    'Mischievous Luna': [],
+    'Mr. Haque': [],
+    'Meme Bro': []
+  });
+
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
@@ -98,17 +107,24 @@ export default function OutputDisplay({
   const flashcardsRef = useRef<HTMLDivElement>(null);
   const slidesRef = useRef<HTMLDivElement>(null);
 
-  const requireAuth = (callback: () => void) => {
-    if (!user) {
-      router.push('/login?redirectUrl=' + encodeURIComponent(window.location.pathname));
-      toast({
-        title: "Login Required",
-        description: "Please log in to use this feature.",
-      });
-    } else {
-      callback();
-    }
-  };
+  const initializeChatHistory = useCallback(() => {
+    const initialHistory: ChatHistory = {
+      'Professor Aya': [{ role: 'model', content: characterData['Professor Aya'].greeting }],
+      'Mischievous Luna': [{ role: 'model', content: characterData['Mischievous Luna'].greeting }],
+      'Mr. Haque': [{ role: 'model', content: characterData['Mr. Haque'].greeting }],
+      'Meme Bro': [{ role: 'model', content: characterData['Meme Bro'].greeting }],
+    };
+    setChatHistory(initialHistory);
+  }, []);
+
+  // Reset chat history when the notes change (i.e., a new transformation happens)
+  useEffect(() => {
+    initializeChatHistory();
+    setQuizQuestions(null);
+    setSlides(null);
+    setSelectedCharacter(null);
+  }, [notes, style, initializeChatHistory]);
+
 
   const handleCopyLink = async () => {
     setIsSharing(true);
@@ -146,7 +162,6 @@ export default function OutputDisplay({
     } finally {
       setIsSharing(false);
       setShareDialogOpen(false);
-      setShowSharePreview(false);
     }
   };
 
@@ -267,7 +282,7 @@ export default function OutputDisplay({
               </CardContent>
                {isShareable && isShareableContentAvailable && (
                 <CardFooter>
-                    <Button onClick={() => requireAuth(() => setShareDialogOpen(true))} variant="outline" className="w-full">
+                    <Button onClick={() => setShareDialogOpen(true)} variant="outline" className="w-full">
                         <Share2 className="mr-2 h-4 w-4" />
                         Share Summary
                     </Button>
@@ -335,7 +350,7 @@ export default function OutputDisplay({
                     Turn your notes into a professional presentation.
                   </p>
                   <Button
-                    onClick={() => requireAuth(handleGenerateSlides)}
+                    onClick={handleGenerateSlides}
                     disabled={isGeneratingSlides}
                     className="font-semibold text-lg py-6 rounded-xl shadow-lg"
                   >
@@ -367,7 +382,7 @@ export default function OutputDisplay({
                     Generate a podcast from your notes.
                   </p>
                   <Button
-                    onClick={() => requireAuth(handlePodcastGeneration)}
+                    onClick={handlePodcastGeneration}
                     disabled={isGeneratingPodcast}
                     className="font-semibold text-lg py-6 rounded-xl shadow-lg"
                   >
@@ -420,7 +435,17 @@ export default function OutputDisplay({
         <TabsContent value="chat">
             <Card ref={chatRef} className="rounded-xl border-2 border-primary/40">
                 <CardContent className="p-0">
-                    <Chat notes={notes} />
+                    <Chat 
+                        notes={notes}
+                        selectedCharacter={selectedCharacter}
+                        setSelectedCharacter={setSelectedCharacter}
+                        messages={selectedCharacter ? chatHistory[selectedCharacter] : []}
+                        setMessages={(newMessages) => {
+                            if (selectedCharacter) {
+                                setChatHistory(prev => ({...prev, [selectedCharacter]: newMessages}))
+                            }
+                        }}
+                    />
                 </CardContent>
             </Card>
         </TabsContent>

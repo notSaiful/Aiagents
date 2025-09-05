@@ -12,18 +12,14 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
-interface ChatProps {
-  notes: string;
-}
-
-interface Message {
+export interface Message {
   role: 'user' | 'model';
   content: string;
 }
 
-type Character = 'Professor Aya' | 'Mischievous Luna' | 'Mr. Haque' | 'Meme Bro';
+export type Character = 'Professor Aya' | 'Mischievous Luna' | 'Mr. Haque' | 'Meme Bro';
 
-const characterData = {
+export const characterData = {
     'Professor Aya': {
         avatarUrl: 'https://picsum.photos/seed/aya/100/100',
         fallback: 'A',
@@ -50,9 +46,22 @@ const characterData = {
     }
 }
 
-export default function Chat({ notes }: ChatProps) {
-  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+interface ChatProps {
+  notes: string;
+  selectedCharacter: Character | null;
+  setSelectedCharacter: (character: Character | null) => void;
+  messages: Message[];
+  setMessages: (messages: Message[]) => void;
+}
+
+
+export default function Chat({ 
+    notes, 
+    selectedCharacter, 
+    setSelectedCharacter,
+    messages,
+    setMessages
+}: ChatProps) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -61,22 +70,14 @@ export default function Chat({ notes }: ChatProps) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-  
-  useEffect(() => {
-    if (selectedCharacter) {
-        setMessages([
-            { role: 'model', content: characterData[selectedCharacter].greeting }
-        ]);
-        setInput('');
-    }
-  }, [selectedCharacter]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading || !selectedCharacter) return;
 
     const userMessage: Message = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
@@ -89,7 +90,7 @@ export default function Chat({ notes }: ChatProps) {
       });
       
       const modelMessage: Message = { role: 'model', content: result.response };
-      setMessages(prev => [...prev, modelMessage]);
+      setMessages([...newMessages, modelMessage]);
 
     } catch (error) {
       console.error('Character chat failed:', error);
@@ -98,7 +99,7 @@ export default function Chat({ notes }: ChatProps) {
         description: 'I seem to be at a loss for words. Please try again.',
         variant: 'destructive',
       });
-       setMessages(prev => prev.slice(0, prev.length -1));
+       setMessages(messages); // Revert to previous messages
        setInput(userMessage.content);
     } finally {
       setIsLoading(false);
