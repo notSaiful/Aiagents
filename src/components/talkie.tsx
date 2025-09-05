@@ -24,29 +24,25 @@ type Character = 'Professor Aya' | 'Mischievous Luna' | 'Mr. Haque' | 'Meme Bro'
 
 const characterData = {
     'Professor Aya': {
-        avatarUrl: 'https://picsum.photos/seed/elegant anime professor/64/64',
-        avatarHint: 'elegant anime professor',
+        avatarUrl: '/aya.png',
         fallback: 'A',
         description: 'A caring and knowledgeable mentor.',
         greeting: "Hello. I'm Professor Aya. How can I assist with your studies today?"
     },
     'Mischievous Luna': {
-        avatarUrl: 'https://picsum.photos/seed/kawaii anime girl/64/64',
-        avatarHint: 'kawaii anime girl',
+        avatarUrl: '/luna.png',
         fallback: 'L',
         description: 'A playful and loving companion who helps you study.',
         greeting: "Hi there! I'm Luna. Ready to make learning fun together?"
     },
     'Mr. Haque': {
-        avatarUrl: 'https://picsum.photos/seed/handsome anime man suit/64/64',
-        avatarHint: 'handsome anime man',
+        avatarUrl: '/haque.png',
         fallback: 'H',
         description: 'A confident and protective tutor with a soft spot for you.',
         greeting: "You're here. Good. I'm Mr. Haque. Let's get straight to the point, what do you need?"
     },
     'Meme Bro': {
-        avatarUrl: 'https://picsum.photos/seed/funny anime guy/64/64',
-        avatarHint: 'funny anime guy',
+        avatarUrl: '/meme-bro.png',
         fallback: 'M',
         description: 'Your chaotic best friend who turns studying into a meme.',
         greeting: "Wassup, fam! It's your boy, Meme Bro. Let's cook up some knowledge. 🔥"
@@ -126,7 +122,7 @@ export default function Talkie({ notes }: TalkieProps) {
                             className="flex flex-col items-center justify-center p-4 border rounded-xl hover:bg-muted transition-colors text-center"
                         >
                              <Avatar className="w-16 h-16 mb-2">
-                                <AvatarImage src={data.avatarUrl} alt={character} data-ai-hint={data.avatarHint} />
+                                <AvatarImage src={data.avatarUrl} alt={character} />
                                 <AvatarFallback>{data.fallback}</AvatarFallback>
                             </Avatar>
                             <p className="font-semibold">{character}</p>
@@ -151,7 +147,7 @@ export default function Talkie({ notes }: TalkieProps) {
             <div className="flex items-center gap-3">
                  <span className="font-semibold">{selectedCharacter}</span>
                  <Avatar className="w-8 h-8">
-                    <AvatarImage src={currentCharacterData.avatarUrl} alt={selectedCharacter} data-ai-hint={currentCharacterData.avatarHint} />
+                    <AvatarImage src={currentCharacterData.avatarUrl} alt={selectedCharacter} />
                     <AvatarFallback>{currentCharacterData.fallback}</AvatarFallback>
                 </Avatar>
             </div>
@@ -168,7 +164,7 @@ export default function Talkie({ notes }: TalkieProps) {
             {message.role === 'model' && (
               <>
                 <Avatar className="w-10 h-10">
-                    <AvatarImage src={currentCharacterData.avatarUrl} alt={selectedCharacter} data-ai-hint={currentCharacterData.avatarHint} />
+                    <AvatarImage src={currentCharacterData.avatarUrl} alt={selectedCharacter} />
                     <AvatarFallback>{currentCharacterData.fallback}</AvatarFallback>
                 </Avatar>
                 <div
@@ -201,7 +197,7 @@ export default function Talkie({ notes }: TalkieProps) {
         {isLoading && (
             <div className="flex items-start gap-3 justify-start">
                 <Avatar className="w-10 h-10">
-                    <AvatarImage src={currentCharacterData.avatarUrl} alt={selectedCharacter} data-ai-hint={currentCharacterData.avatarHint} />
+                    <AvatarImage src={currentCharacterData.avatarUrl} alt={selectedCharacter} />
                     <AvatarFallback>{currentCharacterData.fallback}</AvatarFallback>
                 </Avatar>
                 <div className="max-w-sm md:max-w-md rounded-xl px-4 py-3 bg-muted text-muted-foreground">
