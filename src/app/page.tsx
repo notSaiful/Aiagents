@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import AnimatedCheck from '@/components/animated-check';
 import { useProgress } from '@/context/progress-context';
 import StreakToast from '@/components/streak-toast';
+import OcrAnimation from '@/components/ocr-animation';
 
 
 interface AIOutput {
@@ -261,6 +262,7 @@ export default function Home() {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      const isHandwritten = file.type.startsWith('image/');
       const fileType = file.type.startsWith('video/') ? 'video' : 'image';
       
       setIsUploading(true);
@@ -272,7 +274,8 @@ export default function Home() {
       try {
         const dataUri = await readFileAsDataURI(file);
         
-        startProgress(progressId, { value: 50, label: `Extracting text from ${file.name}...` });
+        const progressLabel = isHandwritten ? "Reading handwriting" : "Extracting text";
+        startProgress(progressId, { value: 50, label: `${progressLabel}...` });
         
         let extractedText = '';
         if (fileType === 'video') {
@@ -367,6 +370,7 @@ export default function Home() {
 
   return (
     <div className={cn("container mx-auto max-w-4xl py-8 px-4", `theme-${style.toLowerCase()}`)}>
+      <OcrAnimation show={isUploading} />
       <div className="mb-4 flex flex-col items-center text-center">
         <h1 className="pt-4 font-serif text-4xl font-bold tracking-tight text-transparent bg-gradient-to-r from-chart-1 via-chart-3 to-chart-5 bg-clip-text md:text-5xl animate-text-glow">
           NotesGPT
@@ -408,14 +412,8 @@ export default function Home() {
                     size="sm"
                     className="text-muted-foreground hover:text-foreground"
                 >
-                  {isUploading ? (
-                    <LoaderCircle className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Upload className="mr-2 h-4 w-4" />
-                      Upload File
-                    </>
-                  )}
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload File
                 </Button>
                  <Button
                     onClick={handleVoiceClick}
