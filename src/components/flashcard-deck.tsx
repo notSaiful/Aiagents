@@ -49,6 +49,7 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
   const [reviewLaterCards, setReviewLaterCards] = useState<FlashcardType[]>([]);
   const [isFinished, setIsFinished] = useState(false);
   const [popMastery, setPopMastery] = useState(false);
+  const [lastAction, setLastAction] = useState<'known' | 'review' | null>(null);
   const { width, height } = useWindowSize();
   const setEmotion = useCharacterStore(state => state.setEmotion);
 
@@ -56,6 +57,22 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
   useEffect(() => {
     setShuffledCards(shuffleArray([...cards]));
   }, [cards]);
+
+  useEffect(() => {
+    if (lastAction === 'known') {
+        setEmotion('cheer');
+    } else if (lastAction === 'review') {
+        setEmotion('confused');
+        const timer = setTimeout(() => setEmotion('encouraging', 2000), 1000);
+        return () => clearTimeout(timer);
+    }
+  }, [lastAction, setEmotion]);
+  
+  useEffect(() => {
+    if (isFinished) {
+        setEmotion('pride');
+    }
+  }, [isFinished, setEmotion]);
 
   const currentCard = useMemo(() => shuffledCards[currentIndex], [shuffledCards, currentIndex]);
   const mastery = cards.length > 0 ? (knownCards.length / cards.length) * 100 : 0;
@@ -66,12 +83,11 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
     if (isKnown) {
         setKnownCards(prev => [...prev, currentCard]);
         setPopMastery(true);
-        setEmotion('cheer');
+        setLastAction('known');
         setTimeout(() => setPopMastery(false), 300);
     } else {
         setReviewLaterCards(prev => [...prev, currentCard]);
-        setEmotion('confused');
-        setTimeout(() => setEmotion('encouraging', 2000), 1000);
+        setLastAction('review');
     }
     
     setIsFlipped(false);
@@ -87,7 +103,6 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
             setCurrentIndex(0);
         } else {
             setIsFinished(true);
-            setEmotion('pride');
         }
     }
   };

@@ -45,6 +45,31 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
   useEffect(() => {
     setEmotion('determined');
   }, [setEmotion]);
+  
+  useEffect(() => {
+    if (!feedback) return;
+    
+    switch (feedback) {
+      case 'correct':
+        setEmotion('joy');
+        break;
+      case 'incorrect':
+      case 'miss':
+        setEmotion('sad');
+        break;
+    }
+  }, [feedback, setEmotion]);
+  
+  useEffect(() => {
+    if (gameOver) {
+        if (aiHealth <= 0) {
+            setEmotion('cheer');
+        } else {
+            setEmotion('sad');
+        }
+    }
+  }, [gameOver, aiHealth, setEmotion]);
+
 
   useEffect(() => {
     if (gameOver || !currentQuestion) return;
@@ -108,7 +133,6 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
         setFeedback('miss');
         setPlayerHealth(prev => Math.max(0, prev - 10)); // Penalty for running out of time
         setStreak(0);
-        setEmotion('confused');
     } else {
         isCorrect = answer === currentQuestion.answer;
         if (isCorrect) {
@@ -125,7 +149,6 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
             setTimeout(() => setPopStreak(false), 300);
 
             setFeedback('correct');
-            setEmotion('joy');
             handleStatsUpdate('quizCorrectAnswer');
             toast({
                 title: 'Correct!',
@@ -136,7 +159,6 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
             setPlayerHealth(prev => Math.max(0, prev - 15));
             setStreak(0);
             setFeedback('incorrect');
-            setEmotion('sad');
         }
     }
     
@@ -146,9 +168,6 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
       const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
       if (isPlayerDefeated || isAIDefeated || isLastQuestion) {
-        if(isAIDefeated) setEmotion('cheer');
-        if(isPlayerDefeated) setEmotion('sad');
-
         if(isAIDefeated || isPlayerDefeated) {
             handleStatsUpdate('quizCompleted');
         }
