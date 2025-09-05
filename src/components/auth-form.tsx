@@ -257,7 +257,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
         <div className="my-4 flex items-center">
             <div className="flex-grow border-t border-muted" />
-            <span className="mx-4 flex-shrink text-xs uppercase text-muted-foreground">Or continue with</span>
+            <span className="mx-4 flex-shrink text-xs uppercase text-muted-foreground">Or</span>
             <div className="flex-grow border-t border-muted" />
         </div>
 
@@ -353,7 +353,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
             )}
           </Button>
         </form>
-        <div className="mt-6 text-center text-sm">
+        <div className="mt-4">
+            <Button variant="link" className="w-full text-muted-foreground" onClick={() => router.push('/')}>
+              Continue without login
+            </Button>
+        </div>
+        <div className="mt-2 text-center text-sm">
           <p className="text-muted-foreground">
             {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
             <NextLink
