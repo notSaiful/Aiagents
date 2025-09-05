@@ -10,6 +10,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { RefreshCw, X, Check, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Flashcard as FlashcardType } from '@/types';
+import Confetti from 'react-confetti';
+import { useWindowSize } from 'react-use';
 
 interface FlashcardDeckProps {
   cards: FlashcardType[];
@@ -46,6 +48,7 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
   const [reviewLaterCards, setReviewLaterCards] = useState<FlashcardType[]>([]);
   const [isFinished, setIsFinished] = useState(false);
   const [popMastery, setPopMastery] = useState(false);
+  const { width, height } = useWindowSize();
 
 
   useEffect(() => {
@@ -95,6 +98,13 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
   if (isFinished) {
     return (
         <motion.div variants={cardVariants} initial="initial" animate="animate" className="w-full text-center">
+            <Confetti
+              width={width}
+              height={height}
+              numberOfPieces={200}
+              recycle={false}
+              gravity={0.15}
+            />
             <Star className="w-16 h-16 mx-auto mb-4 text-yellow-400" />
             <h2 className="text-3xl font-bold font-serif mb-2">Deck Complete!</h2>
             <p className="text-lg text-muted-foreground">You marked {knownCards.length} out of {cards.length} cards as known.</p>
