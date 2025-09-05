@@ -225,3 +225,5 @@ export default function Talkie({ notes }: TalkieProps) {
     </div>
   );
 }
+
+    
