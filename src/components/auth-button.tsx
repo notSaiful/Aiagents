@@ -4,7 +4,6 @@
 import { signOut } from 'firebase/auth';
 import { LogOut, User as UserIcon, Trophy, LogIn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { useAuth } from '@/context/auth-context';
@@ -24,11 +23,6 @@ import { Skeleton } from './ui/skeleton';
 export default function AuthButton() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -39,7 +33,7 @@ export default function AuthButton() {
     }
   };
 
-  if (!isClient || loading) {
+  if (loading) {
     return <Skeleton className="h-9 w-24 rounded-md" />;
   }
 

@@ -25,25 +25,25 @@ type Character = 'Professor Aya' | 'Mischievous Luna' | 'Mr. Haque' | 'Meme Bro'
 
 const characterData = {
     'Professor Aya': {
-        avatarUrl: '/aya.png',
+        avatarUrl: 'https://picsum.photos/seed/aya/100/100',
         fallback: 'A',
         description: 'A caring and knowledgeable mentor.',
         greeting: "Hello. I'm Professor Aya. How can I assist with your studies today?"
     },
     'Mischievous Luna': {
-        avatarUrl: '/luna.png',
+        avatarUrl: 'https://picsum.photos/seed/luna/100/100',
         fallback: 'L',
         description: 'A playful and loving companion who helps you study.',
         greeting: "Hi there! I'm Luna. Ready to make learning fun together?"
     },
     'Mr. Haque': {
-        avatarUrl: '/Mr. haque.png',
+        avatarUrl: 'https://picsum.photos/seed/haque/100/100',
         fallback: 'H',
         description: 'A confident and protective tutor with a soft spot for you.',
         greeting: "You're here. Good. I'm Mr. Haque. Let's get straight to the point, what do you need?"
     },
     'Meme Bro': {
-        avatarUrl: '/meme-bro.png',
+        avatarUrl: 'https://picsum.photos/seed/meme-bro/100/100',
         fallback: 'M',
         description: 'Your chaotic best friend who turns studying into a meme.',
         greeting: "Wassup, fam! It's your boy, Meme Bro. Let's cook up some knowledge. 🔥"
@@ -220,5 +220,3 @@ export default function Chat({ notes }: ChatProps) {
     </div>
   );
 }
-
-    
