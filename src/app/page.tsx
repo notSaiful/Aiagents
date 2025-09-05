@@ -25,6 +25,7 @@ import AnimatedCheck from '@/components/animated-check';
 import { useProgress } from '@/context/progress-context';
 import StreakToast from '@/components/streak-toast';
 import OcrAnimation from '@/components/ocr-animation';
+import UpgradeToast from '@/components/upgrade-toast';
 
 
 interface AIOutput {
@@ -112,6 +113,8 @@ export default function Home() {
       reader.readAsDataURL(file);
     });
   };
+  
+  const [summaryCount, setSummaryCount] = useState(0); // Mock usage tracking
 
   const handleTransform = async () => {
     setLoading(true);
@@ -129,6 +132,17 @@ export default function Home() {
       setLoading(false);
       return;
     }
+
+    // Mock usage limit check
+    const newCount = summaryCount + 1;
+    setSummaryCount(newCount);
+    if (newCount >= 3) {
+      toast({
+        duration: 8000,
+        component: () => <UpgradeToast featureName="summary" usage={newCount} limit={5} />,
+      });
+    }
+
 
     try {
       const input = { notes, style };
@@ -465,5 +479,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

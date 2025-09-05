@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Share2, LoaderCircle, BookOpen, Presentation, X } from 'lucide-react';
+import { Share2, LoaderCircle, BookOpen, Presentation, X, Music, Shield, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,6 +20,8 @@ import Talkie from './talkie';
 import FlashcardDeck from './flashcard-deck';
 import AnimatedCheck from './animated-check';
 import { cn } from '@/lib/utils';
+import LockIcon from './lock-icon';
+import { useAuth } from '@/context/auth-context';
 
 
 interface OutputDisplayProps {
@@ -84,6 +86,10 @@ export default function OutputDisplay({
   const [isStudying, setIsStudying] = useState(false);
   const [isGeneratingSlides, setIsGeneratingSlides] = useState(false);
   const [slides, setSlides] = useState<SlidesType | null>(null);
+  
+  // Mock user plan for demonstration - replace with actual user data
+  const { user } = useAuth();
+  const [userPlan, setUserPlan] = useState('Free'); // 'Free', 'Starter', 'Pro'
 
   const summaryRef = useRef<HTMLDivElement>(null);
   const mindMapRef = useRef<HTMLDivElement>(null);
@@ -196,37 +202,36 @@ export default function OutputDisplay({
   );
 
   const isShareableContentAvailable = !!(shortSummary || longSummary || flashcards || mindMap);
-
+  const isPodcastLocked = userPlan === 'Free';
+  const areSlidesLocked = userPlan === 'Free';
 
   return (
     <div className="relative">
       <Tabs defaultValue="summary" className="w-full" onValueChange={setActiveTab}>
         <div className="flex justify-center mb-6">
-          <TabsList className="bg-primary/80 rounded-full h-12 px-2 flex-wrap">
-            <TabsTrigger value="summary" className="text-base rounded-full h-10">
-              Summary
+          <TabsList className="bg-primary/80 rounded-full h-auto p-1 flex-wrap justify-center">
+            <TabsTrigger value="summary" className="text-sm rounded-full h-10 flex items-center gap-1.5"><BookOpen className="w-4 h-4" />Summary</TabsTrigger>
+            <TabsTrigger value="flashcards" className="text-sm rounded-full h-10" disabled={!flashcards}>Flashcards</TabsTrigger>
+            <TabsTrigger value="mind-map" className="text-sm rounded-full h-10" disabled={!mindMap}>Mind Map</TabsTrigger>
+            <TabsTrigger value="slides" className="text-sm rounded-full h-10 flex items-center gap-1.5">
+                <Presentation className="w-4 h-4" />Slides {areSlidesLocked && <LockIcon />}
             </TabsTrigger>
-            <TabsTrigger value="flashcards" className="text-base rounded-full h-10" disabled={!flashcards}>
-              Flashcards
+            <TabsTrigger value="podcast" className="text-sm rounded-full h-10 flex items-center gap-1.5">
+                <Music className="w-4 h-4" />Podcast {isPodcastLocked && <LockIcon />}
             </TabsTrigger>
-            <TabsTrigger value="mind-map" className="text-base rounded-full h-10" disabled={!mindMap}>
-              Mind Map
-            </TabsTrigger>
-            <TabsTrigger value="slides" className="text-base rounded-full h-10">
-              Slides
-            </TabsTrigger>
-            <TabsTrigger value="podcast" className="text-base rounded-full h-10">
-              Podcast
-            </TabsTrigger>
-            <TabsTrigger value="arcade" className="text-base rounded-full h-10">
-                Arcade
-            </TabsTrigger>
-            <TabsTrigger value="talkie" className="text-base rounded-full h-10">
-                Talkie
-            </TabsTrigger>
+            <TabsTrigger value="arcade" className="text-sm rounded-full h-10 flex items-center gap-1.5"><Shield className="w-4 h-4" />Arcade</TabsTrigger>
+            <TabsTrigger value="talkie" className="text-sm rounded-full h-10 flex items-center gap-1.5"><MessageCircle className="w-4 h-4" />Talkie</TabsTrigger>
           </TabsList>
         </div>
 
+        <AnimatePresence mode="wait">
+        <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+        >
         <TabsContent value="summary">
           <motion.div variants={cardVariants} animate={showAnimation ? "pulse" : "initial"}>
             <Card ref={summaryRef} className="rounded-xl border-2 border-primary/40">
@@ -322,7 +327,7 @@ export default function OutputDisplay({
                   </p>
                   <Button
                     onClick={handleGenerateSlides}
-                    disabled={isGeneratingSlides}
+                    disabled={isGeneratingSlides || areSlidesLocked}
                     className="font-semibold text-lg py-6 rounded-xl shadow-lg"
                   >
                     {isGeneratingSlides ? (
@@ -330,6 +335,8 @@ export default function OutputDisplay({
                         <LoaderCircle className="animate-spin mr-2" />
                         Generating...
                       </>
+                    ) : areSlidesLocked ? (
+                      'Upgrade to generate slides'
                     ) : (
                       'Generate Presentation'
                     )}
@@ -354,7 +361,7 @@ export default function OutputDisplay({
                   </p>
                   <Button
                     onClick={handlePodcastGeneration}
-                    disabled={isGeneratingPodcast}
+                    disabled={isGeneratingPodcast || isPodcastLocked}
                     className="font-semibold text-lg py-6 rounded-xl shadow-lg"
                   >
                     {isGeneratingPodcast ? (
@@ -362,6 +369,8 @@ export default function OutputDisplay({
                         <LoaderCircle className="animate-spin mr-2" />
                         Generating...
                       </>
+                    ) : isPodcastLocked ? (
+                      'Upgrade for Podcasts'
                     ) : (
                       'Generate Podcast'
                     )}
@@ -410,7 +419,8 @@ export default function OutputDisplay({
                 </CardContent>
             </Card>
         </TabsContent>
-
+        </motion.div>
+        </AnimatePresence>
       </Tabs>
       
       <ShareDialog
@@ -429,5 +439,3 @@ export default function OutputDisplay({
     </div>
   );
 }
-
-    
