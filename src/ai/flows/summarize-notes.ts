@@ -10,6 +10,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const SummarizeNotesInputSchema = z.object({
@@ -100,6 +101,7 @@ const summarizeNotesFlow = ai.defineFlow(
     const summarizeNotesPrompt = ai.definePrompt({
       name: 'summarizeNotesPrompt',
       output: {schema: SummarizeNotesOutputSchema},
+      model: 'googleai/gemini-1.5-flash-latest',
       prompt: `You are an AI study assistant. Transform the following notes into concise, aesthetic study material in a ${input.style} style.
 
 ${styleInstructions}
