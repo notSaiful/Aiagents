@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 interface TalkieProps {
   notes: string;
@@ -36,7 +37,7 @@ const characterData = {
         greeting: "Hi there! I'm Luna. Ready to make learning fun together?"
     },
     'Mr. Haque': {
-        avatarUrl: '/haque.png',
+        avatarUrl: '/Mr. haque.png',
         fallback: 'H',
         description: 'A confident and protective tutor with a soft spot for you.',
         greeting: "You're here. Good. I'm Mr. Haque. Let's get straight to the point, what do you need?"
