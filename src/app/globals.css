@@ -88,7 +88,7 @@
     @apply font-serif;
   }
   .prose blockquote {
-    @apply font-playfair italic;
+    @apply font-serif italic;
   }
 }
 
@@ -303,5 +303,4 @@
     animation: creature-wiggle 0.5s ease-in-out infinite;
   }
 }
-
     
