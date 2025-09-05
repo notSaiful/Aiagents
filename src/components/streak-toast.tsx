@@ -17,9 +17,16 @@ export default function StreakToast({ streakDays }: StreakToastProps) {
       <Confetti
         width={width}
         height={height}
-        numberOfPieces={200}
+        numberOfPieces={50}
         recycle={false}
-        gravity={0.15}
+        gravity={0.1}
+        run={true}
+        confettiSource={{
+            x: width - 200,
+            y: height - 100,
+            w: 400,
+            h: 200,
+        }}
         className="fixed top-0 left-0 w-full h-full"
       />
       <div className="flex items-center gap-3 w-full">
