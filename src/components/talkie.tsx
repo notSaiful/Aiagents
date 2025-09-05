@@ -122,12 +122,7 @@ export default function Talkie({ notes }: TalkieProps) {
                             onClick={() => setSelectedCharacter(character)}
                             className="flex flex-col items-center justify-center p-4 border rounded-xl hover:bg-muted transition-colors text-center"
                         >
-                             <Avatar className="w-16 h-16 mb-2">
-                                <AvatarImage src={data.avatarUrl} alt={character} />
-                                <AvatarFallback>{data.fallback}</AvatarFallback>
-                            </Avatar>
                             <p className="font-semibold">{character}</p>
-                            <p className="text-xs text-muted-foreground mt-1">{data.description}</p>
                         </button>
                     )
                 })}
