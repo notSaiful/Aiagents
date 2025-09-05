@@ -5,7 +5,7 @@ import { useEffect, useState, useTransition, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { getUserProfile, GetUserProfileOutput } from '@/ai/flows/get-user-profile';
-import { LoaderCircle, Award, Pencil, Check, X, Gem, Rocket, FileText } from 'lucide-react';
+import { LoaderCircle, Award, Pencil, Check, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -21,12 +21,6 @@ import Link from 'next/link';
 
 
 type ProfileData = GetUserProfileOutput['profile'];
-
-const planDetails = {
-    Pro: { icon: <Gem className="w-6 h-6 text-purple-500" />, name: "Pro Plan" },
-    Starter: { icon: <Rocket className="w-6 h-6 text-orange-500" />, name: "Starter Plan" },
-    Free: { icon: <FileText className="w-6 h-6 text-gray-500" />, name: "Free Plan" },
-}
 
 
 export default function UserProfile() {
@@ -185,8 +179,6 @@ export default function UserProfile() {
   }
   
   const isSaveDisabled = isPending || usernameStatus !== 'available';
-  const currentPlan = profile.currentPlan || 'Free';
-  const planInfo = planDetails[currentPlan];
 
   return (
     <div className="container mx-auto max-w-4xl py-12 px-4 space-y-8">
@@ -274,24 +266,6 @@ export default function UserProfile() {
         </CardContent>
       </Card>
       
-      <Card>
-        <CardContent className="p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-                {planInfo.icon}
-                <div>
-                    <p className="font-semibold">{planInfo.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                        {currentPlan === 'Free' ? "Upgrade to unlock more features." : `Renews on ${profile.planRenewalDate || 'N/A'}`}
-                    </p>
-                </div>
-            </div>
-            <Button asChild variant={currentPlan === 'Pro' ? "outline" : "default"} size="sm">
-                <Link href="/pricing">
-                    {currentPlan !== 'Pro' ? "Upgrade" : "Manage"}
-                </Link>
-            </Button>
-        </CardContent>
-      </Card>
     </div>
   );
 }

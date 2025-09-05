@@ -20,7 +20,6 @@ import Chat from './chat';
 import FlashcardDeck from './flashcard-deck';
 import AnimatedCheck from './animated-check';
 import { cn } from '@/lib/utils';
-import LockIcon from './lock-icon';
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'next/navigation';
 
@@ -89,7 +88,6 @@ export default function OutputDisplay({
   const [slides, setSlides] = useState<SlidesType | null>(null);
   
   const { user, loading: authLoading } = useAuth();
-  const [userPlan, setUserPlan] = useState('Free'); // 'Free', 'Starter', 'Pro'
   const router = useRouter();
 
   const summaryRef = useRef<HTMLDivElement>(null);
@@ -215,8 +213,6 @@ export default function OutputDisplay({
   );
 
   const isShareableContentAvailable = !!(shortSummary || longSummary || flashcards || mindMap);
-  const isPodcastLocked = userPlan === 'Free';
-  const areSlidesLocked = userPlan !== 'Pro';
 
   return (
     <div className="relative">
@@ -228,10 +224,9 @@ export default function OutputDisplay({
             <TabsTrigger value="mind-map" className="text-sm rounded-full h-10" disabled={!mindMap}>Mind Map</TabsTrigger>
             <TabsTrigger value="slides" className="text-sm rounded-full h-10 flex items-center gap-1.5">
                 <Presentation className="w-4 h-4" />Slides
-                {areSlidesLocked && <LockIcon />}
             </TabsTrigger>
             <TabsTrigger value="podcast" className="text-sm rounded-full h-10 flex items-center gap-1.5">
-                <Music className="w-4 h-4" />Podcast {isPodcastLocked && <LockIcon />}
+                <Music className="w-4 h-4" />Podcast
             </TabsTrigger>
             <TabsTrigger value="arcade" className="text-sm rounded-full h-10 flex items-center gap-1.5"><Shield className="w-4 h-4" />Arcade</TabsTrigger>
             <TabsTrigger value="chat" className="text-sm rounded-full h-10 flex items-center gap-1.5"><MessageCircle className="w-4 h-4" />Chat</TabsTrigger>
@@ -341,7 +336,7 @@ export default function OutputDisplay({
                   </p>
                   <Button
                     onClick={() => requireAuth(handleGenerateSlides)}
-                    disabled={isGeneratingSlides || areSlidesLocked}
+                    disabled={isGeneratingSlides}
                     className="font-semibold text-lg py-6 rounded-xl shadow-lg"
                   >
                     {isGeneratingSlides ? (
@@ -349,8 +344,6 @@ export default function OutputDisplay({
                         <LoaderCircle className="h-4 w-4 animate-spin mr-2" />
                         Generating...
                       </>
-                    ) : areSlidesLocked ? (
-                      'Upgrade to generate slides'
                     ) : (
                       'Generate Presentation'
                     )}
@@ -375,7 +368,7 @@ export default function OutputDisplay({
                   </p>
                   <Button
                     onClick={() => requireAuth(handlePodcastGeneration)}
-                    disabled={isGeneratingPodcast || isPodcastLocked}
+                    disabled={isGeneratingPodcast}
                     className="font-semibold text-lg py-6 rounded-xl shadow-lg"
                   >
                     {isGeneratingPodcast ? (
@@ -383,8 +376,6 @@ export default function OutputDisplay({
                         <LoaderCircle className="h-4 w-4 animate-spin mr-2" />
                         Generating...
                       </>
-                    ) : isPodcastLocked ? (
-                      'Upgrade for Podcasts'
                     ) : (
                       'Generate Podcast'
                     )}

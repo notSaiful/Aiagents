@@ -28,8 +28,6 @@ const GetUserProfileOutputSchema = z.object({
     photoURL: z.string().optional(),
     points: z.number(),
     streak: z.number(),
-    currentPlan: z.enum(['Free', 'Starter', 'Pro']),
-    planRenewalDate: z.string().optional(),
     achievements: z.array(z.object({
         id: z.string(),
         name: z.string(),
@@ -84,7 +82,6 @@ const getUserProfileFlow = ai.defineFlow(
             photoURL: photoURL || '',
             points: 0,
             streak: 0,
-            currentPlan: 'Free',
             achievements: [],
             stats: {
                 summariesGenerated: 0,
@@ -123,8 +120,6 @@ const getUserProfileFlow = ai.defineFlow(
           photoURL: user.photoURL,
           points: user.points || 0,
           streak: user.streak || 0,
-          currentPlan: user.currentPlan || 'Free', 
-          planRenewalDate: user.planRenewalDate,
           achievements: (user.achievements || []).map(a => ({
               ...a,
               dateUnlocked: a.dateUnlocked || new Date().toISOString(),

@@ -81,19 +81,8 @@ export default function PricingPage() {
   const router = useRouter();
 
   const handlePlanSelection = (planId: string) => {
-    if (loading) return; // Prevent action while auth state is loading
-    
-    const cycle = isAnnual ? 'annually' : 'monthly';
-    const paymentUrl = `/payment?plan=${planId}&cycle=${cycle}`;
-
-    if (!user) {
-      // If user is not logged in, redirect to login with a redirectUrl
-      const loginUrl = `/login?redirectUrl=${encodeURIComponent(paymentUrl)}`;
-      router.push(loginUrl);
-    } else {
-      // If user is logged in, proceed to payment
-      router.push(paymentUrl);
-    }
+    // Temporarily disabled
+    router.push('/');
   };
 
   return (

@@ -25,7 +25,6 @@ import AnimatedCheck from '@/components/animated-check';
 import { useProgress } from '@/context/progress-context';
 import StreakToast from '@/components/streak-toast';
 import OcrAnimation from '@/components/ocr-animation';
-import UpgradeToast from '@/components/upgrade-toast';
 import { PartyPopper } from 'lucide-react';
 
 
@@ -109,7 +108,6 @@ export default function Home() {
     });
   };
   
-  const [summaryCount, setSummaryCount] = useState(0); // Mock usage tracking
 
   const handleStatsUpdate = async (action: 'generateSummary' | 'generateFlashcards' | 'createMindmap' | 'generatePodcast' | 'quizCorrectAnswer' | 'quizCompleted') => {
     if (!user) return; // Do not update stats for anonymous users
@@ -161,19 +159,6 @@ export default function Home() {
       setLoading(false);
       return;
     }
-
-    if (user) {
-        // Mock usage limit check only for logged-in users
-        const newCount = summaryCount + 1;
-        setSummaryCount(newCount);
-        if (newCount >= 3) {
-        toast({
-            duration: 8000,
-            component: () => <UpgradeToast featureName="summary" usage={newCount} limit={5} />,
-        });
-        }
-    }
-
 
     try {
       const input = { notes, style };

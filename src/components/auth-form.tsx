@@ -180,7 +180,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
             points: 0,
             streak: 0,
             lastActivityDate: null,
-            currentPlan: 'Free',
             achievements: [],
             stats: {
                 summariesGenerated: 0, flashcardsCompleted: 0, mindmapsCreated: 0,
@@ -378,5 +377,3 @@ export default function AuthForm({ mode }: AuthFormProps) {
     </div>
   );
 }
-
-    

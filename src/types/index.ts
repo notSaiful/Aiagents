@@ -52,8 +52,6 @@ export interface UserStats {
     photoURL?: string;
     points: number;
     streak: number;
-    currentPlan: 'Free' | 'Starter' | 'Pro';
-    planRenewalDate?: string;
     achievements: Achievement[];
     lastActivityDate?: any;
     createdAt: any;
