@@ -13,6 +13,7 @@ import { updateUserStats } from '@/ai/flows/update-user-stats';
 import { useToast } from '@/hooks/use-toast';
 import StreakToast from '@/components/streak-toast';
 import VictoryAnimation from './victory-animation';
+import { useCharacterStore } from '@/store/character-store';
 
 
 interface QuizArenaProps {
@@ -37,8 +38,13 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
   const [timer, setTimer] = useState(TIMER_SECONDS);
   const [popScore, setPopScore] = useState(false);
   const [popStreak, setPopStreak] = useState(false);
+  const setEmotion = useCharacterStore(state => state.setEmotion);
   
   const currentQuestion = questions[currentQuestionIndex];
+
+  useEffect(() => {
+    setEmotion('determined');
+  }, [setEmotion]);
 
   useEffect(() => {
     if (gameOver || !currentQuestion) return;
@@ -102,6 +108,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
         setFeedback('miss');
         setPlayerHealth(prev => Math.max(0, prev - 10)); // Penalty for running out of time
         setStreak(0);
+        setEmotion('confused');
     } else {
         isCorrect = answer === currentQuestion.answer;
         if (isCorrect) {
@@ -118,6 +125,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
             setTimeout(() => setPopStreak(false), 300);
 
             setFeedback('correct');
+            setEmotion('joy');
             handleStatsUpdate('quizCorrectAnswer');
             toast({
                 title: 'Correct!',
@@ -128,6 +136,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
             setPlayerHealth(prev => Math.max(0, prev - 15));
             setStreak(0);
             setFeedback('incorrect');
+            setEmotion('sad');
         }
     }
     
@@ -137,6 +146,9 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
       const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
       if (isPlayerDefeated || isAIDefeated || isLastQuestion) {
+        if(isAIDefeated) setEmotion('cheer');
+        if(isPlayerDefeated) setEmotion('sad');
+
         if(isAIDefeated || isPlayerDefeated) {
             handleStatsUpdate('quizCompleted');
         }
@@ -146,6 +158,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
         setSelectedAnswer(null);
         setFeedback(null);
         setTimer(TIMER_SECONDS);
+        setEmotion('determined');
       }
     }, 1500);
   };
@@ -160,6 +173,7 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
     setFeedback(null);
     setSelectedAnswer(null);
     setTimer(TIMER_SECONDS);
+    setEmotion('determined');
   }
 
   if (gameOver) {

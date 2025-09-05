@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import type { Flashcard as FlashcardType } from '@/types';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
+import { useCharacterStore } from '@/store/character-store';
 
 interface FlashcardDeckProps {
   cards: FlashcardType[];
@@ -49,6 +50,7 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
   const [isFinished, setIsFinished] = useState(false);
   const [popMastery, setPopMastery] = useState(false);
   const { width, height } = useWindowSize();
+  const setEmotion = useCharacterStore(state => state.setEmotion);
 
 
   useEffect(() => {
@@ -64,9 +66,12 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
     if (isKnown) {
         setKnownCards(prev => [...prev, currentCard]);
         setPopMastery(true);
+        setEmotion('cheer');
         setTimeout(() => setPopMastery(false), 300);
     } else {
         setReviewLaterCards(prev => [...prev, currentCard]);
+        setEmotion('confused');
+        setTimeout(() => setEmotion('encouraging', 2000), 1000);
     }
     
     setIsFlipped(false);
@@ -82,6 +87,7 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
             setCurrentIndex(0);
         } else {
             setIsFinished(true);
+            setEmotion('pride');
         }
     }
   };

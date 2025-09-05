@@ -27,6 +27,7 @@ import StreakToast from '@/components/streak-toast';
 import OcrAnimation from '@/components/ocr-animation';
 import UpgradeToast from '@/components/upgrade-toast';
 import { PartyPopper } from 'lucide-react';
+import { useCharacterStore } from '@/store/character-store';
 
 
 interface AIOutput {
@@ -54,6 +55,7 @@ export default function Home() {
   const [showSummaryAnimation, setShowSummaryAnimation] = useState(false);
   
   const { setProgress, startProgress, finishProgress } = useProgress();
+  const setEmotion = useCharacterStore(state => state.setEmotion);
 
   const {
     isListening,
@@ -198,6 +200,7 @@ export default function Home() {
         newOutput.longSummary = summaryResult.value.longSummary;
         setShowSummaryAnimation(true);
         handleStatsUpdate('generateSummary');
+        setEmotion('joy');
       } else {
         console.error('Summary generation failed:', summaryResult.reason);
         toast({ title: 'Summary Failed', description: 'Could not generate summary.', variant: 'destructive' });
@@ -350,6 +353,10 @@ export default function Home() {
     setNotes(e.target.value);
   }
 
+  const handleStyleChange = (newStyle: NoteStyle) => {
+    setStyle(newStyle);
+    setEmotion('surprised', 1000);
+  }
   
   const renderContent = () => {
     if (loading) {
@@ -472,7 +479,7 @@ export default function Home() {
             <Button
               key={styleName}
               variant={style === styleName ? 'default' : 'outline'}
-              onClick={() => setStyle(styleName)}
+              onClick={() => handleStyleChange(styleName)}
               className={cn("rounded-full style-button", `style-button-${styleName.toLowerCase()}`)}
               size="sm"
             >
