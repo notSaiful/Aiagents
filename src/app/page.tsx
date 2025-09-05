@@ -409,7 +409,7 @@ export default function Home() {
     <div className={cn("container mx-auto max-w-4xl py-8 px-4", `theme-${style.toLowerCase()}`)}>
       <OcrAnimation show={isUploading} />
       <div className="mb-4 flex flex-col items-center text-center">
-        <h1 className="pt-4 font-serif text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-teal-400 to-pink-500 md:text-5xl animate-text-glow">
+        <h1 className="pt-4 font-serif text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 md:text-5xl animate-text-glow">
           NotesGPT
         </h1>
         <p className="mt-2 max-w-xl text-md text-muted-foreground">
