@@ -82,11 +82,14 @@ export default function Chat({
     setIsLoading(true);
 
     try {
+       // Exclude the initial greeting message from the history sent to the AI
+      const historyForAI = messages.length > 1 ? messages.slice(1) : [];
+      
       const result = await chatWithCharacter({
         character: selectedCharacter,
         message: input,
         notes: notes,
-        chatHistory: messages,
+        chatHistory: historyForAI,
       });
       
       const modelMessage: Message = { role: 'model', content: result.response };
