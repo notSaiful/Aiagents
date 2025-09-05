@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -28,6 +27,29 @@ export type GeneratePodcastOutput = z.infer<typeof GeneratePodcastOutputSchema>;
 export async function generatePodcast(input: GeneratePodcastInput): Promise<GeneratePodcastOutput> {
   return generatePodcastFlow(input);
 }
+
+// Helper function to chunk text into manageable pieces for TTS
+const chunkText = (text: string, maxLength = 4500): string[] => {
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  const chunks: string[] = [];
+  let currentChunk = '';
+
+  for (const sentence of sentences) {
+    if ((currentChunk + sentence).length > maxLength) {
+      if (currentChunk) {
+        chunks.push(currentChunk);
+      }
+      currentChunk = sentence;
+    } else {
+      currentChunk += sentence;
+    }
+  }
+  if (currentChunk) {
+    chunks.push(currentChunk);
+  }
+  return chunks;
+};
+
 
 const minimalistStyleInstructions = `
 - **Vibe**: Smooth, neutral, concise, friendly. Inspired by minimalist narrators, tech explainers, and ASMR-like clarity.
@@ -77,45 +99,68 @@ const generatePodcastFlow = ai.defineFlow(
       styleInstructions = formalStyleInstructions;
     }
 
-    const scriptPrompt = `You are an expert podcast scriptwriter. Create a conversational script based on the provided notes and style.
+    const scriptPrompt = `You are an expert podcast scriptwriter. First, correct any spelling and grammar mistakes from the notes.
+    Then, if the notes are very long or complex, create a concise summary.
+    Finally, generate a conversational script based on the corrected and summarized notes.
 
-        **Style Instructions (${style})**:
-        ${styleInstructions}
-        
-        **Rules**:
-        1.  The script must be a dialogue between "Speaker1" and "Speaker2".
-        2.  Each line must start with the speaker's name (e.g., \`Speaker1: ...\`).
-        3.  The script should be engaging and accurately reflect the content of the notes.
-        4.  First, correct any spelling and grammar mistakes from the notes, then generate the script based on the corrected text.
-        
-        **Notes**:
-        ${notes}
-        `;
+    **Style Instructions (${style})**:
+    ${styleInstructions}
     
-    const { text } = await ai.generate({ prompt: scriptPrompt });
-
-    const { media } = await ai.generate({
-        model: googleAI.model('gemini-2.5-flash-preview-tts'),
-        config: {
-            responseModalities: ['AUDIO'],
-            speechConfig: {
-                multiSpeakerVoiceConfig: {
-                    speakerVoiceConfigs: [
-                        { speaker: 'Speaker1', voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Algenib' } } },
-                        { speaker: 'Speaker2', voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Achernar' } } },
-                    ],
-                },
-            },
-        },
-        prompt: text,
+    **Rules**:
+    1.  The script must be a dialogue between "Speaker1" and "Speaker2".
+    2.  Each line must start with the speaker's name (e.g., \`Speaker1: ...\`).
+    3.  The script should be engaging and accurately reflect the content of the notes.
+    
+    **Notes**:
+    ${notes}
+    `;
+    
+    const { text: script } = await ai.generate({ 
+        prompt: scriptPrompt,
+        model: 'googleai/gemini-1.5-flash-latest'
     });
-    
-    if (!media?.url) {
-        throw new Error('Failed to generate podcast audio.');
+
+    if (!script) {
+        throw new Error('Failed to generate a podcast script.');
     }
 
-    const audioBuffer = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
-    const wavData = await toWav(audioBuffer);
+    // Chunk the script to avoid TTS model limits
+    const scriptChunks = chunkText(script);
+    const audioBuffers: Buffer[] = [];
+
+    for (const chunk of scriptChunks) {
+        const { media } = await ai.generate({
+            model: googleAI.model('gemini-2.5-flash-preview-tts'),
+            config: {
+                responseModalities: ['AUDIO'],
+                speechConfig: {
+                    multiSpeakerVoiceConfig: {
+                        speakerVoiceConfigs: [
+                            { speaker: 'Speaker1', voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Algenib' } } },
+                            { speaker: 'Speaker2', voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Achernar' } } },
+                        ],
+                    },
+                },
+            },
+            prompt: chunk,
+        });
+
+        if (!media?.url) {
+            console.warn('A podcast chunk failed to generate. Skipping.');
+            continue;
+        }
+
+        const audioBuffer = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
+        audioBuffers.push(audioBuffer);
+    }
+    
+    if (audioBuffers.length === 0) {
+        throw new Error('Failed to generate any podcast audio. Please try again.');
+    }
+
+    // Concatenate all audio buffers and convert to WAV
+    const combinedBuffer = Buffer.concat(audioBuffers);
+    const wavData = await toWav(combinedBuffer);
     
     return {
         podcastWavDataUri: `data:audio/wav;base64,${wavData}`,
