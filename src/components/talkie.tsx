@@ -24,29 +24,29 @@ type Character = 'Professor Aya' | 'Mischievous Luna' | 'Mr. Haque' | 'Meme Bro'
 
 const characterData = {
     'Professor Aya': {
-        avatarUrl: 'https://picsum.photos/seed/aya/64/64',
-        avatarHint: 'woman teacher',
+        avatarUrl: 'https://picsum.photos/seed/professor/64/64',
+        avatarHint: 'woman professor',
         fallback: 'A',
         description: 'A caring and knowledgeable mentor.',
         greeting: "Hello. I'm Professor Aya. How can I assist with your studies today?"
     },
     'Mischievous Luna': {
-        avatarUrl: 'https://picsum.photos/seed/luna/64/64',
-        avatarHint: 'anime girl studying',
+        avatarUrl: 'https://picsum.photos/seed/gamergirl/64/64',
+        avatarHint: 'anime girl',
         fallback: 'L',
         description: 'A playful and loving companion who helps you study.',
         greeting: "Hi there! I'm Luna. Ready to make learning fun together?"
     },
     'Mr. Haque': {
-        avatarUrl: 'https://picsum.photos/seed/haque/64/64',
-        avatarHint: 'man suit',
+        avatarUrl: 'https://picsum.photos/seed/businessman/64/64',
+        avatarHint: 'man in suit',
         fallback: 'H',
         description: 'A confident and protective tutor with a soft spot for you.',
         greeting: "You're here. Good. I'm Mr. Haque. Let's get straight to the point, what do you need?"
     },
     'Meme Bro': {
-        avatarUrl: 'https://picsum.photos/seed/bro/64/64',
-        avatarHint: 'young man gamer',
+        avatarUrl: 'https://picsum.photos/seed/memeguy/64/64',
+        avatarHint: 'funny guy',
         fallback: 'M',
         description: 'Your chaotic best friend who turns studying into a meme.',
         greeting: "Wassup, fam! It's your boy, Meme Bro. Let's cook up some knowledge. 🔥"
