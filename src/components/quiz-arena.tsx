@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { QuizQuestion } from '@/types';
-import { Shield, Sword, Heart, Trophy, RefreshCw } from 'lucide-react';
+import { Shield, Sword, Heart, Trophy, RefreshCw, PartyPopper } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { updateUserStats } from '@/ai/flows/update-user-stats';
 import { useToast } from '@/hooks/use-toast';
@@ -57,6 +57,41 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
     return () => clearInterval(interval);
   }, [currentQuestionIndex, gameOver, currentQuestion]);
 
+  const handleStatsUpdate = async (action: 'quizCorrectAnswer' | 'quizCompleted') => {
+      if (!user) return;
+      try {
+        const { newAchievements, streakMilestone } = await updateUserStats({ userId: user.uid, action });
+        
+        if (streakMilestone) {
+            toast({
+                duration: 5000,
+                component: () => <StreakToast streakDays={streakMilestone} />,
+            });
+        }
+        
+        if (newAchievements && newAchievements.length > 0) {
+            newAchievements.forEach(ach => {
+                toast({
+                    duration: 6000,
+                    component: () => (
+                        <div className="flex items-center gap-3 w-full">
+                           <PartyPopper className="w-8 h-8 text-yellow-400" />
+                            <div className="grid gap-1">
+                                <p className="font-bold text-base">Badge Unlocked!</p>
+                                <p className="text-sm opacity-90">You've earned the "{ach.name}" badge!</p>
+                            </div>
+                        </div>
+                    ),
+                });
+            });
+        }
+
+      } catch (e) {
+          console.error(`Failed to update stats for ${action}:`, e);
+      }
+  };
+
+
   const handleAnswer = async (answer: string | null) => {
     if (selectedAnswer || !currentQuestion) return; // Prevent multiple answers
 
@@ -83,19 +118,12 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
             setTimeout(() => setPopStreak(false), 300);
 
             setFeedback('correct');
-            if (user) {
-                const { streakMilestone } = await updateUserStats({ userId: user.uid, action: 'quizCorrectAnswer' });
-                if (streakMilestone) {
-                    toast({
-                        duration: 5000,
-                        component: () => <StreakToast streakDays={streakMilestone} />,
-                    });
-                }
-                toast({
-                    title: 'Correct!',
-                    description: `You earned ${pointsGained} points.`,
-                });
-            }
+            handleStatsUpdate('quizCorrectAnswer');
+            toast({
+                title: 'Correct!',
+                description: `You earned ${pointsGained} points.`,
+            });
+            
         } else {
             setPlayerHealth(prev => Math.max(0, prev - 15));
             setStreak(0);
@@ -109,8 +137,8 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
       const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
       if (isPlayerDefeated || isAIDefeated || isLastQuestion) {
-        if(user && (isAIDefeated || isPlayerDefeated)) {
-            updateUserStats({ userId: user.uid, action: 'quizCompleted' });
+        if(isAIDefeated || isPlayerDefeated) {
+            handleStatsUpdate('quizCompleted');
         }
         setGameOver(true);
       } else {

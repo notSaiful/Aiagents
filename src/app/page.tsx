@@ -26,6 +26,7 @@ import { useProgress } from '@/context/progress-context';
 import StreakToast from '@/components/streak-toast';
 import OcrAnimation from '@/components/ocr-animation';
 import UpgradeToast from '@/components/upgrade-toast';
+import { PartyPopper } from 'lucide-react';
 
 
 interface AIOutput {
@@ -116,6 +117,40 @@ export default function Home() {
   
   const [summaryCount, setSummaryCount] = useState(0); // Mock usage tracking
 
+  const handleStatsUpdate = async (action: 'generateSummary' | 'generateFlashcards' | 'createMindmap' | 'generatePodcast' | 'quizCorrectAnswer' | 'quizCompleted') => {
+    if (!user) return;
+    try {
+        const { newAchievements, streakMilestone } = await updateUserStats({ userId: user.uid, action });
+        
+        if (streakMilestone) {
+            toast({
+                duration: 5000,
+                component: () => <StreakToast streakDays={streakMilestone} />,
+            });
+        }
+        
+        if (newAchievements && newAchievements.length > 0) {
+            newAchievements.forEach(ach => {
+                toast({
+                    duration: 6000,
+                    component: () => (
+                        <div className="flex items-center gap-3 w-full">
+                           <PartyPopper className="w-8 h-8 text-yellow-400" />
+                            <div className="grid gap-1">
+                                <p className="font-bold text-base">Badge Unlocked!</p>
+                                <p className="text-sm opacity-90">You've earned the "{ach.name}" badge!</p>
+                            </div>
+                        </div>
+                    ),
+                });
+            });
+        }
+
+    } catch (e) {
+        console.error(`Failed to update stats for ${action}:`, e);
+    }
+  };
+
   const handleTransform = async () => {
     setLoading(true);
     setOutput(null);
@@ -162,15 +197,7 @@ export default function Home() {
         newOutput.shortSummary = summaryResult.value.shortSummary;
         newOutput.longSummary = summaryResult.value.longSummary;
         setShowSummaryAnimation(true);
-        if (user) {
-          const { streakMilestone } = await updateUserStats({ userId: user.uid, action: 'generateSummary' });
-          if (streakMilestone) {
-            toast({
-              duration: 5000,
-              component: () => <StreakToast streakDays={streakMilestone} />,
-            });
-          }
-        }
+        handleStatsUpdate('generateSummary');
       } else {
         console.error('Summary generation failed:', summaryResult.reason);
         toast({ title: 'Summary Failed', description: 'Could not generate summary.', variant: 'destructive' });
@@ -180,7 +207,7 @@ export default function Home() {
       // Process flashcards result
       if (flashcardsResult.status === 'fulfilled') {
         newOutput.flashcards = flashcardsResult.value.flashcards;
-        if (user) updateUserStats({ userId: user.uid, action: 'generateFlashcards' });
+        handleStatsUpdate('generateFlashcards');
       } else {
         console.error('Flashcard generation failed:', flashcardsResult.reason);
         toast({ title: 'Flashcards Failed', description: 'Could not generate flashcards.', variant: 'destructive' });
@@ -190,7 +217,7 @@ export default function Home() {
       // Process mind map result
       if (mindMapResult.status === 'fulfilled') {
         newOutput.mindMap = mindMapResult.value.mindMap;
-        if (user) updateUserStats({ userId: user.uid, action: 'createMindmap' });
+        handleStatsUpdate('createMindmap');
       } else {
         console.error('Mind map generation failed:', mindMapResult.reason);
         toast({ title: 'Mind Map Failed', description: 'Could not generate mind map.', variant: 'destructive' });
@@ -228,17 +255,10 @@ export default function Home() {
       const podcastRes = await generatePodcast({ notes, style });
       
       setProgress(progressId, { value: 75, label: 'Rendering audio... This may take a moment.' });
+      
+      handleStatsUpdate('generatePodcast');
+      toast({ title: 'Podcast Generated!', description: 'You earned 5 points.' });
 
-      if (user) {
-          const { streakMilestone } = await updateUserStats({ userId: user.uid, action: 'generatePodcast' });
-          if (streakMilestone) {
-            toast({
-              duration: 5000,
-              component: () => <StreakToast streakDays={streakMilestone} />,
-            });
-          }
-          toast({ title: 'Podcast Generated!', description: 'You earned 5 points.' });
-      }
       setOutput(prevOutput => ({
         ...prevOutput,
         podcast: { audioUrl: podcastRes.podcastWavDataUri },
