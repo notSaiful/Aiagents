@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -117,7 +118,10 @@ const generatePodcastFlow = ai.defineFlow(
     
     const { text: script } = await ai.generate({ 
         prompt: scriptPrompt,
-        model: 'googleai/gemini-1.5-flash-latest'
+        model: 'googleai/gemini-1.5-flash-latest',
+        output: {
+            format: 'text',
+        }
     });
 
     if (!script) {
