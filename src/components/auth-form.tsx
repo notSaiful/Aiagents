@@ -241,7 +241,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             disabled={isLoading}
           >
             {googleLoading ? (
-              <LoaderCircle className="animate-spin" />
+              <LoaderCircle className="h-4 w-4 animate-spin" />
             ) : (
               <>
                 <Chrome className="mr-2 h-4 w-4" />
@@ -341,7 +341,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
           <Button type="submit" className="w-full" disabled={isLoading}>
             {loading ? (
-              <LoaderCircle className="animate-spin" />
+              <LoaderCircle className="h-4 w-4 animate-spin" />
             ) : mode === 'login' ? (
               'Sign In'
             ) : (

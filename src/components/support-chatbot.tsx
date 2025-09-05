@@ -143,7 +143,7 @@ export default function SupportChatbot() {
                                 <AvatarFallback><Sparkles /></AvatarFallback>
                             </Avatar>
                             <div className="max-w-xs rounded-xl px-3 py-2 bg-muted text-muted-foreground">
-                                <LoaderCircle className="w-5 h-5 animate-spin" />
+                                <LoaderCircle className="h-4 w-4 animate-spin" />
                             </div>
                         </div>
                     )}
@@ -160,7 +160,7 @@ export default function SupportChatbot() {
                             disabled={isLoading}
                         />
                         <Button type="submit" disabled={isLoading || !input.trim()} size="icon">
-                            {isLoading ? <LoaderCircle className="animate-spin" /> : <Send />}
+                            {isLoading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                         </Button>
                     </form>
                 </div>

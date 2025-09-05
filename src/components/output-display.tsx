@@ -203,7 +203,7 @@ export default function OutputDisplay({
 
   const isShareableContentAvailable = !!(shortSummary || longSummary || flashcards || mindMap);
   const isPodcastLocked = userPlan === 'Free';
-  const areSlidesLocked = userPlan !== 'Pro' && userPlan !== 'Starter' && userPlan !== 'Free'; // Unlocked for all for now.
+  const areSlidesLocked = userPlan !== 'Pro';
 
   return (
     <div className="relative">
@@ -215,6 +215,7 @@ export default function OutputDisplay({
             <TabsTrigger value="mind-map" className="text-sm rounded-full h-10" disabled={!mindMap}>Mind Map</TabsTrigger>
             <TabsTrigger value="slides" className="text-sm rounded-full h-10 flex items-center gap-1.5">
                 <Presentation className="w-4 h-4" />Slides
+                {areSlidesLocked && <LockIcon />}
             </TabsTrigger>
             <TabsTrigger value="podcast" className="text-sm rounded-full h-10 flex items-center gap-1.5">
                 <Music className="w-4 h-4" />Podcast {isPodcastLocked && <LockIcon />}
@@ -332,7 +333,7 @@ export default function OutputDisplay({
                   >
                     {isGeneratingSlides ? (
                       <>
-                        <LoaderCircle className="animate-spin mr-2" />
+                        <LoaderCircle className="h-4 w-4 animate-spin mr-2" />
                         Generating...
                       </>
                     ) : areSlidesLocked ? (
@@ -366,7 +367,7 @@ export default function OutputDisplay({
                   >
                     {isGeneratingPodcast ? (
                       <>
-                        <LoaderCircle className="animate-spin mr-2" />
+                        <LoaderCircle className="h-4 w-4 animate-spin mr-2" />
                         Generating...
                       </>
                     ) : isPodcastLocked ? (
@@ -399,7 +400,7 @@ export default function OutputDisplay({
                             >
                                 {isGeneratingQuiz ? (
                                     <>
-                                        <LoaderCircle className="animate-spin mr-2" />
+                                        <LoaderCircle className="h-4 w-4 animate-spin mr-2" />
                                         Generating Quiz...
                                     </>
                                 ) : (

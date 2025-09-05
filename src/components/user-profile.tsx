@@ -195,7 +195,7 @@ export default function UserProfile() {
           <div className="absolute top-4 right-4 flex gap-2">
             {isEditing && (
               <Button onClick={handleSaveUsername} size="icon" disabled={isSaveDisabled}>
-                {isPending ? <LoaderCircle className="animate-spin" /> : <Check />}
+                {isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
               </Button>
             )}
              <Button variant="outline" size="icon" onClick={handleEditToggle}>
@@ -218,7 +218,8 @@ export default function UserProfile() {
                 className="text-2xl font-bold text-center h-10"
                 disabled={isPending}
               />
-              <p className={cn("text-sm mt-1 h-5", getStatusColor())}>
+              <p className={cn("text-sm mt-1 h-5 flex items-center justify-center gap-1.5", getStatusColor())}>
+                {usernameStatus === 'checking' && <LoaderCircle className="h-3 w-3 animate-spin" />}
                 {usernameStatus === 'checking' ? 'Checking...' : usernameMessage}
               </p>
             </div>
