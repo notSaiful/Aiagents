@@ -89,9 +89,8 @@ export default function AuthButton() {
   }
 
   return (
-    <Button asChild>
+    <Button variant="ghost" asChild>
         <Link href="/signup">
-            <LogIn className="mr-2 h-4 w-4" />
             Login / Sign Up
         </Link>
     </Button>
