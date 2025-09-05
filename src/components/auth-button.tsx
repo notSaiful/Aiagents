@@ -32,7 +32,7 @@ export default function AuthButton() {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      router.push('/login');
+      router.push('/');
     } catch (error) {
       console.error('Error signing out', error);
     }
@@ -87,11 +87,6 @@ export default function AuthButton() {
     );
   }
 
-  // If not logged in, button will redirect to login page.
-  return (
-    <Button onClick={() => router.push('/login')}>
-      <UserIcon className="mr-2 h-4 w-4" />
-      Login
-    </Button>
-  );
+  // If not logged in, render nothing.
+  return null;
 }
