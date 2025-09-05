@@ -413,7 +413,7 @@ export default function Home() {
           NotesGPT
         </h1>
         <p className="mt-2 max-w-xl text-md text-muted-foreground">
-          Instantly transform your raw notes into beautiful summaries, flashcards, and mind maps.
+          Turn messy notes into smart learning tools.
         </p>
       </div>
 
