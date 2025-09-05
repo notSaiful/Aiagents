@@ -4,7 +4,6 @@
 import { PartyPopper } from 'lucide-react';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
-import { useCharacterStore } from '@/store/character-store';
 import { useEffect } from 'react';
 
 interface StreakToastProps {
@@ -13,11 +12,6 @@ interface StreakToastProps {
 
 export default function StreakToast({ streakDays }: StreakToastProps) {
   const { width, height } = useWindowSize();
-  const setEmotion = useCharacterStore(state => state.setEmotion);
-
-  useEffect(() => {
-    setEmotion('pride');
-  }, [setEmotion]);
 
   return (
     <>

@@ -12,7 +12,6 @@ import { ThemeProvider } from '@/components/theme-provider';
 import SupportChatbot from '@/components/support-chatbot';
 import { ProgressProvider } from '@/context/progress-context';
 import ProgressRibbon from '@/components/progress-ribbon';
-import CharacterFeedback from '@/components/character-feedback';
 
 export const metadata: Metadata = {
   title: 'NotesGPT | Transform Your Notes Instantly',
@@ -54,7 +53,6 @@ export default function RootLayout({
               </div>
               <Footer />
               <SupportChatbot />
-              <CharacterFeedback />
               <Toaster />
             </ProgressProvider>
           </AuthProvider>

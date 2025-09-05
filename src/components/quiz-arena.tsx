@@ -13,7 +13,6 @@ import { updateUserStats } from '@/ai/flows/update-user-stats';
 import { useToast } from '@/hooks/use-toast';
 import StreakToast from '@/components/streak-toast';
 import VictoryAnimation from './victory-animation';
-import { useCharacterStore } from '@/store/character-store';
 
 
 interface QuizArenaProps {
@@ -38,38 +37,8 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
   const [timer, setTimer] = useState(TIMER_SECONDS);
   const [popScore, setPopScore] = useState(false);
   const [popStreak, setPopStreak] = useState(false);
-  const setEmotion = useCharacterStore(state => state.setEmotion);
   
   const currentQuestion = questions[currentQuestionIndex];
-
-  useEffect(() => {
-    setEmotion('determined');
-  }, [setEmotion]);
-  
-  useEffect(() => {
-    if (!feedback) return;
-    
-    switch (feedback) {
-      case 'correct':
-        setEmotion('joy');
-        break;
-      case 'incorrect':
-      case 'miss':
-        setEmotion('sad');
-        break;
-    }
-  }, [feedback, setEmotion]);
-  
-  useEffect(() => {
-    if (gameOver) {
-        if (aiHealth <= 0) {
-            setEmotion('cheer');
-        } else {
-            setEmotion('sad');
-        }
-    }
-  }, [gameOver, aiHealth, setEmotion]);
-
 
   useEffect(() => {
     if (gameOver || !currentQuestion) return;
@@ -177,7 +146,6 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
         setSelectedAnswer(null);
         setFeedback(null);
         setTimer(TIMER_SECONDS);
-        setEmotion('determined');
       }
     }, 1500);
   };
@@ -192,7 +160,6 @@ export default function QuizArena({ questions, style }: QuizArenaProps) {
     setFeedback(null);
     setSelectedAnswer(null);
     setTimer(TIMER_SECONDS);
-    setEmotion('determined');
   }
 
   if (gameOver) {

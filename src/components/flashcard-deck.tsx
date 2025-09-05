@@ -12,7 +12,6 @@ import { cn } from '@/lib/utils';
 import type { Flashcard as FlashcardType } from '@/types';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
-import { useCharacterStore } from '@/store/character-store';
 
 interface FlashcardDeckProps {
   cards: FlashcardType[];
@@ -51,28 +50,11 @@ export default function FlashcardDeck({ cards, onFinish }: FlashcardDeckProps) {
   const [popMastery, setPopMastery] = useState(false);
   const [lastAction, setLastAction] = useState<'known' | 'review' | null>(null);
   const { width, height } = useWindowSize();
-  const setEmotion = useCharacterStore(state => state.setEmotion);
 
 
   useEffect(() => {
     setShuffledCards(shuffleArray([...cards]));
   }, [cards]);
-
-  useEffect(() => {
-    if (lastAction === 'known') {
-        setEmotion('cheer');
-    } else if (lastAction === 'review') {
-        setEmotion('confused');
-        const timer = setTimeout(() => setEmotion('encouraging', 2000), 1000);
-        return () => clearTimeout(timer);
-    }
-  }, [lastAction, setEmotion]);
-  
-  useEffect(() => {
-    if (isFinished) {
-        setEmotion('pride');
-    }
-  }, [isFinished, setEmotion]);
 
   const currentCard = useMemo(() => shuffledCards[currentIndex], [shuffledCards, currentIndex]);
   const mastery = cards.length > 0 ? (knownCards.length / cards.length) * 100 : 0;

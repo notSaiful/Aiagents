@@ -27,7 +27,6 @@ import StreakToast from '@/components/streak-toast';
 import OcrAnimation from '@/components/ocr-animation';
 import UpgradeToast from '@/components/upgrade-toast';
 import { PartyPopper } from 'lucide-react';
-import { useCharacterStore } from '@/store/character-store';
 
 
 interface AIOutput {
@@ -55,8 +54,7 @@ export default function Home() {
   const [showSummaryAnimation, setShowSummaryAnimation] = useState(false);
   
   const { setProgress, startProgress, finishProgress } = useProgress();
-  const setEmotion = useCharacterStore(state => state.setEmotion);
-
+  
   const {
     isListening,
     transcript,
@@ -200,7 +198,6 @@ export default function Home() {
         newOutput.longSummary = summaryResult.value.longSummary;
         setShowSummaryAnimation(true);
         handleStatsUpdate('generateSummary');
-        setEmotion('joy');
       } else {
         console.error('Summary generation failed:', summaryResult.reason);
         toast({ title: 'Summary Failed', description: 'Could not generate summary.', variant: 'destructive' });
@@ -355,7 +352,6 @@ export default function Home() {
 
   const handleStyleChange = (newStyle: NoteStyle) => {
     setStyle(newStyle);
-    setEmotion('surprised', 1000);
   }
   
   const renderContent = () => {
