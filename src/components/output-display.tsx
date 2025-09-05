@@ -22,6 +22,7 @@ import AnimatedCheck from './animated-check';
 import { cn } from '@/lib/utils';
 import LockIcon from './lock-icon';
 import { useAuth } from '@/context/auth-context';
+import { useRouter } from 'next/navigation';
 
 
 interface OutputDisplayProps {
@@ -87,9 +88,9 @@ export default function OutputDisplay({
   const [isGeneratingSlides, setIsGeneratingSlides] = useState(false);
   const [slides, setSlides] = useState<SlidesType | null>(null);
   
-  // Mock user plan for demonstration - replace with actual user data
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [userPlan, setUserPlan] = useState('Free'); // 'Free', 'Starter', 'Pro'
+  const router = useRouter();
 
   const summaryRef = useRef<HTMLDivElement>(null);
   const mindMapRef = useRef<HTMLDivElement>(null);
@@ -98,6 +99,18 @@ export default function OutputDisplay({
   const chatRef = useRef<HTMLDivElement>(null);
   const flashcardsRef = useRef<HTMLDivElement>(null);
   const slidesRef = useRef<HTMLDivElement>(null);
+
+  const requireAuth = (callback: () => void) => {
+    if (!user) {
+      router.push('/login?redirectUrl=' + encodeURIComponent(window.location.pathname));
+      toast({
+        title: "Login Required",
+        description: "Please log in to use this feature.",
+      });
+    } else {
+      callback();
+    }
+  };
 
   const handleCopyLink = async () => {
     setIsSharing(true);
@@ -259,7 +272,7 @@ export default function OutputDisplay({
               </CardContent>
                {isShareable && isShareableContentAvailable && (
                 <CardFooter>
-                    <Button onClick={() => setShareDialogOpen(true)} variant="outline" className="w-full">
+                    <Button onClick={() => requireAuth(() => setShareDialogOpen(true))} variant="outline" className="w-full">
                         <Share2 className="mr-2 h-4 w-4" />
                         Share Summary
                     </Button>
@@ -327,7 +340,7 @@ export default function OutputDisplay({
                     Turn your notes into a professional presentation.
                   </p>
                   <Button
-                    onClick={handleGenerateSlides}
+                    onClick={() => requireAuth(handleGenerateSlides)}
                     disabled={isGeneratingSlides || areSlidesLocked}
                     className="font-semibold text-lg py-6 rounded-xl shadow-lg"
                   >
@@ -361,7 +374,7 @@ export default function OutputDisplay({
                     Generate a podcast from your notes.
                   </p>
                   <Button
-                    onClick={handlePodcastGeneration}
+                    onClick={() => requireAuth(handlePodcastGeneration)}
                     disabled={isGeneratingPodcast || isPodcastLocked}
                     className="font-semibold text-lg py-6 rounded-xl shadow-lg"
                   >
@@ -440,5 +453,3 @@ export default function OutputDisplay({
     </div>
   );
 }
-
-    

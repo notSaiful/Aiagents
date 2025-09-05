@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import NextLink from 'next/link';
 import {
   signInWithEmailAndPassword,
@@ -55,6 +55,8 @@ interface AuthFormProps {
 
 export default function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirectUrl');
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -62,6 +64,10 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const form = useForm({
     resolver: zodResolver(mode === 'login' ? loginSchema : signupSchema),
   });
+
+  const handleSuccess = () => {
+    router.push(redirectUrl || '/');
+  };
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
@@ -76,9 +82,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
       if (!userDoc.exists()) {
         const username = user.email?.split('@')[0] || `user_${Date.now()}`;
         
-        // With Google Sign-In, we can attempt to set the username directly.
-        // We'll rely on the transactional `updateUsernameAction` to ensure uniqueness.
-        // If it fails (highly unlikely for Google-generated names), the user can change it later.
         await setDoc(userDocRef, {
             uid: user.uid,
             email: user.email,
@@ -102,7 +105,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
         title: 'Signed In!',
         description: 'Welcome back!',
       });
-      router.push('/');
+      handleSuccess();
     } catch (error: any) {
       console.error(error);
       toast({
@@ -136,7 +139,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
     
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/');
+      handleSuccess();
     } catch (error: any) {
         toast({ title: 'Sign In Failed', description: 'Invalid email/username or password.', variant: 'destructive' });
     } finally {
@@ -193,7 +196,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             title: 'Account Created!',
             description: "Welcome! We've created your account and signed you in.",
         });
-        router.push('/');
+        handleSuccess();
 
     } catch (error: any) {
         let errorMessage = 'An unexpected error occurred. Please try again.';
@@ -214,6 +217,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
 
   const isLoading = loading || googleLoading;
+  const linkQuery = redirectUrl ? `?redirectUrl=${encodeURIComponent(redirectUrl)}` : '';
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
@@ -353,7 +357,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
           <p className="text-muted-foreground">
             {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
             <NextLink
-              href={mode === 'login' ? '/signup' : '/login'}
+              href={(mode === 'login' ? '/signup' : '/login') + linkQuery}
               className="font-medium text-primary-foreground hover:underline"
             >
               {mode === 'login' ? 'Sign up' : 'Sign in'}
@@ -364,5 +368,3 @@ export default function AuthForm({ mode }: AuthFormProps) {
     </div>
   );
 }
-
-    

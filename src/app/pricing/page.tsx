@@ -2,10 +2,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { Check, X, TrendingUp } from 'lucide-react';
+import { Check, X, TrendingUp, LoaderCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
@@ -75,9 +77,23 @@ const plans = [
 
 export default function PricingPage() {
   const [isAnnual, setIsAnnual] = useState(false);
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
-  const getPlanLink = (planId: string) => {
-    return `/payment?plan=${planId}&cycle=${isAnnual ? 'annually' : 'monthly'}`;
+  const handlePlanSelection = (planId: string) => {
+    if (loading) return; // Prevent action while auth state is loading
+    
+    const cycle = isAnnual ? 'annually' : 'monthly';
+    const paymentUrl = `/payment?plan=${planId}&cycle=${cycle}`;
+
+    if (!user) {
+      // If user is not logged in, redirect to login with a redirectUrl
+      const loginUrl = `/login?redirectUrl=${encodeURIComponent(paymentUrl)}`;
+      router.push(loginUrl);
+    } else {
+      // If user is logged in, proceed to payment
+      router.push(paymentUrl);
+    }
   };
 
   return (
@@ -152,14 +168,13 @@ export default function PricingPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button asChild className="w-full" variant={plan.variant as any} disabled={plan.name === 'Free'}>
-                {plan.name === 'Free' ? (
-                   <span>{plan.buttonText}</span>
-                ) : (
-                  <Link href={getPlanLink(plan.planId)}>
-                    {plan.buttonText}
-                  </Link>
-                )}
+              <Button 
+                className="w-full" 
+                variant={plan.variant as any} 
+                disabled={plan.name === 'Free' || loading}
+                onClick={() => plan.name !== 'Free' && handlePlanSelection(plan.planId)}
+              >
+                {loading && plan.name !== 'Free' ? <LoaderCircle className="h-4 w-4 animate-spin" /> : plan.buttonText}
               </Button>
             </CardFooter>
           </Card>

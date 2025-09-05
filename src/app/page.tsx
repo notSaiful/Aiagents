@@ -84,12 +84,6 @@ export default function Home() {
   }, [error, toast]);
 
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, authLoading, router]);
-
   const readFileAsDataURI = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -118,7 +112,7 @@ export default function Home() {
   const [summaryCount, setSummaryCount] = useState(0); // Mock usage tracking
 
   const handleStatsUpdate = async (action: 'generateSummary' | 'generateFlashcards' | 'createMindmap' | 'generatePodcast' | 'quizCorrectAnswer' | 'quizCompleted') => {
-    if (!user) return;
+    if (!user) return; // Do not update stats for anonymous users
     try {
         const { newAchievements, streakMilestone } = await updateUserStats({ userId: user.uid, action });
         
@@ -168,14 +162,16 @@ export default function Home() {
       return;
     }
 
-    // Mock usage limit check
-    const newCount = summaryCount + 1;
-    setSummaryCount(newCount);
-    if (newCount >= 3) {
-      toast({
-        duration: 8000,
-        component: () => <UpgradeToast featureName="summary" usage={newCount} limit={5} />,
-      });
+    if (user) {
+        // Mock usage limit check only for logged-in users
+        const newCount = summaryCount + 1;
+        setSummaryCount(newCount);
+        if (newCount >= 3) {
+        toast({
+            duration: 8000,
+            component: () => <UpgradeToast featureName="summary" usage={newCount} limit={5} />,
+        });
+        }
     }
 
 
@@ -210,7 +206,7 @@ export default function Home() {
         handleStatsUpdate('generateFlashcards');
       } else {
         console.error('Flashcard generation failed:', flashcardsResult.reason);
-        toast({ title: 'Flashcards Failed', description: 'Could not generate flashcards.', variant: 'destructive' });
+        toast({ title: 'Flashcard generation failed:', description: 'Could not generate flashcards.', variant: 'destructive' });
         hasError = true;
       }
       
@@ -399,9 +395,6 @@ export default function Home() {
     );
   }
 
-  if (!user) {
-    return null;
-  }
 
   const isLoading = loading || isUploading;
 
@@ -502,9 +495,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
-
-    
