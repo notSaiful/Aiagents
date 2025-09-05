@@ -360,7 +360,7 @@ export default function OutputDisplay({
                     {isGeneratingPodcast ? (
                       <>
                         <LoaderCircle className="animate-spin mr-2" />
-                        Generating Podcast...
+                        Generating...
                       </>
                     ) : (
                       'Generate Podcast'
@@ -429,3 +429,5 @@ export default function OutputDisplay({
     </div>
   );
 }
+
+    
