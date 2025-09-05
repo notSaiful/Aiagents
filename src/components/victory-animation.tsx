@@ -11,6 +11,7 @@ import { RefreshCw } from 'lucide-react';
 const netVariants = {
     hidden: { y: '-100%', opacity: 0 },
     visible: { y: '0%', opacity: 1, transition: { type: 'spring', damping: 10, stiffness: 80 } },
+    exit: { opacity: 0, scale: 1.5, transition: { duration: 0.3, delay: 0.2 } },
 };
 
 const creatureVariants = {
@@ -39,9 +40,9 @@ export default function VictoryAnimation({ score, onRestart }: VictoryAnimationP
 
     useEffect(() => {
         const timers = [
-            setTimeout(() => setAnimationStep(1), 0),       // Net drops
-            setTimeout(() => setAnimationStep(2), 500),     // Creature shrinks, card appears
-            setTimeout(() => setAnimationStep(3), 1500),    // Final UI shows
+            setTimeout(() => setAnimationStep(1), 500),     // Net disappears, creature shrinks
+            setTimeout(() => setAnimationStep(2), 1000),    // Card appears with confetti
+            setTimeout(() => setAnimationStep(3), 2500),    // Final UI shows
         ];
         return () => timers.forEach(clearTimeout);
     }, []);
@@ -58,24 +59,28 @@ export default function VictoryAnimation({ score, onRestart }: VictoryAnimationP
                 />
             )}
             
-            {/* Note Creature */}
-            <motion.div
-                variants={creatureVariants}
-                initial="initial"
-                animate={animationStep >= 1 ? 'captured' : 'initial'}
-                className="w-24 h-24 bg-yellow-300 rounded-full flex items-center justify-center text-5xl creature-wiggle"
-            >
-                😈
-            </motion.div>
-
-            {/* Net */}
             <AnimatePresence>
-            {animationStep >= 0 && animationStep < 2 && (
+                {animationStep < 2 && (
+                     <motion.div
+                        key="creature"
+                        variants={creatureVariants}
+                        initial="initial"
+                        animate={animationStep >= 1 ? 'captured' : 'initial'}
+                        className="w-24 h-24 bg-yellow-300 rounded-full flex items-center justify-center text-5xl creature-wiggle"
+                    >
+                        😈
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+            {animationStep < 1 && (
                 <motion.div
+                    key="net"
                     variants={netVariants}
                     initial="hidden"
                     animate="visible"
-                    exit={{ opacity: 0, transition: { duration: 0.3, delay: 0.5 } }}
+                    exit="exit"
                     className="absolute w-32 h-32"
                 >
                     <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -87,10 +92,10 @@ export default function VictoryAnimation({ score, onRestart }: VictoryAnimationP
             )}
             </AnimatePresence>
 
-            {/* Captured Card */}
              <AnimatePresence>
-                {animationStep >= 2 && (
+                {animationStep === 2 && (
                     <motion.div
+                        key="card"
                         variants={cardVariants}
                         initial="hidden"
                         animate="visible"
@@ -104,10 +109,10 @@ export default function VictoryAnimation({ score, onRestart }: VictoryAnimationP
                 )}
             </AnimatePresence>
 
-            {/* Final UI */}
             <AnimatePresence>
                 {animationStep >= 3 && (
                     <motion.div
+                        key="final-ui"
                         variants={finalUiVariants}
                         initial="hidden"
                         animate="visible"
