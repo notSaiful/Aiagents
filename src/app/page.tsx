@@ -409,7 +409,7 @@ export default function Home() {
     <div className={cn("container mx-auto max-w-4xl py-8 px-4", `theme-${style.toLowerCase()}`)}>
       <OcrAnimation show={isUploading} />
       <div className="mb-4 flex flex-col items-center text-center">
-        <h1 className="pt-4 font-serif text-4xl font-bold tracking-tight text-transparent bg-gradient-to-r from-chart-1 via-chart-3 to-chart-5 bg-clip-text md:text-5xl animate-text-glow">
+        <h1 className="pt-4 font-serif text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent md:text-5xl animate-text-glow">
           NotesGPT
         </h1>
         <p className="mt-2 max-w-xl text-md text-muted-foreground">
@@ -502,3 +502,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
