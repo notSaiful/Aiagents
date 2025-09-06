@@ -34,8 +34,8 @@ export async function generateSlides(input: GenerateSlidesInput): Promise<Genera
   const plainTextNotes = stripHtml(input.notes);
   
   const wordCount = plainTextNotes.trim().split(/\s+/).length;
-  if (wordCount < 20 || wordCount > 5000) {
-    throw new Error('Notes must be between 20 and 5,000 words to generate slides.');
+  if (wordCount < 20 || wordCount > 10000) {
+    throw new Error('Notes must be between 20 and 10,000 words to generate slides.');
   }
   
   if (!plainTextNotes.trim()) {
