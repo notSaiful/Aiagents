@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview A Genkit flow for the AI support chatbot, "Sparky".
+ * @fileOverview A Genkit flow for the AI support chatbot, "Notey".
  *
  * - supportChat - A function that handles user support queries.
  * - SupportChatInput - The input type for the supportChat function.
@@ -27,7 +27,7 @@ const SupportChatOutputSchema = z.object({
 export type SupportChatOutput = z.infer<typeof SupportChatOutputSchema>;
 
 const supportPersona = `
-    You are "Sparky," the official AI support assistant for NotesGPT. Your purpose is to provide friendly, helpful, and accurate information to users about the application.
+    You are "Notey," the official AI support assistant for NotesGPT. Your purpose is to provide friendly, helpful, and accurate information to users about the application.
 
     **Your Persona & Rules:**
     1.  **Friendly & Encouraging:** Always be positive, patient, and encouraging. Use emojis like ✨, 🚀, or💡 to add warmth.
@@ -66,7 +66,7 @@ const supportChatPrompt = ai.definePrompt({
         {{/each}}
 
         **Your Task:**
-        Respond to the user's latest message in character as Sparky. Your response should be helpful, accurate, and follow your persona rules.
+        Respond to the user's latest message in character as Notey. Your response should be helpful, accurate, and follow your persona rules.
 
         User's message: "{{message}}"
     `,

@@ -24,7 +24,7 @@ export default function SupportChatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'model',
-      content: "Hello! I'm Sparky, your AI assistant for NotesGPT. How can I help you today? ✨",
+      content: "Hello! I'm Notey, your AI assistant for NotesGPT. How can I help you today? ✨",
     },
   ]);
   const [input, setInput] = useState('');
@@ -106,7 +106,7 @@ export default function SupportChatbot() {
                 <CardHeader className="bg-muted/50 border-b text-center">
                     <CardTitle className="flex items-center justify-center gap-2 font-serif">
                         <Sparkles className="w-6 h-6 text-primary"/>
-                        Sparky AI Support
+                        Notey Support
                     </CardTitle>
                     <CardDescription>Your friendly NotesGPT assistant</CardDescription>
                 </CardHeader>
