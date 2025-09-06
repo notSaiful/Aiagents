@@ -34,6 +34,7 @@ const prompt = ai.definePrompt({
   name: 'extractTextFromImagePrompt',
   input: {schema: ExtractTextFromImageInputSchema},
   output: {schema: ExtractTextFromImageOutputSchema},
+  model: 'googleai/gemini-1.5-pro',
   prompt: `You are an expert OCR (Optical Character Recognition) service.
 Your task is to extract all handwritten or printed text from the provided image.
 Analyze the image carefully and transcribe the text as accurately as possible.
